@@ -33,6 +33,7 @@ IF (USE_LPSOLVE)
 			/usr/lib/
 			/usr/local/lib
 			/opt/lib
+			/opt/local/lib
 		)
 
 		FIND_LIBRARY(TMP_LPSOLVE_LIBRARIES 
