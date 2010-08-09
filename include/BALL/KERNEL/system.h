@@ -205,6 +205,8 @@ namespace BALL
 		void prepend(Molecule& molecule);
 
 		/** Append a molecule after the last position.
+		   <b>Note</b> that this method	alters the composite tree from which the <tt>molecule</tt> is taken.
+		   @see Composite::appendChild()
 				@param molecule the molecule to append
 		*/
 		void append(Molecule& molecule);
