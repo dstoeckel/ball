@@ -106,9 +106,10 @@ CHECK(getResidue(const String&))
 RESULT
 
 CHECK(FragmentDB::BuildBondsProcessor::operator () )
-	ABORT_IF(db.getResidue("GLY") == 0)
-	Residue res(*db.getResidue("GLY"));
-	
+	const Residue* gly = db.getResidue("GLY");
+	ABORT_IF(gly == 0)
+	Residue res(*gly);
+
 	AtomIterator atom_it = res.beginAtom();
 	for (; +atom_it; ++atom_it)
 	{
@@ -141,7 +142,7 @@ CHECK(FragmentDB::BuildBondsProcessor::operator () )
 RESULT
 
 CHECK(FragmentDB::BuildBondsProcessor::operator () / Tripeptide)
-  HINFile infile(BALL_TEST_DATA_PATH(AlaGlySer.hin));
+	HINFile infile(BALL_TEST_DATA_PATH(AlaGlySer.hin));
 	System S;
 	infile >> S;
 	TEST_EQUAL(S.countAtoms(), 31)
@@ -151,10 +152,10 @@ CHECK(FragmentDB::BuildBondsProcessor::operator () / Tripeptide)
 				
 	Atom::BondIterator bond_it;
 	AtomIterator atom_it;
-	ResidueIterator res_it = S.beginResidue();
-	for (; +res_it; ++res_it)
+	ResidueIterator res_it;
+	BALL_FOREACH_RESIDUE(S, res_it)
 	{
-		Size number_of_atoms = 0;;
+		Size number_of_atoms = 0;
 		BALL_FOREACH_BOND(*res_it, atom_it, bond_it)
 		{
 			number_of_atoms++;
@@ -163,8 +164,7 @@ CHECK(FragmentDB::BuildBondsProcessor::operator () / Tripeptide)
 		STATUS("Number of bonds in residue " << res_it->getName() << ": " << number_of_atoms)
 	}
 
-	atom_it = S.beginAtom();
-	for (; +atom_it; ++atom_it)
+	BALL_FOREACH_ATOM(S,atom_it)
 	{
 		atom_it->destroyBonds();
 	}
@@ -174,7 +174,7 @@ CHECK(FragmentDB::BuildBondsProcessor::operator () / Tripeptide)
 	
 	// check the bonds
 	Position residue = 0;
-	for (res_it = S.beginResidue(); +res_it; ++res_it)
+	BALL_FOREACH_RESIDUE(S,res_it)
 	{
 		Position i = 0;
 		BALL_FOREACH_BOND(*res_it, atom_it, bond_it)
@@ -220,6 +220,20 @@ CHECK(FragmentDB::BuildBondsProcessor::operator () / BPTI)
 	TEST_EQUAL(S.countBonds(), 906)	
 RESULT
 
+CHECK(FragmentDB::NormalizeNamesProcessor::operator() / 1GLU)
+	PDBFile input(BALL_TEST_DATA_PATH(1GLU.pdb));
+	System S;
+	input >> S;
+
+	TEST_EQUAL(S.beginFragment()->getName(), "DC")
+	S.apply(db.normalize_names);
+	STATUS("chosen naming standard: " << db.normalize_names.getNamingStandard())
+	TEST_EQUAL(S.beginFragment()->getName(), "C")
+
+	// TODO: add more tests for NormalizeNamesProcessor
+	// (e.g. corner cases)
+RESULT
+
 CHECK([EXTRA]DNA bond contruction)
 	PDBFile f(BALL_TEST_DATA_PATH(AG.pdb));
 	System S;
@@ -230,7 +244,7 @@ CHECK([EXTRA]DNA bond contruction)
 	TEST_EQUAL(S.countAtoms(), 34)
 	ABORT_IF(S.countAtoms() != 34)
 	
-	FragmentDB db("");
+	FragmentDB db(""); // really empty db here? yes. uses default ;-)
 	STATUS("number of atoms: " << S.countAtoms())
 	STATUS("number of bonds: " << S.countBonds())
 	S.apply(db.build_bonds);
@@ -242,7 +256,10 @@ CHECK([EXTRA]DNA bond contruction)
 	S.apply(db.build_bonds);
 	STATUS("number of atoms: " << S.countAtoms())
 	STATUS("number of bonds: " << S.countBonds())
+	// TODO: add a meaningful check here.
 RESULT
+
+// TODO: (meaningfully) test ReconstructFragmentProcessor
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
