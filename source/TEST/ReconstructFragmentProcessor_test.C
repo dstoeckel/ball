@@ -125,6 +125,37 @@ CHECK([EXTRA]Contents of FragmentDB -- proteinogenous amino acids)
                                 
 RESULT
 
+CHECK([EXTRA]ReconstructFragmentProcessor should not duplicate atoms that are renamed)
+	 // TODO: test renaming of atoms in preconstructed structures
+	 ReconstructFragmentProcessor rfp(frag_db);
+
+	 // construct an ALA
+	 System S;
+	 Protein ala;
+	 ala.setName("P");
+	 Chain c;
+	 c.setName("C");
+	 Residue alaRes;
+	 alaRes.setName("ALA");
+	 c.insert(alaRes);
+	 ala.insert(c);
+	 S.insert(ala);
+	 S.apply(rfp);
+
+	 Size atomCount = alaRes.countAtoms();
+	 STATUS("Atoms After construction: " << atomCount);
+
+	 // rename the first atom to something silly
+	 AtomIterator atoms = S.beginAtom();
+	 atoms->setName("foo");
+
+	 // reapply the processor
+	 S.apply(rfp);
+
+	 // and expect nothing new to have been added
+	 TEST_EQUAL(alaRes.countAtoms(), atomCount);
+RESULT
+
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 END_TEST
