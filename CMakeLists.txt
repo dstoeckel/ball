@@ -791,6 +791,7 @@ ENDIF()
 
 ##### Packaging #####
 IF (BALL_ENABLE_PACKAGING)
+	MESSAGE(STATUS "Enabled Packaging")
 	INCLUDE(cmake/BALLPackageConfig.cmake)
 ENDIF()
 
