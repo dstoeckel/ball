@@ -466,7 +466,9 @@ ResourceFile f;
 CHECK(ResourceFile::open(const String&))
 	TEST_EQUAL(f.open(BALL_TEST_DATA_PATH(test.db)), true)
 	TEST_EQUAL(f.isValid(), true)
-	TEST_NOT_EQUAL(f.getEntry("/Node1"), 0)
+	ResourceEntry* node1;
+	TEST_NOT_EQUAL(node1 = f.getEntry("/Node1"), 0)
+	TEST_EQUAL(node1->getValue(), "test1")
 	TEST_EQUAL(f.getEntry("//Node1"), 0)
 	TEST_NOT_EQUAL(f.getEntry("/Node2"), 0)
 	TEST_EQUAL(f.getEntry("//Node2"), 0)
