@@ -85,6 +85,14 @@ SET(BALL_BENCHMARK_DATA_PATH ${PROJECT_SOURCE_DIR}/source/BENCHMARKS/data)
 # Should we build packages as well?
 OPTION(BALL_ENABLE_PACKAGING "Enable the building of binary packages" OFF)
 
+# Restrict architecture ("universal binary") on osx
+IF(APPLE)
+	MESSAGE(STATUS "Restricting OSX build to i386 for now")
+	SET(CMAKE_OSX_ARCHITECTURES "i386;" CACHE STRING "OSX Build Arch" FORCE)
+	SET(CMAKE_TRY_COMPILE_OSX_ARCHITECTURES "i386;" CACHE STRING "OSX Check Compile Arch" FORCE)
+ENDIF()
+
+
 # Used for linking BALL dependent applications and libraries (BALLView, Python bindings, ...)
 SET(BALL_LIBRARIES optimized BALL debug BALLd)
 SET(VIEW_LIBRARIES optimized VIEW debug VIEWd)
