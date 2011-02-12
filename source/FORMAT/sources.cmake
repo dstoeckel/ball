@@ -10,6 +10,7 @@ SET(SOURCES_LIST
 	CIFFile.C
 	DCDFile.C
 	DSN6File.C
+	fragmentXMLFile.C
 	GAMESSDatFile.C
 #	GAMESSLogFile.C
 	genericMolFile.C
