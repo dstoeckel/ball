@@ -9,6 +9,8 @@
 #   include <BALL/FORMAT/genericMolFile.h>
 #endif
 
+class QDomDocument;
+
 namespace BALL
 {
 	/** Fragment XML file class.
@@ -34,15 +36,18 @@ namespace BALL
 		/// Read a single molecule, in this case the first variant in the file.
 		Molecule* read();
 
-		/// Read the whole System, aka all variants from the file.
-		bool read(System& system);
-
 		/// Read a specific molecule (variant) from the file.
 		Molecule* read(const String& variantName);
 
-		FragmentXMLFile& operator = (const GenericMolFile& rhs);
+		bool write(const Molecule &molecule);
+
+		bool isOpen() const;
+
+		FragmentXMLFile& operator = (const FragmentXMLFile& rhs);
 
 		// (no need to reimplement operators, they call read/write in the superclass)
+		private:
+		QDomDocument* data;
 	};
 }
 
