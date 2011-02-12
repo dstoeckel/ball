@@ -9,7 +9,8 @@
 #   include <BALL/FORMAT/genericMolFile.h>
 #endif
 
-namespace BALL {
+namespace BALL
+{
 	/** Fragment XML file class.
 		Support for reading fragmentXML files, one variant at a time.
 		\ingroup StructureFormats
