@@ -9,7 +9,7 @@
 #   include <BALL/FORMAT/genericMolFile.h>
 #endif
 
-class QDomDocument;
+#include <QtXml>
 
 namespace BALL
 {
@@ -37,6 +37,9 @@ namespace BALL
 		Molecule* read();
 
 		/// Read a specific molecule (variant) from the file.
+		Molecule* getMoleculeForVariant(const String& variantName);
+
+		/// alias for getMoleculeForVariant().
 		Molecule* read(const String& variantName);
 
 		bool write(const Molecule &molecule);
@@ -47,7 +50,11 @@ namespace BALL
 
 		// (no need to reimplement operators, they call read/write in the superclass)
 		private:
-		QDomDocument* data;
+		std::vector<String> getVariantNames();
+		Atom* atomFromAtomDomForVariant(QDomElement& atomElement, const String& variant);
+		bool bondFromInDomForMolecule(QDomElement& inElement, Molecule* molecule);
+		QDomDocument* data_;
+		Position currentVariant_;
 	};
 }
 
