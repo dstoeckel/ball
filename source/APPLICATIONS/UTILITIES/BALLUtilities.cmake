@@ -23,6 +23,7 @@ SET(EXECUTABLES_LIST
 	pdb2hin
 	reconstruct_fragment
 	solvent_accessibility
+	fdb_load
 )
 
 IF (BALL_HAS_FFTW)
