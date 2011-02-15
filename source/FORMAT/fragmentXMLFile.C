@@ -36,17 +36,26 @@ namespace BALL
 	}
 
 	FragmentXMLFile::FragmentXMLFile(const String &filename, File::OpenMode open_mode)
+		: GenericMolFile()
 	{
-		FragmentXMLFile();
+		data_ = new QDomDocument;
 		File::name_ = filename;
 		File::open_mode_ = open_mode;
-		if (open_mode & ios::in) {
+		File::is_open_ = true;
+		currentVariant_ = 0;
+		if (open_mode & std::ios::in) {
 			// load the file if we're supposed to.
 			QFile file(filename.c_str());
 			if (file.open(QIODevice::ReadOnly))
 			{
 				// doesn't really matter if it succeeds, since an empty dom is still valid in here.
-				data_->setContent(&file);
+				int line, col;
+				QString error;
+				if (!data_->setContent(&file, &error, &line, &col))
+				{
+					Log.error() << "Error parsing xml in " << filename << " line "<< line << " col "<<col;
+					Log.error() << ":" << String(error) << std::endl;
+				}
 				file.close();
 			}
 		}
@@ -67,6 +76,7 @@ namespace BALL
 		// this has a definite order: the preorder of the nodes in the document.
 		std::vector<String> variants;
 		QDomNodeList nodes = data_->elementsByTagName("variant");
+		Log.info() << "Found " << nodes.count() << " variant tags"<< std::endl;
 		for (int i = 0; i < nodes.count(); i++) {
 			QDomElement node = nodes.item(i).toElement();
 			if (node.hasAttribute("id")) {
@@ -131,8 +141,12 @@ namespace BALL
 				// so the information we want is in our grand-grand-parent.
 				QDomElement thing = inElement.parentNode().parentNode().parentNode().toElement();
 				if (thing.nodeName() == "atom") {
-					Atom* atom = atomFromAtomDomForVariant(thing, variantName);
-					theMolecule->append(*atom);
+					// append it if it not yet exists.
+					if (theMolecule->getAtom(String(thing.attribute("id"))) == 0)
+					{
+						Atom* atom = atomFromAtomDomForVariant(thing, variantName);
+						theMolecule->append(*atom);
+					}
 				}
 			}
 		}
@@ -146,6 +160,7 @@ namespace BALL
 				}
 			}
 		}
+		theMolecule->setName(variantName);
 
 		return theMolecule;
 	}
@@ -153,15 +168,14 @@ namespace BALL
 	bool FragmentXMLFile::write(const Molecule &molecule)
 	{
 		// idea: merge molecule into data, then write everything
-		// since this isn't necessary a linear, linebased format, but interleaved.
+		// since this isn't necessarily a linear, linebased format, but interleaved.
 		return false;
 	}
 
 	Molecule* FragmentXMLFile::read()
 	{
 		std::vector<String> variants = getVariantNames();
-		if (currentVariant_ > variants.size()) return 0;
-
+		if (currentVariant_ >= variants.size()) return 0;
 		return getMoleculeForVariant(variants[currentVariant_++]);
 	}
 

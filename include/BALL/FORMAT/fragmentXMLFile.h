@@ -34,17 +34,17 @@ namespace BALL
 		//@}
 
 		/// Read a single molecule, in this case the first variant in the file.
-		Molecule* read();
+		virtual Molecule* read();
 
 		/// Read a specific molecule (variant) from the file.
-		Molecule* getMoleculeForVariant(const String& variantName);
+		virtual Molecule* getMoleculeForVariant(const String& variantName);
 
 		/// alias for getMoleculeForVariant().
-		Molecule* read(const String& variantName);
+		virtual Molecule* read(const String& variantName);
 
-		bool write(const Molecule &molecule);
+		virtual bool write(const Molecule &molecule);
 
-		bool isOpen() const;
+		virtual bool isOpen() const;
 
 		FragmentXMLFile& operator = (const FragmentXMLFile& rhs);
 
