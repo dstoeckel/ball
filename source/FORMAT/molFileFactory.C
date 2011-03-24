@@ -9,6 +9,7 @@
 #include <BALL/FORMAT/SDFile.h>
 #include <BALL/FORMAT/XYZFile.h>
 #include <BALL/FORMAT/dockResultFile.h>
+#include <BALL/FORMAT/fragmentXMLFile.h>
 
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
@@ -132,6 +133,10 @@ namespace BALL
     {
       gmf = new DockResultFile(filename, open_mode);
     }
+	else if(filename.hasSuffix(".fdb") || filename.hasSuffix(".FDB"))
+	{
+		gmf = new FragmentXMLFile(filename, open_mode);
+	}
     else
     {
       if (open_mode == std::ios::in)

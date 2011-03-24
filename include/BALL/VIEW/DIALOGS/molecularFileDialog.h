@@ -144,6 +144,10 @@ namespace BALL
 			 */
 			System* readXYZFile(String filename, String system_name);
 
+			/** Read a FragmentXML file
+			 */
+			System* readFXMLFile(String filename, String system_name);
+
 			/** Write a PDB file
 			 */
 			bool writePDBFile(String filename, const System& system);

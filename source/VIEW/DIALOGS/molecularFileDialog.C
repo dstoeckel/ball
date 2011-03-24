@@ -14,6 +14,7 @@
 #include <BALL/FORMAT/SDFile.h>
 #include <BALL/FORMAT/antechamberFile.h>
 #include <BALL/FORMAT/XYZFile.h>
+#include <BALL/FORMAT/fragmentXMLFile.h>
 #include <BALL/MATHS/simpleBox3.h>
 #include <BALL/KERNEL/system.h>
 
@@ -83,13 +84,13 @@ void MolecularFileDialog::readFiles()
 
 String MolecularFileDialog::getSupportedFileFormats() const
 {
-	return String("*.pdb *.brk *.ent *.hin *.mol *.mol2 *.sdf *.ac *.xyz");
+	return String("*.pdb *.brk *.ent *.hin *.mol *.mol2 *.sdf *.ac *.xyz *.fdb");
 }
 
 String MolecularFileDialog::getSupportedFileFormatsList() const
 {
 	QString sl;
-	sl += tr("Molecular files") + " (*.pdb *.brk *.ent *.hin *.mol *.mol2 *.sdf *.ac *.xyz);;";
+	sl += tr("Molecular files") + " (*.pdb *.brk *.ent *.hin *.mol *.mol2 *.sdf *.ac *.xyz *.fdb);;";
 	sl += "PDB " + tr("files")  + " (*.pdb *.brk *.ent);;";
 	sl += "HIN " + tr("files")  + " (*.hin);;";
 	sl += "MOL " + tr("files")  + " (*.mol);;";
@@ -172,6 +173,11 @@ System* MolecularFileDialog::openMolecularFile(const String& filename,
 					 filetype.hasSubstring("xyz"))
 	{
 		return readXYZFile(filename, system_name);
+	}
+	else if (filetype.hasSubstring("FDB") ||
+					 filetype.hasSubstring("fdb"))
+	{
+		return readFXMLFile(filename, system_name);
 	}
 	else
 	{
@@ -537,6 +543,28 @@ System* MolecularFileDialog::readMOL2File(String filename, String system_name)
 	return system;
 }
 
+System* MolecularFileDialog::readFXMLFile(String filename, String system_name)
+{
+	setStatusbarText((String)tr("reading FragmentXML file..."), true);
+
+	System* system = new System();
+
+	try
+	{
+		FragmentXMLFile fxml_file(filename);
+		fxml_file >> *system;
+		fxml_file.close();
+	}
+	catch(Exception::GeneralException& e)
+	{
+		setStatusbarText((String)tr("Reading of MOL2 file failed, see logs!"), true);
+		delete system;
+		return 0;
+	}
+
+	if (!finish_(filename, system_name, system)) return 0;
+	return system;
+}
 
 System* MolecularFileDialog::readSDFile(String filename, String system_name)
 {
