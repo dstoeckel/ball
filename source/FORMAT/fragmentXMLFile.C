@@ -91,8 +91,14 @@ namespace BALL
 
 		theAtom->setName(String(atomElement.attribute("id")));
 		// TODO: preserve aliases
-		String element = String(atomElement.elementsByTagName("element").at(0).toElement().text());
-		theAtom->setElement(PTE_::getElement(element));
+		QDomNodeList elementTags = atomElement.elementsByTagName("element");
+		if (elementTags.count() != 1)
+		{
+			Log.info() << "No ("<<elementTags.count()<< ") element Tag for Atom "<< theAtom->getName() << "?!?" << std::endl;
+		}
+		String element = String(elementTags.at(0).toElement().text());
+		Log.info() << "Element: " << element << std::endl;
+		theAtom->setElement( PTE[element] );
 		QDomNodeList positions = atomElement.elementsByTagName("position");
 		for (int i = 0; i < positions.count(); i++) {
 			QDomElement pos = positions.item(i).toElement();
