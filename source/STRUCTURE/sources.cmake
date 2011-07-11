@@ -1,5 +1,6 @@
 INCLUDE(source/STRUCTURE/BONDORDERS/sources.cmake)
 INCLUDE(source/STRUCTURE/VFLIB/sources.cmake)
+INCLUDE(source/STRUCTURE/FRAGMENTDB/sources.cmake)
 
 ### list all filenames of the directory here ###
 SET(SOURCES_LIST
