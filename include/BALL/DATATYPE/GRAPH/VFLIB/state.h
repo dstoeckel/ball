@@ -1,8 +1,8 @@
 /*------------------------------------------------------------
  * state.h
- * Definition of an abstract class representing a state of the 
+ * Definition of an abstract class representing a state of the
  * matching process between two ARGs.
- * See: argraph.h 
+ * See: argraph.h
  *
  * Author: P. Foggia
  * $Id: state.h,v 1.3 1998/09/29 09:50:16 foggia Exp $
@@ -28,44 +28,50 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include "BALL/STRUCTURE/VFLIB/argraph.h"
+namespace BALL
+{
+	namespace VFLib
+	{
 
-namespace BALL {
-namespace VFLib {
+		typedef unsigned short node_id;
+		const node_id NULL_NODE=0xFFFF;
 
-/*----------------------------------------------------------
- * class State
- * An abstract representation of the SSR current state.
- * NOTE: Respect to pre-2.0 version of the library, class
- *   State assumes explicitly a depth-first search. The
- *   BackTrack method has been added to allow a state 
- *   to clean up things before reverting to its parent. This
- *   can be used, for instance, for sharing resources between
- *   the parent and the child. The BackTrack implementation
- *   can safely assume that at most one AddPair has been
- *   performed on the state.
- ---------------------------------------------------------*/
-class State
-  { 
+		/*----------------------------------------------------------
+		 * class State
+		 * An abstract representation of the SSR current state.
+		 * NOTE: Respect to pre-2.0 version of the library, class
+		 *   State assumes explicitly a depth-first search. The
+		 *   BackTrack method has been added to allow a state
+		 *   to clean up things before reverting to its parent. This
+		 *   can be used, for instance, for sharing resources between
+		 *   the parent and the child. The BackTrack implementation
+		 *   can safely assume that at most one AddPair has been
+		 *   performed on the state.
+		 ---------------------------------------------------------*/
+		template<class QueryGraph_t, class TargetGraph_t>
+		class State
+		{
+			public:
+				typedef QueryGraph_t QueryGraph;
+				typedef TargetGraph_t TargetGraph;
 
-    public:
-      virtual ~State() {} 
-      virtual Graph *GetGraph1()=0;
-      virtual Graph *GetGraph2()=0;
-      virtual bool NextPair(node_id *pn1, node_id *pn2,
-                    node_id prev_n1=NULL_NODE, node_id prev_n2=NULL_NODE)=0;
-      virtual bool IsFeasiblePair(node_id n1, node_id n2)=0;
-      virtual void AddPair(node_id n1, node_id n2)=0;
-      virtual bool IsGoal() =0;
-      virtual bool IsDead() =0;
-      virtual int CoreLen() =0;
-      virtual void GetCoreSet(node_id c1[], node_id c2[]) =0;
-      virtual State *Clone() =0;  // Changed clone to Clone for uniformity
-     
-      virtual void BackTrack() { }
-  };
+				virtual ~State() {}
+				virtual const QueryGraph *GetGraph1()=0;
+				virtual const TargetGraph *GetGraph2()=0;
+				virtual bool NextPair(node_id *pn1, node_id *pn2,
+				                      node_id prev_n1=NULL_NODE, node_id prev_n2=NULL_NODE)=0;
+				virtual bool IsFeasiblePair(node_id n1, node_id n2)=0;
+				virtual void AddPair(node_id n1, node_id n2)=0;
+				virtual bool IsGoal() =0;
+				virtual bool IsDead() =0;
+				virtual int CoreLen() =0;
+				virtual void GetCoreSet(node_id c1[], node_id c2[]) =0;
+				virtual State *Clone() =0;  // Changed clone to Clone for uniformity
 
-}
+				virtual void BackTrack() { }
+		};
+
+	}
 }
 #endif
 
