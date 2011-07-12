@@ -1,3 +1,5 @@
+INCLUDE(source/DATATYPE/GRAPH/VFLIB/sources.cmake)
+
 SET(DIRECTORY source/DATATYPE/GRAPH)
 
 ### list all filenames of the directory here ###

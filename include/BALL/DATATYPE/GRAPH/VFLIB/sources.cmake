@@ -1,5 +1,5 @@
 ### list all filenames of the directory here ###
-SET(GROUP STRUCTURE/VFLIB)
+SET(GROUP DATATYPE/GRAPH/VFLIB)
 
 FILE(GLOB HEADERS_LIST "include/BALL/${GROUP}/*.h" "include/BALL/${GROUP}/*.iC")	
 

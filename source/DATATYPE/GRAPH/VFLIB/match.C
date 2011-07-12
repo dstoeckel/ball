@@ -3,10 +3,8 @@
  * Definition of the match function
  ------------------------------------------------------*/
 
-#include "BALL/STRUCTURE/VFLIB/argraph.h"
-#include "BALL/STRUCTURE/VFLIB/match.h"
-#include "BALL/STRUCTURE/VFLIB/state.h"
-#include "BALL/STRUCTURE/VFLIB/error.h"
+#include <BALL/DATATYPE/GRAPH/VFLIB/match.h>
+#include <BALL/DATATYPE/GRAPH/VFLIB/state.h>
 
 namespace BALL {
 namespace VFLib {

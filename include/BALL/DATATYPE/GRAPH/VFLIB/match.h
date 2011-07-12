@@ -20,8 +20,8 @@
 #ifndef MATCH_H
 #define MATCH_H
 
+#include <BALL/DATATYPE/GRAPH/VFLIB/state.h>
 #include "BALL/STRUCTURE/VFLIB/argraph.h"
-#include "BALL/STRUCTURE/VFLIB/state.h"
 
 namespace BALL {
 namespace VFLib {
