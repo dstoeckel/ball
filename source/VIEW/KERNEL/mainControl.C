@@ -106,7 +106,7 @@ namespace BALL
 				Embeddable("MainControl"),
 				about_to_quit_(false),
  				multi_threading_mode_(true),
-				fragment_db_(),
+				fragment_db_(0),
 				model_information_(new ModelInformation()),
 				selection_(),
 				control_selection_(),
@@ -196,6 +196,7 @@ namespace BALL
 					Timer t;
 					t.start();
 #endif
+					fragment_db_ = new FragmentDB();
 #ifdef BALL_BENCHMARKING
 					t.stop();
 					Log.error() << "Building FragmentDB time: " << t.getClockTime() << std::endl;

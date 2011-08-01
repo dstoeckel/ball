@@ -655,7 +655,7 @@ namespace BALL
 	
 			/// Get a const reference for the fragment database
 			const FragmentDB& getFragmentDB() const
-				{ return fragment_db_;}
+				{ return *fragment_db_;}
 
 			///
 			const ModelInformation& getModelInformation() const;
@@ -888,7 +888,7 @@ namespace BALL
 			bool								multi_threading_mode_;	
 
 			//_
-			FragmentDB 									fragment_db_;
+			FragmentDB*									fragment_db_;
 
 			ModelInformation* 					model_information_;
 
