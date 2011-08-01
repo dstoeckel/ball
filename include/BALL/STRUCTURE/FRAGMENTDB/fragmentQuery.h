@@ -42,7 +42,7 @@ namespace BALL
 		virtual String toString() = 0;
 
 		/** Retrieve the Results of the Query -- if any -- after it has been resolved. */
-		virtual ResultSet& getResults() { return results_; }
+		virtual const ResultSet& getResults() { return results_; }
 
 		/** Add a Fragment to the result set of the Query. */
 		virtual void addResult(boost::shared_ptr<Residue> p) { results_.insert(p); }
