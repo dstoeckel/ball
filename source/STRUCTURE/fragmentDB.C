@@ -1041,6 +1041,10 @@ namespace BALL
 		return bonds_built;
 	}
 
+		const std::vector<Residue*>& FragmentDB::getFragments() const
+		{
+			// TODO
+		}
 
 
 } // namespace BALL
