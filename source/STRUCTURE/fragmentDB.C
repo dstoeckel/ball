@@ -77,31 +77,6 @@ namespace BALL
 		/* the destruction of stores_ and shared_ptr take care of everything... */
 	}
 
-	void FragmentDB::destroy()
-	{
-		valid_ = false;
-		filename_ = "";
-
-		if (tree != 0) 
-		{
-			delete tree;
-			tree = 0;
-		}
-
-		// Delete all hash maps.
-		name_to_path_.destroy();
-		name_to_frag_index_.destroy();
-		name_to_variants_.destroy();
-		standards_.clear();
-		// Delete all fragments.
-		for (std::vector<Residue*>::iterator it = fragments_.begin();
-				 it != fragments_.end(); ++it)
-		{
-			delete *it;
-			*it = 0;
-		}
-		fragments_.clear();		
-	}
 
 	void FragmentDB::setFilename(const String& filename)
 	{

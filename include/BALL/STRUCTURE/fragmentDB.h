@@ -121,10 +121,6 @@ namespace BALL
 		*/
 		virtual ~FragmentDB();
 
-		/**	
-		*/
-		void destroy();
-
 		//@}
 
 		/**@name	Inspectors and mutators
