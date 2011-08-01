@@ -29,7 +29,8 @@ namespace BALL
 			QueryFragmentName = 0,     //< will return a pointer to a #NameFragmentQuery
 			QueryFragmentProperties = 1,
 //			QueryFragmentVariants, //< will return a pointer to a #VariantFragmentQuery
-			QueryConnectionTable,
+			QueryConnectionTable = 2,
+			QueryNameMap = 3,
 			MAX_QUERYSELECTORS
 		};
 

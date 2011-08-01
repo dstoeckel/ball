@@ -14,6 +14,7 @@
 #include <BALL/FORMAT/resourceFile.h>
 
 #include <BALL/STRUCTURE/FRAGMENTDB/resourceFileFragmentStorage.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/nameMapQuery.h>
 	
 /*			Things still missing (among others)
 				===================================
@@ -472,6 +473,15 @@ namespace BALL
 
 	bool FragmentDB::NormalizeNamesProcessor::finish() 
 	{
+		/*
+			The _good_ way to do it would be to operate on a by-fragment basis, maybe similar to the current code,
+			using the non-chained fragments to determine the map first, by getting "all translations of the fragment",
+			graph isomorphism wrt. names, and choosing the standard based on that. After that, just get the Fragment
+			readily translated from the backend with NameFragmentQuery.
+			
+			For now, I'll just work my necromancy and conjure the translation tables back up from the backend.
+			-- wolfgang, Jul 2011
+		*/
 		if (fragment_db_ == 0)
 		{
 			return false;
@@ -480,22 +490,22 @@ namespace BALL
 		const char* error_msg = "FragmentDB: cannot locate an appropriate name conversion table!";
 		const String map_name = "-" + naming_standard_;
 
-		StringHashMap<NameMap>& table = fragment_db_->getNamingStandards();
-
-		HashMap<NameMap*, Index> usable_maps;
-
-		for (StringHashMap<NameMap>::Iterator it = table.begin(); it != table.end(); ++it)
-		{
-			if (it->first.hasSubstring(map_name))
-			{
-				usable_maps[&it->second] = 0;
-			}
-		}
-
-		if (usable_maps.size() == 0) {
+		NameMapQuery query(map_name);
+		if (!fragment_db_->query(query)) {
 			Log.error() << error_msg << endl;
 			return false;
 		}
+		const StringHashMap<NameMapQuery::NameMap*>& table = query.getMaps();
+
+		HashMap<NameMapQuery::NameMap*, Index> usable_maps;
+
+		Log.info() << "Got Name Maps:" << std::endl;
+		for (StringHashMap<NameMapQuery::NameMap*>::ConstIterator it = table.begin(); it != table.end(); ++it)
+		{
+			usable_maps[it->second] = 0;
+			Log.info() << it->first << std::endl;
+		}
+
 
 		//We now sort the fragments into parent containers if available. The rational
 		//is that we should get a more stable estimate of the applicable naming scheme

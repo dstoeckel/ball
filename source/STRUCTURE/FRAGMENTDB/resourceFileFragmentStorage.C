@@ -1,5 +1,6 @@
 #include <BALL/STRUCTURE/FRAGMENTDB/resourceFileFragmentStorage.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/fragmentQuery.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/nameMapQuery.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/propertyFragmentQuery.h>
 
 #include <BALL/KERNEL/atom.h>
@@ -78,6 +79,18 @@ namespace BALL
 					found = true;
 					++it;
 					--remaining_results;
+				}
+			}
+		}
+		else if (query.selectsOn(FragmentQuery::QueryNameMap))
+		{
+			NameMapQuery* q = static_cast<NameMapQuery*>(query.getSelectorDetail(FragmentQuery::QueryNameMap));
+			for (StringHashMap<NameMap>::Iterator it = standards_.begin(); it != standards_.end(); ++it)
+			{
+				if (it->first.hasSubstring(q->getMapName()))
+				{
+					found = true;
+					q->addMap(it->first,& it->second);
 				}
 			}
 		}
