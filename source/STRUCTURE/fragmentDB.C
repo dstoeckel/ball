@@ -122,13 +122,15 @@ namespace BALL
 		return *this;
 	}
 
+	static String fragmentdb_pdb_dummy_ = "PDB";
 
 	const String& FragmentDB::getDefaultNamingStandard() const 
 	{
-		return default_standard_;
+		/* FIXME: compute this from the stores */
+		return fragmentdb_pdb_dummy_;
 	}
-	
-	
+
+
 	const Fragment* FragmentDB::getFragment(const String& fragment_name) const
 	{
 		const StringHashMap<Position>::ConstIterator to_find = name_to_frag_index_.find(fragment_name);
