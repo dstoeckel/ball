@@ -314,7 +314,7 @@ namespace BALL
 
 	};
 
-	typedef std::vector<NamedProperty>::iterator NamedPropertyIterator;
+	typedef std::vector<NamedProperty>::const_iterator NamedPropertyIterator;
 
 	/**	Property Manager class.
 			This class manages properties of a class.
@@ -574,10 +574,10 @@ namespace BALL
 		const NamedProperty& getProperty(const std::string& name) const;
 
 		/** Return an iterator to the first NamedProperty stored in this container. */
-		NamedPropertyIterator beginNamedProperty();
+		NamedPropertyIterator beginNamedProperty() const;
 
 		/** Return an iterator past the last NamedProperty stored in this container. */
-		NamedPropertyIterator endNamedProperty();
+		NamedPropertyIterator endNamedProperty() const;
 
 		/**	Remove a named property.
 				If the named property <tt>name</tt> does exist, it is remove from
