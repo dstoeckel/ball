@@ -26,6 +26,7 @@
 #endif
 
 #include <BALL/STRUCTURE/FRAGMENTDB/fragmentQuery.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/connection.h>
 
 #include <vector>
 #include <list>
@@ -350,17 +351,6 @@ namespace BALL
 			*/
 			//@{
 			///
-			struct Connection
-			{
-				Atom*				atom;
-				String			type_name;
-				String			connect_to;
-				Bond::Order order;
-				float				dist;
-				float				delta;
-			};
-
-			///
 			typedef std::list<Connection> ConnectionList;
 			//@}
 
@@ -414,7 +404,7 @@ namespace BALL
 					in the template.
 					@return the number of bonds built
 			*/
-			Size buildFragmentBonds(Fragment& fragment) const;
+			Size buildFragmentBonds(Fragment& fragment);
 
 			/**	Build all bonds in a fragment according to a manually supplied
 					template.
@@ -423,7 +413,7 @@ namespace BALL
 					@return the number of bonds built
 					@exception Exception::TooManyBonds if an atom would be assigned too many bonds
 			*/
-			Size buildFragmentBonds(Fragment& fragment, const Fragment& tplate) const;
+			Size buildFragmentBonds(Fragment& fragment, const Fragment& tplate);
 
 			/**	Build all possible bonds between two fragments.
 					This method builds all bonds that are allowed by
@@ -436,13 +426,6 @@ namespace BALL
 			//@}
 
 			protected:
-
-			/**	Store connections for a fragment.
-					This method extracts all possible connections for a given fragment
-					and stores them in a list of possible connections.
-					finish will then check that list for possible inter-residue bonds.
-			*/
-			void storeConnections_(Fragment& fragment);
 
 			/**	Build a connection between two atoms, if possible
 					@exception Exception::TooManyBonds if an atom would be assigned too many bonds

@@ -771,8 +771,8 @@ namespace BALL
 	}
 
 
-	bool FragmentDB::BuildBondsProcessor::buildConnection_(FragmentDB::BuildBondsProcessor::Connection& con1, 
-																												 FragmentDB::BuildBondsProcessor::Connection& con2)
+	bool FragmentDB::BuildBondsProcessor::buildConnection_(Connection& con1, 
+																												 Connection& con2)
 	{
 		if (con1.type_name != con2.connect_to || 
 				con1.connect_to != con2.type_name)
@@ -821,16 +821,12 @@ namespace BALL
 		{
 			return Processor::ABORT;
 		}
-			
-		// store a pointer to the fragment in a list
-		// to build all inter-fragment bonds in the finish method
-		storeConnections_(fragment);
 
 		return Processor::CONTINUE;
 	}
 
 
-	Size FragmentDB::BuildBondsProcessor::buildFragmentBonds(Fragment& fragment, const Fragment& tplate) const
+	Size FragmentDB::BuildBondsProcessor::buildFragmentBonds(Fragment& fragment, const Fragment& tplate)
 	{
 		// abort immediately if no fragment DB is known
 		if (fragment_db_ == 0) return 0;
@@ -869,6 +865,21 @@ namespace BALL
 			}
 			
 			const Atom* tplate_atom = to_find->second;
+			
+			// if tplate_atom has a connection, store it for &*frag_atom_it.
+			// so inter-fragment connections can be built in the finish() step.
+			if (tplate_atom->hasProperty("CONNECTION")) {
+				DEBUG(tplate_atom->getName() << " has a Connection entry (inter-fragment bond).")
+				boost::shared_ptr<Connection> con;
+				con = boost::dynamic_pointer_cast<Connection>(tplate_atom->getProperty("CONNECTION").getSmartObject());
+				if (con) {
+					Connection conn = *con;
+					conn.atom = &*frag_atom_it;
+					DEBUG("Storing connection entry (" << conn.type_name << ") for later.")
+
+					connections_.push_back(conn);
+				}
+			}
 
 			// we found two matching atoms. Great! Now check their bonds..
 			// iterate over all bonds of the template
@@ -916,86 +927,17 @@ namespace BALL
 	}
 
 
-	Size FragmentDB::BuildBondsProcessor::buildFragmentBonds(Fragment& fragment) const
+	Size FragmentDB::BuildBondsProcessor::buildFragmentBonds(Fragment& fragment)
 	{
 		// abort immediately if no fragment DB is known
 		if (fragment_db_ == 0) return 0;
 
 		// check whether our DB knows the fragment and retrieve the template
-		const Fragment* const tplate = fragment_db_->getReferenceFragment(fragment);
-		if (tplate == 0) return 0;
+		boost::shared_ptr<Residue> tplate = fragment_db_->findReferenceFragment(fragment);
+		if (!tplate) return 0;
 		
 		return buildFragmentBonds(fragment, *tplate);
 	}
-
-	void FragmentDB::BuildBondsProcessor::storeConnections_(Fragment& fragment)
-	{
-		if (fragment_db_ == 0) return;
-
-		const ResourceEntry* first_entry = 0;
-/* FIXME!
-			fragment_db_->tree->getEntry("/Fragments/" + fragment.getName() + "/Connections");
-*/
-
-		if (first_entry == 0) return;
-
-		ResourceEntry::ConstIterator	it1 = first_entry->begin();
-		ResourceEntry::Iterator	it2;
-		for (++it1; +it1; ++it1)
-		{
-			// split the fields of the "Connections" entry.
-			// It should have the following format:
-			//   (<name> <atom_name> <match_name> <distance> <tolerance>)
-			//	<name>:				Name of the connection type (eg C-term)
-			//	<atom_name>:	Name of the atom that might create the connection
-			//  <bond_order>: s/d/t/a (single/double/triple/aromatic)
-			//	<match_name>:	Name of a matching connection type: this connection is 
-			//								created if the two names match
-			//	<distance>:		Distance of the connection in Angstrom
-			//	<tolerance>:	Tolerance: connection will be built only if the distance
-			//								of the two atoms within <tolerance> of <distance>
-			//	Example entry:
-			//		(C-term C s N-term 1.33 0.5):
-			//			This will build a connection to a fragment with a N-term connection
-			//			if the two atoms are 1.33+/-0.5 Angstrom apart. The bond is a single bond.
-			
-			String	s[6];
-			it1->getValue().split(s, 6);
-			Connection conn;
-			conn.atom = 0;
-			for (AtomIterator ai = fragment.beginAtom(); +ai; ++ai)
-			{
-				if (ai->getName() == s[0])
-				{
-					conn.atom = &*ai;
-					break;
-				}
-			}
-			// If there is a matching atom, store the connection.
-			if (conn.atom != 0)
-			{
-				conn.type_name = it1->getKey();
-				conn.connect_to = s[1];
-				
-				conn.dist = s[3].toFloat();
-				conn.delta = s[4].toFloat();
-				// set the bond order
-				switch (s[2][0])
-				{
-					case 's': conn.order = Bond::ORDER__SINGLE; break;
-					case 'd': conn.order = Bond::ORDER__DOUBLE; break;
-					case 't': conn.order = Bond::ORDER__TRIPLE; break;
-					case 'a': conn.order = Bond::ORDER__AROMATIC; break;
-					default:
-						Log.warn() << "FragmentDB::BuildBondsProcessor: unknown bond order " 
-											 << s[2] << " (in " << first_entry->getPath() << ")" << std::endl;
-				}
-				
-				connections_.push_back(conn);	
-			}
-		}
-	}
-
 
 	Size FragmentDB::BuildBondsProcessor::buildInterFragmentBonds(Fragment& first, Fragment& second) const
 	{

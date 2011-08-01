@@ -352,6 +352,70 @@ namespace BALL
 			}
 		}
 	}
+	
+	void ResourceFileFragmentStorage::parseConnections_(ResourceEntry&  entry, Fragment& fragment)
+	{
+		const ResourceEntry* first_entry = &entry;
+
+		if (first_entry == 0) return;
+
+		ResourceEntry::ConstIterator	it1 = first_entry->begin();
+		for (++it1; +it1; ++it1)
+		{
+			// split the fields of the "Connections" entry.
+			// It should have the following format:
+			//   (<name> <atom_name> <match_name> <distance> <tolerance>)
+			//	<name>:				Name of the connection type (eg C-term)
+			//	<atom_name>:	Name of the atom that might create the connection
+			//  <bond_order>: s/d/t/a (single/double/triple/aromatic)
+			//	<match_name>:	Name of a matching connection type: this connection is 
+			//								created if the two names match
+			//	<distance>:		Distance of the connection in Angstrom
+			//	<tolerance>:	Tolerance: connection will be built only if the distance
+			//								of the two atoms within <tolerance> of <distance>
+			//	Example entry:
+			//		(C-term C s N-term 1.33 0.5):
+			//			This will build a connection to a fragment with a N-term connection
+			//			if the two atoms are 1.33+/-0.5 Angstrom apart. The bond is a single bond.
+			
+			String	s[6];
+			it1->getValue().split(s, 6);
+			Connection conn;
+			conn.atom = 0;
+			for (AtomIterator ai = fragment.beginAtom(); +ai; ++ai)
+			{
+				if (ai->getName() == s[0])
+				{
+					conn.atom = &*ai;
+					break;
+				}
+			}
+			// If there is a matching atom, store the connection.
+			if (conn.atom != 0)
+			{
+				conn.type_name = it1->getKey();
+				conn.connect_to = s[1];
+				
+				conn.dist = s[3].toFloat();
+				conn.delta = s[4].toFloat();
+				// set the bond order
+				switch (s[2][0])
+				{
+					case 's': conn.order = Bond::ORDER__SINGLE; break;
+					case 'd': conn.order = Bond::ORDER__DOUBLE; break;
+					case 't': conn.order = Bond::ORDER__TRIPLE; break;
+					case 'a': conn.order = Bond::ORDER__AROMATIC; break;
+					default:
+						Log.warn() << "FragmentDB::BuildBondsProcessor: unknown bond order " 
+											 << s[2] << " (in " << first_entry->getPath() << ")" << std::endl;
+				}
+				
+				boost::shared_ptr<PersistentObject> connptr(new Connection(conn));
+				conn.atom->setProperty(NamedProperty("CONNECTION", connptr));
+			}
+		}
+
+	}
 
 	void ResourceFileFragmentStorage::parseProperties_(ResourceEntry&  entry, PropertyManager& property_man)
 	{
@@ -528,6 +592,12 @@ namespace BALL
 					parseProperties_(*entry, *dynamic_cast<PropertyManager*>(fragment));
 				}
 
+				entry = frag_entry_it->getEntry("Connections");
+				if (entry != 0)
+				{
+					parseConnections_(*entry, *fragment);
+				}
+
 				// check for all aliases (given in the Names section of the db-file)
 				// and insert them into the corresponding hash maps
 				ResourceEntry::Iterator entry_it;
@@ -605,6 +675,10 @@ namespace BALL
 									else if (key == "Delete")
 									{
 										parseDelete_(*entry_it, *variant);
+									}
+									else if (key == "Connections")
+									{
+										parseConnections_(*entry_it, *variant);
 									}
 									else if (key == "Properties")
 									{

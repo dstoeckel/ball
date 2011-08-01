@@ -7,6 +7,7 @@
 
 #include<BALL/STRUCTURE/FRAGMENTDB/fragmentStorage.h>
 #include<BALL/STRUCTURE/FRAGMENTDB/nameFragmentQuery.h>
+#include<BALL/STRUCTURE/FRAGMENTDB/connection.h>
 
 #include<BALL/FORMAT/resourceFile.h>
 #include<BALL/CONCEPT/property.h>
@@ -64,6 +65,8 @@ namespace BALL
 				All atoms given in this section are renamed to the given new name.
 		*/
 		void parseRename_(ResourceEntry& entry, Fragment& fragment);
+		
+		void parseConnections_(ResourceEntry&  entry, Fragment& fragment);
 
 		/// @}
 
