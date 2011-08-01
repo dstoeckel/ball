@@ -143,8 +143,14 @@ namespace BALL
 		list<String> getVariantNames(const String& name) const;
 		
 		/**	Return a fragment.
+		    @deprecated Since the new FragmentDB architecture does not allow direct access
+		    to the backends raw data any more, this function cannot give you a pointer
+		    owned by the FragmentDB any more.
+		    Using this function is semantically equivalent to calling getFragmentCopy(),
+		    you will have to clean up the Fragment* returned after you're done with it.
+		    Consider using query() instead, where smart_ptrs will take care of this for you.
 		*/
-		const Fragment* getFragment(const String& fragment_name) const;
+		BALL_DEPRECATED const Fragment* getFragment(const String& fragment_name) const;
 
 		/**	Return a reference fragment.
 				This method returns a standard template of a given fragment or a NULL pointer
@@ -152,11 +158,19 @@ namespace BALL
 				If there exist multiple variants of the fragment, the correct variant is chosen 
 				according to the properties set in <tt>fragment</tt>.
 		*/
-		const Fragment* getReferenceFragment(const Fragment& fragment) const;
+		/** Returns a reference fragment.
+				Returns an independent copy of the reference fragment found by #findReferenceFragment() ,
+				if any.
+				@deprecated Since the new FragmentDB architecture does not allow direct access
+		    to the backends raw data any more, this function cannot give you a pointer
+		    owned by the FragmentDB any more.
+		    @see getFragment()
+		*/
+		BALL_DEPRECATED const Fragment* getReferenceFragment(const Fragment& fragment) const;
 
 		/**	Return a residue.
 		*/
-		const Residue* getResidue(const String& fragment_name) const;
+		BALL_DEPRECATED const Residue* getResidue(const String& fragment_name) const;
 
 		/**	Return a copy of a fragment.
 				If a fragment with name <tt>fragment_name</tt> exists in the
