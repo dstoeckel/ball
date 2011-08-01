@@ -65,6 +65,9 @@ namespace BALL
 			/* construct it with a custom filename. */
 			stores_.insert(boost::shared_ptr<FragmentStorage>(new ResourceFileFragmentStorage(filename)));
 		}
+		normalize_names.setFragmentDB(*this);
+		add_hydrogens.setFragmentDB(*this);
+		build_bonds.setFragmentDB(*this);
 	}
 
 	void FragmentDB::addStore(boost::shared_ptr<FragmentStorage>& store)
