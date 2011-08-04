@@ -126,17 +126,7 @@ namespace BALL
 		void destroy();
 
 		//@}
-		/**	@name	Database Setup
-		*/
-		//@{
 
-		/**	Initialization of the database. 
-				@exception Exception::FileNotFound if the file is not found in the BALL_DATA_PATH
-		 *  @exception Exception::NoFragmentNode if the FragmentDB file did not contain any node entries
-		*/
-		void init();
-		
-		//@}
 		/**@name	Inspectors and mutators
 		*/
 		//@{
@@ -490,55 +480,6 @@ namespace BALL
 		//@}
 
 		private:
-			
-		/*_	@name	Parse functions
-				These functions parse different sections of the fragment DB resource
-				tree and translate everything into the correct data structures.
-		*/
-		//_@{
-
-		/*_	Parses the Atoms entry and creates the atoms of the fragment
-		*/
-		void parseAtoms_(ResourceEntry& entry, Fragment& fragment);
-
-		/*_	Parses the Bonds entry and creates the bonds of the fragment
-		*/
-		void parseBonds_(ResourceEntry& entry, Fragment& fragment);
-
-		/*_	Parses the properties of a fragment/variant and sets the corresponding properties.
-				Properties are set or reset (if the property name starts with "!") for the current 
-				fragment. All properties of fragment and residue are recognized, if they
-				are written exactly as in the header file (case insensitive) and set.
-				Unknown properties are set as name/value pairs as bool properties and set to 
-				<b>  true </b>.
-		*/
-		void parseProperties_(ResourceEntry& entry, PropertyManager& property_man);
-
-		/*_	Parses the Delete section.
-				All atoms given in this section are removed from the fragment.
-		*/
-		void parseDelete_(ResourceEntry& entry, Fragment& fragment);
-
-		/*_	Parses the Rename section.
-				All atoms given in this section are renamed to the given new name.
-		*/
-		void parseRename_(ResourceEntry& entry, Fragment& fragment);
-
-		//_@}
-
-		/** Add a new fragment pointer to the database (while parsing) */
-		Position addNewFragment_(Residue* fragment);
-
-		/*_	Expands all include directives in the resource file.
-				This method calls expandFirst_ until it returns true.	
-		*/
-		void expandTree_(ResourceEntry& root_entry);
-	 
-		/*_	Expands the first occuring include directive.
-				If no include directive is found, <b>  false </b> is returned, otherwise <b>  true </b>.
-				@exception Exception::FileNotFound if the file is not found in the BALL_DATA_PATH
-		*/
-		bool expandFirst_(ResourceEntry& root_entry);
 
 		// The status of the FragmentDB
 		bool						valid_;
@@ -546,23 +487,6 @@ namespace BALL
 		// The filename of the master fragment file.
 		String 					filename_;
 
-		// The naming standard we default to.
-		String					default_standard_;
-
-		// An array containing all allocated residues.
-		std::vector<Residue*>						fragments_;
-
-		// Maps a fragment name back to a path in the database
-		NameMap													name_to_path_;
-
-		// Maps a fragment name back to the array index in fragments_
-		StringHashMap<Position>					name_to_frag_index_;
-
-		// Maps all variants of a specific fragment back to array indices.
-		StringHashMap<list<Position> >	name_to_variants_;
-
-		// Contains the naming standards as a nested map.
-		StringHashMap<NameMap>					standards_;
 	};
   
 } // namespace BALL 

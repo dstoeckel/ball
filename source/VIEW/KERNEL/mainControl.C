@@ -196,8 +196,6 @@ namespace BALL
 					Timer t;
 					t.start();
 #endif
-					fragment_db_.setFilename("fragments/Fragments.db");
-					fragment_db_.init();
 #ifdef BALL_BENCHMARKING
 					t.stop();
 					Log.error() << "Building FragmentDB time: " << t.getClockTime() << std::endl;
