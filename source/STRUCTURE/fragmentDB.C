@@ -110,6 +110,9 @@ namespace BALL
 
 	FragmentDB::Type FragmentDB::getFragmentType(const String& fragment_name) const 
 	{
+/*
+		FIXME: This probably needs to go in an extra FragmentQuery::QuerySelector
+		*******
 		if (!isValid() || 
 				!tree->isValid() ||
 				!has(fragment_name))
@@ -139,7 +142,7 @@ namespace BALL
 				return FragmentDB::TYPE__MOLECULE;
 			}
 		}
-
+*/
 		return FragmentDB::TYPE__UNKNOWN;
 	}
 
@@ -392,27 +395,20 @@ namespace BALL
 
 	StringHashMap<StringHashMap<String> >& FragmentDB::getNamingStandards() 
 	{
-		return standards_;
+		throw std::exception();
+		// FIXME return standards_;
 	}
 
-	const StringHashMap<String>& FragmentDB::getNamingStandard(const String& std) const
+	const StringHashMap<String>& FragmentDB::getNamingStandard(const String& standard) const
 	{
-		return standards_[std];
+		throw std::exception();
+		// FIXME return standards_[std];
 	}
 
 	std::vector<String> FragmentDB::getAvailableNamingStandards() const
 	{
-		std::vector<String> result(standards_.size());
-
-		int i = 0;
-		for(StringHashMap<StringHashMap<String> >::const_iterator it = standards_.begin();
-		    it != standards_.end();
-		    ++it, ++i)
-		{
-			result[i] = it->first;
-		}
-
-		return result;
+		throw std::exception();
+		// FIXME return result;
 	}
 
 	Processor::Result FragmentDB::NormalizeNamesProcessor::operator () (Fragment& fragment) 
