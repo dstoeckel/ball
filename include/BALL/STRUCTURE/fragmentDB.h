@@ -25,6 +25,8 @@
 #	include <BALL/STRUCTURE/reconstructFragmentProcessor.h>
 #endif
 
+#include <BALL/STRUCTURE/FRAGMENTDB/fragmentQuery.h>
+
 #include <vector>
 #include <list>
 #include <boost/smart_ptr/shared_ptr.hpp>
@@ -132,6 +134,9 @@ namespace BALL
 		/**	Checks whether a specified fragment is known to the fragment database.
 		*/
 		bool has(const String& fragment_name) const;
+		
+		/** Queries the Database backends. */
+		bool query(FragmentQuery&) const;
 
 		///
 		const std::vector<Residue*>& getFragments() const;
