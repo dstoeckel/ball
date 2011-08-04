@@ -327,7 +327,6 @@ namespace BALL
 		return variant;
 	}
 
-
 	const Residue* FragmentDB::getResidue(const String& fragment_name) const 
 	{
 		Residue* p_copy = getResidueCopy(fragment_name);
@@ -338,7 +337,6 @@ namespace BALL
 		return p_copy;
 	}
 
-	
 	list<String> FragmentDB::getVariantNames(const String& name) const
 	{
 		NameFragmentQuery q(name, "PDB", /* unlimited */ 0);

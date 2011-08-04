@@ -493,8 +493,7 @@ namespace BALL
 		private:
 
 		// The status of the FragmentDB
-		bool						valid_;
-
+		bool	valid_;
 		typedef std::set<boost::shared_ptr<FragmentStorage> > FragmentStoreSet;
 		FragmentStoreSet stores_;
 
