@@ -84,11 +84,12 @@ int main(int argc, char** argv)
 			cerr << "Didn't find res_id " << res_id << " in system" << endl;
 		}
 
-		const Fragment& ref = *db.getFragment(reference_fragment_name);
-		list<Atom*> atoms = ReconstructFragmentProcessor::reconstructFragment(*res_it, ref);
+		Fragment* ref = db.getFragmentCopy(reference_fragment_name);
+		list<Atom*> atoms = ReconstructFragmentProcessor::reconstructFragment(*res_it, *ref);
 		Log.info() << " added " << atoms.size() << " atoms" << std::endl;
-		Size bonds = db.build_bonds.buildFragmentBonds(*res_it, ref);
+		Size bonds = db.build_bonds.buildFragmentBonds(*res_it, *ref);
 		Log.info() << " added " << bonds << " bonds" << std::endl;
+		delete ref;
 	}
 
 	ResidueChecker check(db);
