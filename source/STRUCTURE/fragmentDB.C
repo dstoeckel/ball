@@ -90,6 +90,10 @@ namespace BALL
 	{
 		if (!isValid()) return false;
 
+		NameFragmentQuery q(fragment_name);
+		return query(q);
+	}
+
 	bool FragmentDB::query(FragmentQuery &the_query) const
 	{
 		FragmentStoreSet::iterator store;
