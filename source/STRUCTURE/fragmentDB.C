@@ -45,6 +45,9 @@ namespace BALL
 	FragmentDB::FragmentDB()
 		:	valid_(false)
 	{
+		normalize_names.setFragmentDB(*this);
+		add_hydrogens.setFragmentDB(*this);
+		build_bonds.setFragmentDB(*this);
 	}
 
 
