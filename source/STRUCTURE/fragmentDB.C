@@ -161,29 +161,18 @@ namespace BALL
 
 	const Fragment* FragmentDB::getFragment(const String& fragment_name) const
 	{
-		const StringHashMap<Position>::ConstIterator to_find = name_to_frag_index_.find(fragment_name);
-		if (to_find == name_to_frag_index_.end()) 
+		Fragment* p_copy = getFragmentCopy(fragment_name);
+		if (p_copy != NULL)
 		{
-			return 0;	
+			Log.warn() << "FragmentDB::getFragment() returning a copy Fragment* where non-copy requested. This _WILL_ leak memory! Use getFragmentCopy() or query() instead." << std::endl;
 		}
-		
-		return fragments_[to_find->second];
+		return p_copy;
 	}
 
-	
 	Fragment* FragmentDB::getFragmentCopy(const String& fragment_name) const
 	{
-		const Fragment* ref_fragment = getFragment(fragment_name);
-		Fragment* copy = 0;
-
-		// copy the reference fragment if we found a reference fragment
-		// (pointer != 0). Otherwise, return the NULL pointer.
-		if (ref_fragment !=	0)
-		{
-			copy = new Fragment(*ref_fragment);
-		}
-
-		return copy;
+		/* this is OK, since Residue is-a Fragment */
+		return getResidueCopy(fragment_name);
 	}
 
 	Residue* FragmentDB::getResidueCopy(const String& fragment_name) const
@@ -203,7 +192,7 @@ namespace BALL
 
 	Molecule* FragmentDB::getMoleculeCopy(const String& fragment_name) const
 	{
-		const Fragment* ref_fragment = getFragment(fragment_name);
+		Fragment* ref_fragment = getFragmentCopy(fragment_name);
 		Molecule* copy = 0;
 
 		// copy the reference fragment if we found a reference fragment
@@ -212,7 +201,7 @@ namespace BALL
 		if (ref_fragment !=	0)
 		{
 			copy = new Molecule;
-			copy->insert(*new Fragment(*ref_fragment));
+			copy->insert(*ref_fragment);
 		}
 
 		return copy;
@@ -335,13 +324,12 @@ namespace BALL
 
 	const Residue* FragmentDB::getResidue(const String& fragment_name) const 
 	{
-		const StringHashMap<Position>::ConstIterator to_find = name_to_frag_index_.find(fragment_name);
-		if (to_find == name_to_frag_index_.end())
+		Residue* p_copy = getResidueCopy(fragment_name);
+		if (p_copy != NULL)
 		{
-			return 0;
+			Log.warn() << "FragmentDB::getResidue(): returning a copy Residue* where non-copy requested. This _WILL_ leak memory! Use getFragmentCopy() or query() instead." << std::endl;
 		}
-		
-		return fragments_[(*to_find).second];
+		return p_copy;
 	}
 
 	
