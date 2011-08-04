@@ -27,11 +27,13 @@
 
 #include <vector>
 #include <list>
+#include <boost/smart_ptr/shared_ptr.hpp>
 
 namespace BALL 
 {
 
 	class ResourceEntry;
+	class FragmentStorage;
 
 	/**	FragmentDB - fragment database class.
 			The fragment database is used to store commonly
@@ -141,7 +143,11 @@ namespace BALL
 		/**	Return a list containing all variant names.
 		*/
 		list<String> getVariantNames(const String& name) const;
-		
+
+		/** Add an externally constructed store to the Queriable backends
+		 */
+		void addStore(boost::shared_ptr<FragmentStorage>& store);
+
 		/**	Return a fragment.
 		    @deprecated Since the new FragmentDB architecture does not allow direct access
 		    to the backends raw data any more, this function cannot give you a pointer
@@ -481,6 +487,8 @@ namespace BALL
 		// The status of the FragmentDB
 		bool						valid_;
 
+		typedef std::set<boost::shared_ptr<FragmentStorage> > FragmentStoreSet;
+		FragmentStoreSet stores_;
 
 	};
   

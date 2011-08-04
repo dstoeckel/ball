@@ -51,19 +51,29 @@ namespace BALL
 	FragmentDB::FragmentDB(const String& filename)
 		:	valid_(false)
 	{
-		if (filename == "")
-		{
+		if (filename == "") {
+			Log.error() << "FragmentDB: using an empty filename is deprecated. Simulating previous behaviour by only using ResourceFile storage." << std::endl;
+			Log.error() << "FragmentDB: Note that this may change in a near future release." << std::endl;
+			/* RFFS's default constructor simulates the old behaviour, "fragments/Fragments.db" */
+			stores_.insert(boost::shared_ptr<FragmentStorage>(new ResourceFileFragmentStorage()));
 		}
 		else
 		{
+			/* construct it with a custom filename. */
+			stores_.insert(boost::shared_ptr<FragmentStorage>(new ResourceFileFragmentStorage(filename)));
 		}
+	}
 
+	void FragmentDB::addStore(boost::shared_ptr<FragmentStorage>& store)
+	{
+		stores_.insert(store);
 	}
 
 	FragmentDB::FragmentDB(const FragmentDB& db, bool /* deep */)
 		:	valid_(false)
 	{
 		valid_ = db.isValid();
+		stores_.insert(db.stores_.begin(),db.stores_.end());
 	}
 
 	FragmentDB::~FragmentDB()
@@ -119,6 +129,11 @@ namespace BALL
 
 	FragmentDB& FragmentDB::operator = (const FragmentDB& db)
 	{
+		/* save the other set of pointers.
+		   in case db == *this, we'd throw away the store pointers otherwise. */
+		FragmentStoreSet otherSet = db.stores_;
+		stores_.clear();
+		stores_.insert(otherSet.begin(),otherSet.end());
 		return *this;
 	}
 
