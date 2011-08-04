@@ -897,8 +897,10 @@ namespace BALL
 	{
 		if (fragment_db_ == 0) return;
 
-		const ResourceEntry* first_entry = 
+		const ResourceEntry* first_entry = 0;
+/* FIXME!
 			fragment_db_->tree->getEntry("/Fragments/" + fragment.getName() + "/Connections");
+*/
 
 		if (first_entry == 0) return;
 
