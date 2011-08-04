@@ -188,17 +188,17 @@ namespace BALL
 
 	Residue* FragmentDB::getResidueCopy(const String& fragment_name) const
 	{
-		const Residue* ref_residue = getResidue(fragment_name);
-		Residue* copy = 0;
-
-		// copy the reference residue if we found a reference residue
-		// (pointer != 0). Otherwise, return the NULL pointer.
-		if (ref_residue !=	0)
+		NameFragmentQuery q(fragment_name);
+		if (!query(q))
 		{
-			copy = new Residue(*ref_residue);
+			return NULL;
 		}
-
-		return copy;
+		if (q.getResults().size() > 1)
+		{
+			Log.info() << "FragmentDB: More than one result for query \"" << fragment_name << "\". Returning first match!" << std::endl;
+			Log.info() << "FragmentDB: You should consider using query() instead of getFragment() to obtain all matching fragments." << std::endl;
+		}
+		return new Residue(*q.getResults().begin()->get());
 	}
 
 	Molecule* FragmentDB::getMoleculeCopy(const String& fragment_name) const
