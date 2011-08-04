@@ -220,13 +220,34 @@ namespace BALL
 
 	const Fragment* FragmentDB::getReferenceFragment(const Fragment& fragment) const
 	{
-		// if there are no variants, return the default fragment
-		String s(fragment.getName());
-		if (!name_to_variants_.has(s)) return 0;
-
-		if (name_to_variants_[fragment.getName()].size() == 1)
+		boost::shared_ptr<Residue> reference = findReferenceFragment(fragment);
+		if (reference)
 		{
-			return getFragment(s);
+			Log.warn() << "FragmentDB: returning a copy Fragment* where non-copy requested. This _WILL_ leak memory! Use findReferenceFragment() or query() instead." << std::endl;
+			return new Fragment(*reference.get());
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
+	boost::shared_ptr<Residue> FragmentDB::findReferenceFragment(const Fragment &fragment) const
+	{
+	
+		/* FIXME: this should be propagated downward into a specific FragmentQuery that can
+			make use of more properties of &fragment than is used here.
+		*/
+	
+		NameFragmentQuery q(fragment.getName());
+		if (!query(q))
+		{
+			return boost::shared_ptr<Residue>();
+		}
+
+		if (q.getResults().size() == 1)
+		{
+			return *q.getResults().begin();
 		}
 
 		// now find the variant that best matches the fragment
@@ -273,7 +294,8 @@ namespace BALL
 			}
 		}
 	
-		Fragment* variant = 0;
+		boost::shared_ptr<Residue> variant;
+
 		// the number of properties that matched.
 		// the fragment with the largest number of matched
 		// properties is returned
@@ -283,18 +305,17 @@ namespace BALL
 		Index best_property_difference = 10000;
 
 		// Iterate over all variants of the fragment and compare the properties.
-		const std::list<Position>& variant_list = name_to_variants_[fragment.getName()];
-		std::list<Position>::const_iterator it = variant_list.begin();
-		for (; it != variant_list.end(); ++it)
+		FragmentQuery::ResultSet::iterator it = q.getResults().begin();
+		for (; it != q.getResults().end(); ++it)
 		{
 			// determine how many properties both have in common
 			// by ANDing both bitvectors and counting ones
 			BitVector props = fragment.getBitVector();
 			props |= additional_properties;
-			property_difference = (int)abs((int)props.countValue(true) - (int)fragments_[*it]->getBitVector().countValue(true));
+			property_difference = (int)abs((int)props.countValue(true) - (int)(*it)->getBitVector().countValue(true));
 			DEBUG(" props = " << props << "  bv = " << (*it)->getBitVector() << "   add = " << additional_properties)
 
-			props &= fragments_[*it]->getBitVector();
+			props &= (*it)->getBitVector();
 			number_of_properties = (int)props.countValue(true);
 			DEBUG(" considering variant " << (*it)->getName() << ". # properties: " << number_of_properties)
 
@@ -302,7 +323,7 @@ namespace BALL
 					|| ((number_of_properties == best_number_of_properties) 
 							&& (property_difference < best_property_difference)))
 			{
-				variant = fragments_[*it];
+				variant = *it;
 				best_number_of_properties = number_of_properties;
 				best_property_difference = property_difference;
 			}

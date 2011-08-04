@@ -169,12 +169,15 @@ namespace BALL
 				If there exist multiple variants of the fragment, the correct variant is chosen 
 				according to the properties set in <tt>fragment</tt>.
 		*/
+		boost::shared_ptr<Residue> findReferenceFragment(const Fragment& fragment) const;
+
 		/** Returns a reference fragment.
 				Returns an independent copy of the reference fragment found by #findReferenceFragment() ,
 				if any.
 				@deprecated Since the new FragmentDB architecture does not allow direct access
 		    to the backends raw data any more, this function cannot give you a pointer
 		    owned by the FragmentDB any more.
+		    @see findReferenceFragment()
 		    @see getFragment()
 		*/
 		BALL_DEPRECATED const Fragment* getReferenceFragment(const Fragment& fragment) const;
