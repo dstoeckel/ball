@@ -298,20 +298,18 @@ namespace BALL
 	
 	list<String> FragmentDB::getVariantNames(const String& name) const
 	{
+		NameFragmentQuery q(name, "PDB", /* unlimited */ 0);
 		list<String> names;
 
-		StringHashMap<list<Position> >::ConstIterator to_find = name_to_variants_.find(name);
-		if (to_find == name_to_variants_.end())  
+		if (!query(q))
 		{
-			return names;	
+			return names;
 		}
-		
-		list<Position>::const_iterator it = (*to_find).second.begin();
-		const list<Position>::const_iterator end_it = (*to_find).second.end();
 
-		for (; it != end_it; it++)
+		FragmentQuery::ResultSet::iterator result;
+		for (result = q.getResults().begin(); result != q.getResults().end(); ++result)
 		{
-			names.push_back(fragments_[*it]->getName());
+			names.push_back((*result)->getName());
 		}
 
 		return names;
