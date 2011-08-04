@@ -473,10 +473,6 @@ namespace BALL
 		*/
 		BuildBondsProcessor				build_bonds;
 
-		/**	The resource tree read from the database file
-		*/
-		ResourceEntry*	tree;
-
 		//@}
 
 		private:

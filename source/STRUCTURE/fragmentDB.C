@@ -43,16 +43,14 @@ namespace BALL
 
 	// default constructor
 	FragmentDB::FragmentDB()
-		: tree(0),
-			valid_(false),
+		:	valid_(false),
 			filename_("")
 	{
 	}
 
 
 	FragmentDB::FragmentDB(const String& filename)
-		: tree(0),
-			valid_(false),
+		:	valid_(false),
 			filename_("")
 	{
 		if (filename == "")
@@ -67,8 +65,7 @@ namespace BALL
 	}
 
 	FragmentDB::FragmentDB(const FragmentDB& db, bool /* deep */)
-		: tree(0),
-			valid_(false),
+		:	valid_(false),
 			filename_("")
 	{
 		filename_ = db.getFilename();
@@ -125,7 +122,7 @@ namespace BALL
 
 	bool FragmentDB::isValid() const 
 	{
-		return valid_ && tree != 0;
+		return valid_;
 	}
 
 	bool FragmentDB::has(const String& fragment_name) const 
@@ -1015,10 +1012,10 @@ namespace BALL
 	{
 		if (fragment_db_ == 0) return 0;
 
-		const ResourceEntry* const first_entry = fragment_db_->tree->getEntry("/Fragments/" + first.getName() + "/Connections");
+		const ResourceEntry* const first_entry =0/* FIXME = fragment_db_->tree->getEntry("/Fragments/" + first.getName() + "/Connections") */;
 		if (first_entry == 0) return 0;
 
-		const ResourceEntry* const second_entry = fragment_db_->tree->getEntry("/Fragments/" + second.getName() + "/Connections");
+		const ResourceEntry* const second_entry =0/* FIXME = fragment_db_->tree->getEntry("/Fragments/" + second.getName() + "/Connections") */;
 		if (second_entry == 0) return 0;
 
 		// count the bonds we build
