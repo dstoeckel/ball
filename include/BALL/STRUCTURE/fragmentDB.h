@@ -127,15 +127,6 @@ namespace BALL
 		*/
 		//@{
 
-		/**	Assigns a filename.
-				@exception Exception::FileNotFound if the file is not found in the BALL_DATA_PATH
-		*/	
-		void setFilename(const String& filename);
-		
-		/**	Get the filename.
-		*/	
-		const String& getFilename() const;
-		
 		/**	Checks whether a specified fragment is known to the fragment database.
 		*/
 		bool has(const String& fragment_name) const;
@@ -476,8 +467,6 @@ namespace BALL
 		// The status of the FragmentDB
 		bool						valid_;
 
-		// The filename of the master fragment file.
-		String 					filename_;
 
 	};
   

@@ -43,56 +43,32 @@ namespace BALL
 
 	// default constructor
 	FragmentDB::FragmentDB()
-		:	valid_(false),
-			filename_("")
+		:	valid_(false)
 	{
 	}
 
 
 	FragmentDB::FragmentDB(const String& filename)
-		:	valid_(false),
-			filename_("")
+		:	valid_(false)
 	{
 		if (filename == "")
 		{
-			setFilename("fragments/Fragments.db");
 		}
 		else
 		{
-			setFilename(filename);
 		}
 
 	}
 
 	FragmentDB::FragmentDB(const FragmentDB& db, bool /* deep */)
-		:	valid_(false),
-			filename_("")
+		:	valid_(false)
 	{
-		filename_ = db.getFilename();
 		valid_ = db.isValid();
 	}
 
 	FragmentDB::~FragmentDB()
 	{
 		/* the destruction of stores_ and shared_ptr take care of everything... */
-	}
-
-
-	void FragmentDB::setFilename(const String& filename)
-	{
-		// search for the standard fragment DB file
-		Path path;
-		filename_ = path.find(filename);
-		
-		if (filename_ == "")
-		{
-			throw Exception::FileNotFound(__FILE__, __LINE__, filename);
-		}
-	}
-
-	const String& FragmentDB::getFilename() const 
-	{
-		return filename_;
 	}
 
 	bool FragmentDB::isValid() const 
@@ -143,7 +119,6 @@ namespace BALL
 
 	FragmentDB& FragmentDB::operator = (const FragmentDB& db)
 	{
-		filename_ = db.filename_;
 		return *this;
 	}
 
