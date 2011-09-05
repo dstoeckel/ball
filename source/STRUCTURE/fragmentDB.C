@@ -235,10 +235,10 @@ namespace BALL
 	{
 	
 		/* FIXME: this should be propagated downward into a specific FragmentQuery that can
-			make use of more properties of &fragment than is used here.
+			make use of more properties of &fragment than is used here. (we only use the name here).
 		*/
 	
-		NameFragmentQuery q(fragment.getName());
+		NameFragmentQuery q(fragment.getName(),"PDB",0);
 		if (!query(q))
 		{
 			return boost::shared_ptr<Residue>();
