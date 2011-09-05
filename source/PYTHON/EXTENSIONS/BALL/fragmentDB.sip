@@ -30,12 +30,8 @@ class FragmentDB
   FragmentDB(const String&);
   FragmentDB(const FragmentDB&, bool deep = true); 
   ~FragmentDB();
-  void destroy();
-  void init();
-  void setFilename(const String&);
-  const String& getFilename() const;
-  bool has(const String&) const;
-  FragmentDB::Type getFragmentType(const String&) const;
+  bool has(const String& /fragment_name/) const;
+  FragmentDB::Type getFragmentType(const String& /fragment_name/) const;
 	// BAUSTELLE
   // list<String> getVariantNames(const String&) const;
   const Fragment* getFragment(const String&) const;
@@ -55,7 +51,6 @@ class FragmentDB
   NormalizeNamesProcessor 			normalize_names;
 	ReconstructFragmentProcessor  add_hydrogens;
   BuildBondsProcessor   				build_bonds;
-  ResourceEntry* tree;
 };
 
 
