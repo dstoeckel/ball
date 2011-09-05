@@ -554,6 +554,14 @@ namespace BALL
 	{
 		// we are invalid until we're sure we're not...
 //		valid_ = false;
+		Path path;
+		String filename = path.find(filename_);
+
+		if (filename == "")
+		{
+			throw Exception::FileNotFound(__FILE__, __LINE__, filename);
+		}
+		filename_ = filename;
 
 		// try to open the main resource file
 		ResourceFile* resource_db = new ResourceFile(filename_);
