@@ -953,83 +953,17 @@ namespace BALL
 	{
 		if (fragment_db_ == 0) return 0;
 
-		const ResourceEntry* const first_entry =0/* FIXME = fragment_db_->tree->getEntry("/Fragments/" + first.getName() + "/Connections") */;
-		if (first_entry == 0) return 0;
+		// apply the whole processor to just the two arguments.
+		// retained for compatibility reasons
+		// this inner instance is needed for const-correctness, obviously.
 
-		const ResourceEntry* const second_entry =0/* FIXME = fragment_db_->tree->getEntry("/Fragments/" + second.getName() + "/Connections") */;
-		if (second_entry == 0) return 0;
+		BuildBondsProcessor temp_pocessor(*fragment_db_);
+		temp_pocessor.start();
+		temp_pocessor(first);
+		temp_pocessor(second);
+		temp_pocessor.finish();
 
-		// count the bonds we build
-		Size bonds_built = 0;
-
-		String s1[6], s2[6];
-		ResourceEntry::ConstIterator	it1 = first_entry->begin();
-		ResourceEntry::ConstIterator	it2;
-		for (++it1; +it1; ++it1)
-		{
-			// split the fields of the "Connections" entry.
-			// It should have the following format:
-			//   (<name> <atom_name> <match_name> <distance> <tolerance>)
-			//	<name>:				Name of the connection type (eg C-term)
-			//	<atom_name>:	Name of the atom that might create the connection
-			//  <bond_order>: s/d/t/a (single/double/triple/aromatic)
-			//	<match_name>:	Name of a matching connection type: this connection is 
-			//								created if the two names match
-			//	<distance>:		Distance of the connection in Angstrom
-			//	<tolerance>:	Tolerance: connection will be built only if the distance
-			//								of the two atoms within <tolerance> of <distance>
-			//	Example entry:
-			//		(C-term C s N-term 1.33 0.5):
-			//			This will build a connection to a fragment with a N-term connection
-			//			if the two atoms are 1.33+/-0.5 Angstrom apart. The bond is a single bond.
-			it1->getValue().split(s1, 6);
-
-			// check if the connection of the first fragment
-			// matches any connection type of the second fragment
-			for (it2 = second_entry->begin(), ++it2; +it2; ++it2)
-			{
-				// do the two connection types match?
-				if (it2->getKey() != s1[1]) continue;
-			
-				it2->getValue().split(s2, 6);
-				Atom* const a1 = first.getAtom(s1[0]);
-				Atom* const a2 = second.getAtom(s2[0]);
-				// break if not the two atoms were found
-				if (a1 == 0 || a2 == 0) continue;
-			
-				// check the distance conditions for both Connection data sets
-				const double distance = a1->getPosition().getDistance(a2->getPosition());
-				if ((fabs(distance - s1[3].toFloat()) >= s1[4].toFloat()) ||
-						(fabs(distance - s2[3].toFloat()) >= s2[4].toFloat()))
-				{
-					continue;
-				}
-
-				// create the bond only if it does not exist
-				if (a1->isBoundTo(*a2)) continue;
-			
-				// create the bond
-				Bond* const bond = a1->createBond(*a2);
-				if (bond == 0) continue;
-			
-				// count the bond
-				bonds_built++;
-
-				// set the bond order
-				switch (s1[2][0])
-				{
-					case 's': bond->setOrder(Bond::ORDER__SINGLE); break;
-					case 'd': bond->setOrder(Bond::ORDER__DOUBLE); break;
-					case 't': bond->setOrder(Bond::ORDER__TRIPLE); break;
-					case 'a': bond->setOrder(Bond::ORDER__AROMATIC); break;
-					default:
-						Log.warn() << "FragmentDB::BuildBondsProcessor: unknown bond order " 
-											 << s1[2] << " (in " << first_entry->getPath() << ")" << endl;
-				}
-			}
-		}
-		
-		return bonds_built;
+		return temp_pocessor.getNumberOfBondsBuilt();
 	}
 
 		const std::vector<Residue*>& FragmentDB::getFragments() const
