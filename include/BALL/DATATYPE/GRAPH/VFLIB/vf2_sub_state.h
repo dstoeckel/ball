@@ -448,7 +448,7 @@ namespace BALL
 			}
 
 			TargetOutEdgeIterator te, te_end;
-			boost::tie(te, te_end) = boost::out_edges(boost::vertex(node2, g2),g2);
+			boost::tie(te, te_end) = boost::out_edges(node2_vert,g2);
 			TargetVertexIndexMap g2_indices = boost::get(boost::vertex_index, g2);
 			QueryVertex node1_vert = boost::vertex(node1, g1);
 
@@ -683,7 +683,7 @@ namespace BALL
 
 			if (orig_core_len < core_len)
 			{
-				int i, node2;
+				int node2;
 
 				QueryInEdgeIterator qe, qe_end;
 				boost::tie(qe, qe_end) = boost::in_edges(boost::vertex(added_node1, g1),g1);
