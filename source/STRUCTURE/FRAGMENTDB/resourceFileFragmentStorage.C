@@ -20,7 +20,8 @@ namespace BALL
 	static const char* FRAGMENT_DB_INCLUDE_TAG = "#include";
 
 	ResourceFileFragmentStorage::ResourceFileFragmentStorage(const String& path_to_root_resourcefile)
-		: filename_(path_to_root_resourcefile)
+		: tree_(0),
+		  filename_(path_to_root_resourcefile)
 	{
 		init();
 	}
