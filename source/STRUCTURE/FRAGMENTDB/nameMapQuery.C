@@ -11,7 +11,10 @@ namespace BALL {
 
 	String NameMapQuery::toString()
 	{
-		return "Blah"; // FIXME
+		String name;
+		name += "Name Map for";
+		name += name_part_;
+		return name;
 	}
 
 	void* NameMapQuery::getSelectorDetail(QuerySelector q)
