@@ -46,6 +46,8 @@ namespace BALL
 	{
 		// Clear old bijection.
 		clear();
+		unmapped_A_.clear();
+		unmapped_B_.clear();
 
 		// Remember the names of A and their atom pointers.
 		StringHashMap<Atom*> A_names;
@@ -70,6 +72,11 @@ namespace BALL
 				// 1:n mappings.
 				A_names.erase(ai->getFullName(Atom::ADD_VARIANT_EXTENSIONS_AND_ID));
 			}
+			else
+			{
+				// There's no matching atom in A for this one.
+				unmapped_B_.push_back(&*ai);
+			}
 		}
 
 		// Check whether we could map anything. 
@@ -83,6 +90,8 @@ namespace BALL
 				A_names.insert(std::pair<String, Atom*>(ai->getName(), &*ai));
 			}
 			clear();
+			unmapped_B_.clear();
+
 			for (AtomIterator ai = B.beginAtom(); +ai; ++ai)
 			{
 				if (A_names.has(ai->getName()))
@@ -97,6 +106,20 @@ namespace BALL
 					// 1:n mappings.
 					A_names.erase(ai->getName());
 				}
+				else
+				{
+					// There's no matching atom in A for this one.
+					unmapped_B_.push_back(&*ai);
+				}
+			}
+		}
+
+		// Collect remaining unmapped Atoms from A.
+		if (A_names.size() > 0) {
+			StringHashMap<Atom*>::Iterator leftover = A_names.begin();
+			for (; leftover != A_names.end(); ++leftover)
+			{
+				unmapped_A_.push_back(leftover->second);
 			}
 		}
 
@@ -107,6 +130,8 @@ namespace BALL
 	{
 		// Delete old bijection.
 		clear();
+		unmapped_A_.clear();
+		unmapped_B_.clear();
 
 		// Map in order -- first atom of A onto
 		// first atom of B and so on.
@@ -117,7 +142,21 @@ namespace BALL
 			if (   !limit_to_selection
 					|| (ai->isSelected() || bi->isSelected()))
 			{
-				push_back(std::pair<Atom*, Atom*>(&*ai, &*bi));
+				push_back(AtomPair(&*ai, &*bi));
+			} else {
+				unmapped_A_.push_back(&*ai);
+				unmapped_B_.push_back(&*bi);
+			}
+		}
+		if (+ai) {
+			for (; +ai; ++ai) {
+				unmapped_A_.push_back(&*ai);
+			}
+		}
+		else if (+bi)
+		{
+			for (; +bi; ++bi) {
+				unmapped_B_.push_back(&*bi);
 			}
 		}
 
@@ -231,6 +270,14 @@ namespace BALL
 		return size();
 	}
 
+	const std::vector<Atom*>& AtomBijection::unmappedAtomsFromLeft() const
+	{
+		return unmapped_A_;
+	}
 
+	const std::vector<Atom*>& AtomBijection::unmappedAtomsFromRight() const
+	{
+		return unmapped_B_;
+	}
 
 } // namespace BALL

@@ -136,11 +136,10 @@ namespace BALL
 				residue with the property AMINO_ACID) of the two proteins
 				in the order they are traversed. The size of the mapping
 				corresponds to the minimum of the number of C-alpha atoms
-        of both atom containers.	
-				\p
-				If the flag limit_to_selection is set to true and one of
-				the two given atom containers has selected content, the 
-				bijection is limited to this selection.
+				of both atom containers.
+				\note For efficiency reasons, an AtomBijection assigned this way
+				does not allow for retrieval of #unmappedAtomsFromA() or
+				#unmappedAtomsFromB().
 				\p
 				\return The number of atom pairs mapped
 		*/
@@ -149,16 +148,15 @@ namespace BALL
 
 		/** Assign the backbone atoms ordered by sequence.
 				This method iterated over all residues and assigns
-				the backbone atoms (i.e. all atoms named "CA", "C",
-				"N", "H", and "O" in every residue with the property AMINO_ACID)
+				the backbone atoms (i.e. the first(!) atoms named "CA", "C",
+				"N", "H", or "O" in every residue with the property AMINO_ACID)
 				of the two proteins
 				in the order they are traversed. The mapping terminates,
 				if the traversal of the residues in one of the two atom containers
-				terminates.	
-				\p
-				If the flag limit_to_selection is set to true and one of
-				the two given atom containers has selected content, the 
-				bijection is limited to this selection.
+				terminates.
+				\note For efficiency reasons, an AtomBijection assigned this way
+				does not allow for retrieval of #unmappedAtomsFromA() or
+				#unmappedAtomsFromB().
 				\p
 				\return The number of atom pairs mapped
 		*/
@@ -178,6 +176,9 @@ namespace BALL
 		//@{
 		///	Calculate the root mean squared deviation of the mapped atoms.
 		double calculateRMSD() const;
+
+		const std::vector<Atom*>& unmappedAtomsFromLeft() const;
+		const std::vector<Atom*>& unmappedAtomsFromRight() const;
 		//@}
 
 		/**	@name STL container compliance */
@@ -196,6 +197,9 @@ namespace BALL
 		using PairVector::rend;
 		//@}
 
+		private:
+		std::vector<Atom*> unmapped_A_;
+		std::vector<Atom*> unmapped_B_;
 	};
 
 } // namespace BALL
