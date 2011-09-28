@@ -96,12 +96,12 @@ namespace BALL {
 				}
 
 
-				const QueryGraph *GetGraph1()
+				const QueryGraph *GetGraph1() const
 				{
 					return &g1;
 				}
 
-				const TargetGraph *GetGraph2()
+				const TargetGraph *GetGraph2() const
 				{
 					return &g2;
 				}
@@ -612,7 +612,7 @@ namespace BALL {
 		 * The i-th pair of the mapping is (c1[i], c2[i])
 		 --------------------------------------------------------------*/
 		template<class QueryGraph, class TargetGraph, class VertexComparator, class EdgeComparator>
-		void VF2State::GetCoreSet(node_id c1[], node_id c2[])
+		void VF2State::GetCoreSet(node_id c1[], node_id c2[]) const
 		{
 			int i,j;
 			for (i=0,j=0; i<n1; i++)

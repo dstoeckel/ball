@@ -96,12 +96,12 @@ namespace BALL
 					}
 				}
 
-				const QueryGraph *GetGraph1()
+				const QueryGraph *GetGraph1() const
 				{
 					return &g1;
 				}
 
-				const TargetGraph *GetGraph2()
+				const TargetGraph *GetGraph2() const
 				{
 					return &g2;
 				}
