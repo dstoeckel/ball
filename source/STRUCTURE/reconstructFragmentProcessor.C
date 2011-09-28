@@ -206,7 +206,6 @@ namespace BALL
 		(Fragment& fragment, const Fragment& tplate)
 	{
 		// We count the number of atoms created.
-		Size number_of_inserted_atoms = 0;
 		list<Atom*> inserted_atoms;
 		
 		// Get a copy of the atom names occurring in the current reference fragment....
@@ -243,7 +242,6 @@ namespace BALL
 				fragment.insert(*new_atom);
 				tpl_to_res.insert(std::pair<const Atom*, Atom*>(&*cit, new_atom));
 				// update the atom count
-				number_of_inserted_atoms++;
 				inserted_atoms.push_back(new_atom);
 				DEBUG("creating atom " << (void*)(new_atom) << " for tpl atom " << cit->getName() << " (" << (void*)&*cit << ")")
 			}
