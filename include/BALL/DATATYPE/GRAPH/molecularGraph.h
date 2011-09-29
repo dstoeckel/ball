@@ -25,8 +25,8 @@ namespace BALL
 
 	//Define a properly adjusted boost graph type
 	typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
-	                              boost::property<boost::vertex_atom_ptr_t, const Atom*>,
-	                              boost::property<boost::edge_bond_ptr_t, const Bond*>
+		boost::property<boost::vertex_atom_ptr_t, Atom*>,
+		boost::property<boost::edge_bond_ptr_t, Bond*>
 	> MolecularGraphBase;
 
 	/**
@@ -40,7 +40,7 @@ namespace BALL
 	 * These properties can be obtained by using the following code:
 	 * @code
 	 *   AtomPtrMap atom_ptrs = get(boost::vertex_atom_ptr, graph);
-	 *   const Atom* atom = boost::get(atom_ptrs, vertex_handle);
+	 *   Atom* atom = boost::get(atom_ptrs, vertex_handle);
 	 * @endcode
 	 */
 	class MolecularGraph 
@@ -67,14 +67,14 @@ namespace BALL
 
 			MolecularGraph(AtomContainer& ac, ExportOptions opt = INCLUDE_ALL);
 
-			const Edge&   getEdge  (const Bond* bond) const;
-			const Vertex& getVertex(const Atom* atom) const;
+			const Edge&   getEdge  (Bond* bond) const;
+			const Vertex& getVertex(Atom* atom) const;
 
 			void editableCopy(EditableGraph& eg);
 
 		private:
-			std::map<const Bond*, Edge>   bond_to_edge_;
-			std::map<const Atom*, Vertex> atom_to_vertex_;
+			std::map<Bond*, Edge>   bond_to_edge_;
+			std::map<Atom*, Vertex> atom_to_vertex_;
 	};
 
 	typedef GRAPH::GraphTraits<MolecularGraph> MolecularGraphTraits;

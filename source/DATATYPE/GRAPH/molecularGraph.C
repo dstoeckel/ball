@@ -11,7 +11,7 @@ namespace BALL
 	class BondVisitor : public UnaryProcessor<Bond>
 	{
 		public:
-			BondVisitor(MolecularGraph& molgraph, std::map<const Bond*, MolecularGraph::Edge>& bte)
+			BondVisitor(MolecularGraph& molgraph, std::map<Bond*, MolecularGraph::Edge>& bte)
 				: molgraph_(molgraph),
 				  bte_(bte),
 				  bond_ptrs_(boost::get(boost::edge_bond_ptr, molgraph))
@@ -32,7 +32,7 @@ namespace BALL
 
 		private:
 			MolecularGraph& molgraph_;
-			std::map<const Bond*, MolecularGraph::Edge>& bte_;
+			std::map<Bond*, MolecularGraph::Edge>& bte_;
 			MolecularGraph::BondPtrMap bond_ptrs_;
 	};
 
@@ -42,7 +42,7 @@ namespace BALL
 		// Create a bijective mapping between Vertices and Atom*
 		AtomPtrMap atom_ptrs = get(boost::vertex_atom_ptr, *this);
 
-		AtomConstIterator ait = ac.beginAtom();
+		AtomIterator ait = ac.beginAtom();
 		VertexIterator vi, vi_end;
 		boost::tie(vi, vi_end) = boost::vertices(*this);
 
@@ -57,9 +57,9 @@ namespace BALL
 		ac.applyIntraBond(visitor);
 	}
 
-	const MolecularGraph::Edge& MolecularGraph::getEdge(const Bond* bond) const
+	const MolecularGraph::Edge& MolecularGraph::getEdge(Bond* bond) const
 	{
-		std::map<const Bond*, Edge>::const_iterator it = bond_to_edge_.find(bond);
+		std::map<Bond*, Edge>::const_iterator it = bond_to_edge_.find(bond);
 
 		if(it == bond_to_edge_.end())
 		{
@@ -69,9 +69,9 @@ namespace BALL
 		return it->second;
 	}
 
-	const MolecularGraph::Vertex& MolecularGraph::getVertex(const Atom* atom) const
+	const MolecularGraph::Vertex& MolecularGraph::getVertex(Atom* atom) const
 	{
-		std::map<const Atom*, Vertex>::const_iterator it = atom_to_vertex_.find(atom);
+		std::map<Atom*, Vertex>::const_iterator it = atom_to_vertex_.find(atom);
 
 		if(it == atom_to_vertex_.end())
 		{
