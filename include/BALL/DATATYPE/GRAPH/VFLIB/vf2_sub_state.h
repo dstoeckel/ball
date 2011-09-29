@@ -124,7 +124,7 @@ namespace BALL
 					       t1in_len>t2in_len;
 				}
 
-				int CoreLen()
+				int CoreLen() const
 				{
 					return core_len;
 				}

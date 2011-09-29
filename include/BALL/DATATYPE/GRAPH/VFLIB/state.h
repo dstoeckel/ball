@@ -64,7 +64,7 @@ namespace BALL
 				virtual void AddPair(node_id n1, node_id n2)=0;
 				virtual bool IsGoal() =0;
 				virtual bool IsDead() =0;
-				virtual int CoreLen() =0;
+				virtual int CoreLen() const =0;
 				virtual void GetCoreSet(node_id c1[], node_id c2[]) const =0;
 				virtual State *Clone() =0;  // Changed clone to Clone for uniformity
 
