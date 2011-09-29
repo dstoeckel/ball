@@ -7,6 +7,7 @@ SET(SOURCES_LIST
 	analyticalSES.C
 	assignBondOrderProcessor.C
 	atomBijection.C
+	atomBiMap.C
 	atomTyper.C
 	binaryFingerprintMethods.C
 	bindingPocketProcessor.C
