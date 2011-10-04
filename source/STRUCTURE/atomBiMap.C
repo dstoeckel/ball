@@ -30,7 +30,7 @@ namespace BALL {
 		state.GetCoreSet(queryCore, targetCore);
 		
 		for (int pair_no = 0; pair_no < state.CoreLen(); ++pair_no) {
-			push_back(AtomPair(boost::get(queryVertexLabels,boost::get(queryVertexIndices,queryCore[pair_no])),
+			insert(AtomPair(boost::get(queryVertexLabels,boost::get(queryVertexIndices,queryCore[pair_no])),
 											boost::get(targetVertexLabels,boost::get(targetVertexIndices,targetCore[pair_no]))));
 		}
 
@@ -85,7 +85,7 @@ namespace BALL {
 			if (A_names.has(ai->getFullName(Atom::ADD_VARIANT_EXTENSIONS_AND_ID)))
 			{
 				// We found two matching atoms. Remember them.
-				push_back(AtomPair(A_names[ai->getFullName(Atom::ADD_VARIANT_EXTENSIONS_AND_ID)], &*ai));
+				insert(AtomPair(A_names[ai->getFullName(Atom::ADD_VARIANT_EXTENSIONS_AND_ID)], &*ai));
 
 				// Throw away the hash map entry in order to avoid
 				// 1:n mappings.
@@ -116,7 +116,7 @@ namespace BALL {
 				if (A_names.has(ai->getName()))
 				{
 					// We found two matching atoms. Remember them.
-					push_back(AtomPair(A_names[ai->getName()], &*ai));
+					insert(AtomPair(A_names[ai->getName()], &*ai));
 					// Throw away the hash map entry in order to avoid
 					// 1:n mappings.
 					A_names.erase(ai->getName());
@@ -154,7 +154,7 @@ namespace BALL {
 		AtomIterator bi(B.beginAtom());
 		for (; +ai && +bi; ++ai, ++bi)
 		{
-			push_back(AtomPair(&*ai, &*bi));
+			insert(AtomPair(&*ai, &*bi));
 		}
 		if (+ai) {
 			for (; +ai; ++ai) {
@@ -190,7 +190,7 @@ namespace BALL {
 			Atom* cab = (*itb)->getAtom("CA");
 			if (caa != 0 && cab != 0)
 			{
-				push_back(AtomPair(caa, cab));
+				insert(AtomPair(caa, cab));
 			}
 		}
 		//
@@ -217,31 +217,31 @@ namespace BALL {
 			Atom* b = (*itb)->getAtom("CA");
 			if (a != 0 && b != 0)
 			{
-				push_back(AtomPair(a, b));
+				insert(AtomPair(a, b));
 			}
 			a = (*ita)->getAtom("C");
 			b = (*itb)->getAtom("C");
 			if (a != 0 && b != 0)
 			{
-				push_back(AtomPair(a, b));
+				insert(AtomPair(a, b));
 			}
 			a = (*ita)->getAtom("N");
 			b = (*itb)->getAtom("N");
 			if (a != 0 && b != 0)
 			{
-				push_back(AtomPair(a, b));
+				insert(AtomPair(a, b));
 			}
 			a = (*ita)->getAtom("O");
 			b = (*itb)->getAtom("O");
 			if (a != 0 && b != 0)
 			{
-				push_back(AtomPair(a, b));
+				insert(AtomPair(a, b));
 			}
 			a = (*ita)->getAtom("H");
 			b = (*itb)->getAtom("H");
 			if (a != 0 && b != 0)
 			{
-				push_back(AtomPair(a, b));
+				insert(AtomPair(a, b));
 			}
 		}
 			
@@ -257,6 +257,30 @@ namespace BALL {
 	const std::vector<Atom*>& AtomBiMap::unmappedAtomsFromRight() const
 	{
 		return unmapped_B_;
+	}
+
+	Atom* AtomBiMap::leftFromRight(Atom* atom) {
+		right_const_iterator it = right.find(atom);
+		if (it == right.end())
+		{
+			return 0;
+		}
+		else
+		{
+			return it->second;
+		}
+	}
+
+	Atom* AtomBiMap::rightFromLeft(Atom* atom) {
+		left_const_iterator it = left.find(atom);
+		if (it == left.end())
+		{
+			return 0;
+		}
+		else
+		{
+			return it->second;
+		}
 	}
 
 }

@@ -6,7 +6,7 @@
 #define BALL_STRUCTURE_FRAGMENTDB_ATOMBIJECTION_H
 
 #include<boost/bimap.hpp>
-#include<boost/bimap/list_of.hpp>
+#include<boost/bimap/unordered_set_of.hpp>
 
 #include<BALL/DATATYPE/GRAPH/VFLIB/state.h>
 #include<BALL/DATATYPE/GRAPH/molecularGraph.h>
@@ -16,8 +16,8 @@ namespace BALL
 	class Atom;
 
 	typedef boost::bimaps::bimap<
-				boost::bimaps::list_of<Atom*>,
-				boost::bimaps::unconstrained_set_of<Atom*>
+				boost::bimaps::unordered_set_of<Atom*>,
+				boost::bimaps::unordered_set_of<Atom*>
 			> AtomBiMapBase;
 
 	/**	Atom bijection.
@@ -162,6 +162,9 @@ namespace BALL
 		const RemainderList& unmappedAtomsFromLeft() const;
 		const RemainderList& unmappedAtomsFromRight() const;
 		//@}
+
+		Atom* leftFromRight(Atom*);
+		Atom* rightFromLeft(Atom*);
 
 		private:
 		RemainderList unmapped_A_;
