@@ -132,7 +132,7 @@ namespace BALL
 
 		*/
 		static Triple<bool, const Atom*, const Atom*>
-		getTwoReferenceAtoms(const Atom& ref_center_atom, const HashSet<const Atom*>& allowed)
+		getTwoReferenceAtoms(const Atom& ref_center_atom, const HashSet<Atom*>& allowed)
 			;
 
 		/**

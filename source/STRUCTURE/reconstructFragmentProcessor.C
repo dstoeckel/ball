@@ -15,10 +15,11 @@
 #include <BALL/DATATYPE/stringHashMap.h>
 #include <BALL/STRUCTURE/fragmentDB.h>
 #include <BALL/STRUCTURE/structureMapper.h>
+#include <BALL/STRUCTURE/atomBiMap.h>
 	
 using namespace std;
 
-// #define BALL_DEBUG_RECONSTRUCTFRAGMENTPROCESSOR
+#define BALL_DEBUG_RECONSTRUCTFRAGMENTPROCESSOR
 
 #ifdef BALL_DEBUG_RECONSTRUCTFRAGMENTPROCESSOR
 #	define DEBUG(a) Log.info() << "ReconstructFragmentProcessor: " << a << std::endl;
@@ -50,7 +51,7 @@ namespace BALL
 	*/
 	Triple<bool, const Atom*, const Atom*> 
 	ReconstructFragmentProcessor::getTwoReferenceAtoms
-		(const Atom& ref_center_atom, const HashSet<const Atom*>& allowed)
+		(const Atom& ref_center_atom, const HashSet<Atom*>& allowed)
 		
 	{
 		Triple<bool, const Atom*, const Atom*> result(false, 0, 0);
@@ -67,7 +68,7 @@ namespace BALL
 			Atom::BondConstIterator bond((*current)->beginBond());
 			for (; +bond; ++bond)
 			{
-				const Atom* next_atom = bond->getPartner(**current);
+				Atom* next_atom = bond->getPartner(**current);
 				if (allowed.has(next_atom) 
 						&& (find(atom_list.begin(), atom_list.end(), next_atom) == atom_list.end()))
 				{
@@ -207,48 +208,44 @@ namespace BALL
 	{
 		// We count the number of atoms created.
 		list<Atom*> inserted_atoms;
-		
-		// Get a copy of the atom names occurring in the current reference fragment....
-		StringHashMap<Atom*> name_to_atom;
-		AtomIterator it = fragment.beginAtom();
-		for (; +it; ++it)
+		HashSet<Atom*> transformed;
+
+		AtomBiMap mapping;
+		// have to use const_cast here, as AtomBiMap is more general,
+		// but we won't do anything bad in here, will we?
+		mapping.assignByName(fragment, const_cast<Fragment&>(tplate));
+
+		AtomBiMap::iterator template_atom = mapping.begin();
+		for (; template_atom != mapping.end(); ++template_atom)
 		{
-			name_to_atom.insert(pair<String, Atom*>(it->getName(), const_cast<Atom*>(&*it)));
-			DEBUG("inserting " << it->getName() << " = " << (void*)(&*it) << " into name_to_atom map. ")
-		}
-		
-		// ...and remove the names of existing atoms.
-		// At the same time, we construct a hash map relating the atom names
-		// of the residues to the corresponding atom pointers.
-		HashMap<const Atom*, Atom*> tpl_to_res;
-		HashSet<const Atom*> transformed;
-		AtomConstIterator cit = tplate.beginAtom();
-		for (; +cit; ++cit)
-		{	
-			if (name_to_atom.has(cit->getName()))
-			{
-				// remember that the coordinates of this one are correct
-				Atom* res_atom = name_to_atom[cit->getName()];
-				transformed.insert(&*cit);
-				tpl_to_res.insert(std::pair<const Atom*, Atom*>(&*cit, res_atom));
-				DEBUG("inserting " << (void*)&*cit << " = " << (void*)(res_atom) << " into tpl_to_res map. ")
-			}
-			else
-			{
-				// We create a copy of the existing atom and insert it into
-				// the residue. Coordinates are bogus, but we'll correct that
-				// later on.
-				Atom* new_atom = reinterpret_cast<Atom*>(cit->create(false));
-				fragment.insert(*new_atom);
-				tpl_to_res.insert(std::pair<const Atom*, Atom*>(&*cit, new_atom));
-				// update the atom count
-				inserted_atoms.push_back(new_atom);
-				DEBUG("creating atom " << (void*)(new_atom) << " for tpl atom " << cit->getName() << " (" << (void*)&*cit << ")")
-			}
+			transformed.insert(template_atom->right);
 		}
 
+		AtomBiMap::RemainderList::const_iterator unmapped_atom_from_template
+			= mapping.unmappedAtomsFromRight().begin();
+		for (; unmapped_atom_from_template
+		       != mapping.unmappedAtomsFromRight().end()
+		     ; ++unmapped_atom_from_template)
+		{
+			Atom* copy_of_unmapped = reinterpret_cast<Atom*>(
+				(*unmapped_atom_from_template)->create(false)
+			);
+			fragment.insert(*copy_of_unmapped);
+			mapping.insert(
+				AtomBiMap::AtomPair(copy_of_unmapped, *unmapped_atom_from_template)
+			);
+			inserted_atoms.push_back(copy_of_unmapped);
+		}
+
+		DEBUG("Found "<<mapping.size()<<" same atoms, "
+		      << mapping.unmappedAtomsFromLeft().size() <<" remain from fragment, "
+		      << mapping.unmappedAtomsFromRight().size() <<" remain from template."
+		     )
+
+		// TODO: IDEA: if the remainders are of equal length, maybe try harder.
+
 		// We've now made sure that all atoms of the tplate exist in the 
-    // reconstructed residue as well (careful, not the other way round!)
+		// reconstructed residue as well (careful, not the other way round!)
 		// we can now start to adjust the atom coordinates.
 
 		// If no atoms were in common, there's not much we can do...
@@ -259,73 +256,97 @@ namespace BALL
 		{
 			// Otherwise, we start adjusting coordinates
 			// We use a hash set for BFS
-			HashSet<const Atom*> visited;
-			list<const Atom*> stack;
+			HashSet<Atom*> visited;
+
+			list<Atom*> stack;
 			stack.push_back(*transformed.begin());
 			while (!stack.empty())
 			{
-				const Atom* current = stack.front();
-				stack.erase(stack.begin());
-				visited.insert(current);
+				Atom* template_atom = stack.front();
+				stack.pop_front();
+				visited.insert(template_atom);
 
-				DEBUG("center is " << (void*)current << " (" << current->getFullName() << ") visited = " 
-							<< (visited.has(current)) << " transformed = " << transformed.has(current) 
-							<< " @ " << current->getPosition())
-				DEBUG("residue atom is @ " << tpl_to_res[current]->getPosition()  << " (dist = " 
-							<< tpl_to_res[current]->getPosition().getDistance(current->getPosition()) << ")")
-
-				for (Atom::BondConstIterator bond = current->beginBond(); +bond; ++ bond)
 				{
-					const Atom* next = bond->getPartner(*current);
-					DEBUG("examining " << (void*)next << " (" << next->getFullName() << ") visited = " 
-								<< (visited.has(next)) << " transformed = " << transformed.has(next))
-					if (!visited.has(next))
-					{
-						stack.push_back(next);
-						visited.insert(next);
-						if (!transformed.has(next))
-						{
-							DEBUG("searching reference atoms for "<< next->getFullName())
-							Triple<bool, const Atom*, const Atom*> ref_atoms;
-							ref_atoms = getTwoReferenceAtoms(*current, transformed);
-							DEBUG("reference atoms: " << (ref_atoms.second == 0 ? String("-") : ref_atoms.second->getFullName())
-										<< " / " << (ref_atoms.third == 0 ? String("-") : ref_atoms.third->getFullName()))
+				DEBUG("center is " << (void*)template_atom << " (" << template_atom->getFullName() << ") visited = "
+							<< (visited.has(template_atom)) << " transformed = " << transformed.has(template_atom)
+							<< " @ " << template_atom->getPosition())
+				DEBUG("residue atom is @ " << mapping.leftFromRight(template_atom)->getPosition()  << " (dist = "
+							<< mapping.leftFromRight(template_atom)->getPosition().getDistance(template_atom->getPosition()) << ")")
+				}
+				Atom::BondConstIterator bond;
+				for (bond = template_atom->beginBond(); +bond; ++ bond)
+				{
+					Atom* translation_template = bond->getPartner(*template_atom);
+					DEBUG("examining "
+					      << (void*)translation_template
+					      << " (" << translation_template->getFullName() << ")"
+					      << " visited = " 	<< (visited.has(translation_template))
+					      << " transformed = " << transformed.has(translation_template)
+					     )
 
-							Matrix4x4 T;
-							if (ref_atoms.first == true)
+					if (!visited.has(translation_template))
+					{
+						stack.push_back(translation_template);
+						visited.insert(translation_template);
+						if (!transformed.has(translation_template))
+						{
+							DEBUG("searching reference atoms for "<< translation_template->getFullName())
+							Triple<bool, const Atom*, const Atom*> correctly_positioned_partners;
+							correctly_positioned_partners = getTwoReferenceAtoms(*template_atom, transformed);
+							Atom* partner_a = const_cast<Atom*>(correctly_positioned_partners.second);
+							Atom* partner_b = const_cast<Atom*>(correctly_positioned_partners.third);
+							DEBUG("reference atoms: "
+							      << (partner_a == 0 ? String("-") : partner_a->getFullName()) << " / "
+							      << (correctly_positioned_partners.third == 0 ? String("-") : correctly_positioned_partners.third->getFullName())
+							     )
+
+							Matrix4x4 transform_to_match_neighbors;
+							if (correctly_positioned_partners.first == true)
 							{
 								// we can map all three atoms, great!
-								DEBUG("mapping three atoms: " << tpl_to_res[current]->getFullName() << "/" 
-											<< tpl_to_res[ref_atoms.second]->getFullName() << "/" << tpl_to_res[ref_atoms.third]->getFullName())
-								DEBUG("onto:                " << current->getFullName() << "/" 
-											<< ref_atoms.second->getFullName() << "/" << ref_atoms.third->getFullName())
-								DEBUG("from: " << tpl_to_res[current]->getPosition() << "/" 
-											<< tpl_to_res[ref_atoms.second]->getPosition() << "/" << tpl_to_res[ref_atoms.third]->getPosition())
-								DEBUG("to:   " << current->getPosition() << "/" 
-											<< ref_atoms.second->getPosition() << "/" << ref_atoms.third->getPosition())
-								T = StructureMapper::matchPoints
-											(current->getPosition(), ref_atoms.second->getPosition(), ref_atoms.third->getPosition(),
-											 tpl_to_res[current]->getPosition(), 
-											 tpl_to_res[ref_atoms.second]->getPosition(), 
-											 tpl_to_res[ref_atoms.third]->getPosition());
-								DEBUG("found two reference atoms, mapped with T =\n" << T)
+								DEBUG("mapping three atoms: " << mapping.leftFromRight(template_atom)->getFullName() << "/"
+								      << mapping.leftFromRight(partner_a)->getFullName() << "/"
+								      << mapping.leftFromRight(partner_b)->getFullName())
+								DEBUG("onto:                " << template_atom->getFullName() << "/"
+								      << partner_a->getFullName() << "/"
+								      << partner_b->getFullName())
+								DEBUG("from: " << mapping.leftFromRight(template_atom)->getPosition() << "/"
+								      << mapping.leftFromRight(partner_a)->getPosition() << "/"
+								      << mapping.leftFromRight(partner_b)->getPosition())
+								DEBUG("to:   " << template_atom->getPosition() << "/"
+								      << partner_a->getPosition() << "/"
+								      << partner_b->getPosition())
+
+								transform_to_match_neighbors = StructureMapper::matchPoints(
+								       // map these three known positions:
+								       template_atom->getPosition(),
+								       partner_a->getPosition(),
+								       partner_b->getPosition(),
+								       // onto these three known positions:
+								       mapping.leftFromRight(template_atom)->getPosition(),
+								       mapping.leftFromRight(partner_a)->getPosition(),
+								       mapping.leftFromRight(partner_b)->getPosition());
+
+								DEBUG("found two reference atoms, mapped with T =\n" << transform_to_match_neighbors)
 							}
 							else 
 							{
 								// We could map the two center atoms only, which corresponds to 
 								// a simple translation by the difference of the two atom positions.
-								T.setIdentity();
-								T.setTranslation(tpl_to_res[current]->getPosition() - current->getPosition());
-								DEBUG("translating by " << T)
+								transform_to_match_neighbors.setIdentity();
+								transform_to_match_neighbors.setTranslation(mapping.leftFromRight(template_atom)->getPosition() - template_atom->getPosition());
+								DEBUG("translating by " << transform_to_match_neighbors)
 							}
 
-							// Transform the coordinates of the atom we're interest in
-							tpl_to_res[next]->setPosition(T * tpl_to_res[next]->getPosition());
+							Atom* fragment_translatee = mapping.leftFromRight(translation_template);
+							// Apply the transformation to the coordinates of the atom we're interested in
+							fragment_translatee->setPosition(transform_to_match_neighbors * fragment_translatee->getPosition());
 
 							// Remember that we already took care of that guy.
-							transformed.insert(next);
-							DEBUG(next->getFullName() << " is transformed: " << tpl_to_res[next]->getPosition() << "/" << next->getPosition())
-							DEBUG("distance = " << tpl_to_res[next]->getPosition().getDistance(next->getPosition()))
+							transformed.insert(translation_template);
+							DEBUG(translation_template->getFullName() << " is transformed: " << fragment_translatee->getPosition()
+							      << "/" << translation_template->getPosition())
+							DEBUG("distance = " << fragment_translatee->getPosition().getDistance(translation_template->getPosition()))
 						}
 					}
 				}
