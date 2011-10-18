@@ -25,8 +25,8 @@
  *----------------------------------------------------------------*/
 
 
-#ifndef STATE_H
-#define STATE_H
+#ifndef BALL_DATATYPE_GRAPH_VFLIB_STATE_H
+#define BALL_DATATYPE_GRAPH_VFLIB_STATE_H
 
 namespace BALL
 {
@@ -73,5 +73,5 @@ namespace BALL
 
 	}
 }
-#endif
+#endif //BALL_DATATYPE_GRAPH_VFLIB_STATE_H
 
