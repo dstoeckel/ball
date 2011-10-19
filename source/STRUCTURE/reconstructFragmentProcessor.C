@@ -55,11 +55,11 @@ namespace BALL
 		
 	{
 		Triple<bool, const Atom*, const Atom*> result(false, 0, 0);
-		
+
 		// a hash set to remember all those atoms we have already visited
 		list<const Atom*> atom_list;
 		atom_list.push_back(&ref_center_atom);
-		
+
 		// abort if we found the three first atoms (beyond the center atom)
 		// or we are running out of fresh atoms
 		list<const Atom*>::iterator current(atom_list.begin());
@@ -80,11 +80,11 @@ namespace BALL
 					}
 				}
 			}
-			
+
 			// try the bonds of the next atom in the list
 			current++;
 		}
-		
+
 		// copy the two  reference atoms to the result 
 		// (omit the first atom, which is the center atom!)
 		result.first = (atom_list.size() == 3);
@@ -102,20 +102,20 @@ namespace BALL
 
 		return result;
 	}
-	
+
 	// start function of ReconstructFragmentProcessor
 	// nothing important is done here
 	bool ReconstructFragmentProcessor::start()
 	{
 		inserted_atoms_.clear();
-		
+
 		if (fragment_db_ == 0)
 		{
 			Log.error() << "ReconstructFragmentProcessor: no FragmentDB defined. "
 									<< "Use setFragmentDB() to associate a fragment database." << std::endl;
 			return false;
 		}
-		
+
 		return true;
 	}
 	
@@ -129,7 +129,7 @@ namespace BALL
 	Processor::Result ReconstructFragmentProcessor::operator () (Fragment& object)
 	{
 		// abort if the object is not a residue (only residues are 
-		// contained in the fragment DB)																				
+		// contained in the fragment DB)
 		if (!RTTI::isKindOf<Residue>(object))
 		{
 			return Processor::CONTINUE;
@@ -170,7 +170,7 @@ namespace BALL
 			inserted_atoms_()
 	{
 	}
-	
+
 	// copy constructor	
 	ReconstructFragmentProcessor::ReconstructFragmentProcessor(const ReconstructFragmentProcessor& rfp)
 		:	UnaryProcessor<Fragment>(rfp),
@@ -178,14 +178,14 @@ namespace BALL
 			inserted_atoms_(rfp.inserted_atoms_)
 	{
 	}
-	
+
 	// default constructor	
 	ReconstructFragmentProcessor::ReconstructFragmentProcessor()
 		:	fragment_db_(0),
 			inserted_atoms_()
 	{
 	}
-	
+
 	// destructor	
 	ReconstructFragmentProcessor::~ReconstructFragmentProcessor()
 	{
@@ -202,7 +202,7 @@ namespace BALL
 	{
 		return inserted_atoms_.size();
 	}
- 
+
 	list<Atom*> ReconstructFragmentProcessor::reconstructFragment
 		(Fragment& fragment, const Fragment& tplate)
 	{
@@ -266,13 +266,12 @@ namespace BALL
 				stack.pop_front();
 				visited.insert(template_atom);
 
-				{
 				DEBUG("center is " << (void*)template_atom << " (" << template_atom->getFullName() << ") visited = "
-							<< (visited.has(template_atom)) << " transformed = " << transformed.has(template_atom)
-							<< " @ " << template_atom->getPosition())
+				      << (visited.has(template_atom)) << " transformed = " << transformed.has(template_atom)
+				      << " @ " << template_atom->getPosition())
 				DEBUG("residue atom is @ " << mapping.leftFromRight(template_atom)->getPosition()  << " (dist = "
-							<< mapping.leftFromRight(template_atom)->getPosition().getDistance(template_atom->getPosition()) << ")")
-				}
+				      << mapping.leftFromRight(template_atom)->getPosition().getDistance(template_atom->getPosition()) << ")")
+
 				Atom::BondConstIterator bond;
 				for (bond = template_atom->beginBond(); +bond; ++ bond)
 				{
