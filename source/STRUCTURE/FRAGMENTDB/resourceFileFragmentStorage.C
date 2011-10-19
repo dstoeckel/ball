@@ -2,6 +2,7 @@
 #include <BALL/STRUCTURE/FRAGMENTDB/fragmentQuery.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/nameMapQuery.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/propertyFragmentQuery.h>
+#include <BALL/STRUCTURE/fragmentDB.h>
 
 #include <BALL/KERNEL/atom.h>
 #include <BALL/KERNEL/bond.h>
@@ -551,6 +552,30 @@ namespace BALL
 		
 	}
 
+	void ResourceFileFragmentStorage::parseType_(ResourceEntry&  entry, Fragment& fragment)
+	{
+		ResourceEntry* type_entry = entry.findChild("");
+
+		if (type_entry!= 0)
+		{
+			if (type_entry->getValue() == "residue")
+			{
+				fragment.setProperty("TYPE", FragmentDB::TYPE__RESIDUE);
+			}
+
+			if (type_entry->getValue() == "molecule")
+			{
+				fragment.setProperty("TYPE", FragmentDB::TYPE__MOLECULE);
+			}
+
+			if (type_entry->getValue() == "fragment")
+			{
+				fragment.setProperty("TYPE", FragmentDB::TYPE__FRAGMENT);
+			}
+		}
+	}
+
+
 	void ResourceFileFragmentStorage::init()
 	{
 		// we are invalid until we're sure we're not...
@@ -656,6 +681,12 @@ namespace BALL
 					parseConnections_(*entry, *fragment);
 				}
 
+				entry = frag_entry_it->getEntry("Type");
+				if (entry != 0)
+				{
+					parseType_(*entry, *fragment);
+				}
+
 				// check for all aliases (given in the Names section of the db-file)
 				// and insert them into the corresponding hash maps
 				ResourceEntry::Iterator entry_it;
@@ -741,6 +772,10 @@ namespace BALL
 									else if (key == "Properties")
 									{
 										parseProperties_(*entry_it, *dynamic_cast<PropertyManager*>(variant));
+									}
+									else if (key == "Type")
+									{
+										parseType_(*entry_it, *variant);
 									}
 								}
 							}

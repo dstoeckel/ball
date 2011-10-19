@@ -65,8 +65,15 @@ namespace BALL
 				All atoms given in this section are renamed to the given new name.
 		*/
 		void parseRename_(ResourceEntry& entry, Fragment& fragment);
-		
+
+		/** Parses the Connections section
+		    There, possible inter-fragment bonds are stored.
+		 */
 		void parseConnections_(ResourceEntry&  entry, Fragment& fragment);
+
+		/** Parses Type information
+		 */
+		void parseType_(ResourceEntry&  entry, Fragment& fragment);
 
 		/// @}
 
