@@ -112,42 +112,27 @@ namespace BALL
 		return found;
 	}
 
-	FragmentDB::Type FragmentDB::getFragmentType(const String& fragment_name) const 
+	FragmentDB::Type BALL_DEPRECATED FragmentDB::getFragmentType(const String& fragment_name) const
 	{
-/*
-		FIXME: This probably needs to go in an extra FragmentQuery::QuerySelector
-		*******
-		if (!isValid() || 
-				!tree->isValid() ||
-				!has(fragment_name))
+		// FIXME: did anyone ever use this? The original backend does not have that data...
+		NameFragmentQuery theFragment(fragment_name);
+		if (!query(theFragment))
 		{
 			return FragmentDB::TYPE__UNKNOWN;
 		}
-
-		String path = (*name_to_path_.find(fragment_name)).second;
-		path += "/Type";
-		ResourceEntry* entry = tree->findChild(path);
-		entry = tree->findChild("");
-			
-		if (entry!= 0)
+		if (theFragment.getResults().size() > 1)
 		{
-			if (entry->getValue() == "residue")
-			{
-				return FragmentDB::TYPE__RESIDUE;
-			}
-
-			if (entry->getValue() == "molecule")
-			{
-				return FragmentDB::TYPE__MOLECULE;
-			}
-
-			if (entry->getValue() == "fragment")
-			{
-				return FragmentDB::TYPE__MOLECULE;
-			}
+			Log.info() << "FragmentDB: More than one result for query \"" << fragment_name << "\". Returning first match!" << std::endl;
 		}
-*/
-		return FragmentDB::TYPE__UNKNOWN;
+		boost::shared_ptr<Residue> fragment(*(theFragment.getResults().begin()));
+		if (fragment->hasProperty("TYPE"))
+		{
+			return fragment->getProperty("TYPE").getInt();
+		}
+		else
+		{
+			return FragmentDB::TYPE__UNKNOWN;
+		}
 	}
 
 	FragmentDB& FragmentDB::operator = (const FragmentDB& db)
