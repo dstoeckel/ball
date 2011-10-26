@@ -119,3 +119,9 @@ namespace BALL
 	}
 }
 
+namespace boost {
+ // FIXME: not sure if this works as intended.
+  size_t hash_value(const detail::edge_desc_impl<undirected_tag, long unsigned int>& edge) {
+	 return hash_value(edge.m_source)+hash_value(edge.m_target)+hash_value(edge.get_property());
+ }
+}

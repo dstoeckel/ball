@@ -86,4 +86,9 @@ namespace BALL
 	typedef MolecularGraph::EditableGraph EditableMolecularGraph;
 }
 
+namespace boost {
+ // FIXME: not sure if this works as intended.
+ size_t hash_value(const detail::edge_desc_impl<undirected_tag, long unsigned int>& edge);
+}
+
 #endif //BALL_DATATYPE_GRAPH_MOLECULARGRAPH_H
