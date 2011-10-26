@@ -12,6 +12,10 @@
 #	include <BALL/COMMON/global.h>
 #endif
 
+#ifndef BALL_DATATYPE_HASHSET_H
+#	include <BALL/DATATYPE/hashSet.h>
+#endif
+
 #ifndef BALL_DATATYPE_GRAPH_GRAPHALGORITHMS_H
 # include <BALL/DATATYPE/GRAPH/graphAlgorithms.h>
 #endif
@@ -66,6 +70,7 @@ namespace BALL
 			typedef GRAPH::GraphTraits<MolecularGraph>::EditableGraph EditableGraph;
 
 			MolecularGraph(AtomContainer& ac, ExportOptions opt = INCLUDE_ALL);
+			MolecularGraph(HashSet<Atom*>&, HashSet<Bond*>&);
 
 			const Edge&   getEdge  (Bond* bond) const;
 			const Vertex& getVertex(Atom* atom) const;

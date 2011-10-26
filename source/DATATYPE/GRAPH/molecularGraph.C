@@ -57,6 +57,37 @@ namespace BALL
 		ac.applyIntraBond(visitor);
 	}
 
+	MolecularGraph::MolecularGraph(HashSet<Atom*> &atoms, HashSet<Bond*> &bonds)
+		: MolecularGraphBase(atoms.size())
+	{
+		AtomPtrMap vert2atom = boost::get(boost::vertex_atom_ptr, *this);
+		BondPtrMap edge2bond = boost::get(boost::edge_bond_ptr, *this);
+
+		VertexIterator vi, vi_end;
+		boost::tie(vi, vi_end) = boost::vertices(*this);
+
+		HashSet<Atom*>::Iterator ait = atoms.begin();
+		for(; ait != atoms.end(); ++ait, ++vi) {
+			atom_to_vertex_.insert(std::make_pair(*ait, *vi));
+			boost::put(vert2atom, *vi, *ait);
+		}
+
+		HashSet<Bond*>::Iterator bond = bonds.begin();
+		for (; bond != bonds.end(); ++bond) {
+			Bond* theBond = *bond;
+			std::map<Atom*, Vertex>::const_iterator v_first, v_second;
+			v_first = atom_to_vertex_.find(theBond->getFirstAtom());
+			v_second = atom_to_vertex_.find(theBond->getSecondAtom());
+			if ((v_first != atom_to_vertex_.end()) &&
+			    (v_second != atom_to_vertex_.end()))
+			{
+				Edge e = boost::add_edge(v_first->second, v_second->second, *this).first;
+				boost::put(edge2bond, e, theBond);
+				bond_to_edge_.insert(std::make_pair(theBond, e));
+			}
+		}
+	}
+
 	const MolecularGraph::Edge& MolecularGraph::getEdge(Bond* bond) const
 	{
 		std::map<Bond*, Edge>::const_iterator it = bond_to_edge_.find(bond);
