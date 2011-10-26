@@ -21,10 +21,8 @@
 # include <BALL/KERNEL/extractors.h>
 #endif
 
-#ifdef BALL_USE_NEW_MOLECULAR_GRAPH
 #ifndef BALL_DATATYPE_GRAPH_MOLECULARGRAPH_H
 # include <BALL/DATATYPE/GRAPH/molecularGraph.h>
-#endif
 #endif
 
 
@@ -53,9 +51,7 @@ namespace BALL {
 		/** @name Type Definitions */
 		//@{
 		typedef std::vector<Atom*> RemainderList;
-#ifdef BALL_USE_NEW_MOLECULAR_GRAPH
 		typedef boost::property_map<MolecularGraph, boost::vertex_index_t>::type VertexIndexMap;
-#endif
 		//@}
 
 		/**	@name Bijection construction */
@@ -364,7 +360,6 @@ namespace BALL {
 			return containerSize();
 		}
 
-#ifdef BALL_USE_NEW_MOLECULAR_GRAPH
 		/** Assign the mapping from a previously computed Morphism.
 				\p
 				\return The number of atom pairs mapped
@@ -399,7 +394,6 @@ namespace BALL {
 
 			return containerSize();
 		}
-#endif
 		//@}
 
 		const RemainderList& unmappedAtomsFromLeft() const
