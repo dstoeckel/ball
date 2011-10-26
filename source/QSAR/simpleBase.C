@@ -12,6 +12,9 @@
 #include <BALL/QSAR/aromaticityProcessor.h>
 #include <BALL/SYSTEM/file.h>
 #include <BALL/SYSTEM/path.h>
+#include <BALL/KERNEL/atom.h>
+#include <BALL/KERNEL/bond.h>
+#include <BALL/KERNEL/molecule.h>
 
 using namespace std;
 

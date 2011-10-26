@@ -11,12 +11,16 @@
 	#include <BALL/KERNEL/atomContainer.h>
 #endif
 
-#ifndef BALL_STRUCTURE_SIMPLEMOLECULARGRAPH_H
-	#include <BALL/STRUCTURE/simpleMolecularGraph.h>
+#ifndef BALL_DATATYPE_GRAPH_MOLECULARGRAPH_H
+	#include <BALL/DATATYPE/GRAPH/molecularGraph.h>
 #endif
 
 #ifndef BALL_DATATYPE_OPTIONS_H
 	#include <BALL/DATATYPE/options.h>
+#endif
+
+#ifndef BALL_DATATYPE_HASHMAP_H
+# include <BALL/DATATYPE/hashMap.h>
 #endif
 
 #include <stack>
@@ -119,7 +123,7 @@ namespace BALL
 					adapted from a standard bcc (binary connected components) algorithm. 
 					Returns the number of bccs found.
 			*/
-			Size findAllBCC(std::vector<SimpleMolecularGraph*>& bcc, SimpleMolecularGraph& graph);
+			Size findAllBCC(std::vector<MolecularGraph*>& bcc, MolecularGraph& graph);
 
 			/*_ Options for the ring perception
 			*/
@@ -156,19 +160,20 @@ namespace BALL
 			/*_ Method that finds all biconnected components, the algorithm is freely 
 					adapted from a standard bcc algorithm.
 			*/
-			Size findAllBCC_(std::vector<SimpleMolecularGraph*>& bcc, SimpleMolecularGraph& graph);
+			Size findAllBCC_(std::vector<MolecularGraph*>& bcc, MolecularGraph& graph);
 	
 			/*_ recursive function that finds bccs
 			*/
-			void DFSBCC_( std::vector<SimpleMolecularGraph*>& bccs, Size dfbi, 
-										HashMap<NodeItem<Index, Index>*, Size> DFBIndex, 
-										NodeItem<Index, Index>* v);
+			void DFSBCC_( std::vector<MolecularGraph*>& bccs, Size dfbi, 
+										HashMap<MolecularGraph::Vertex, Size> DFBIndex, 
+										MolecularGraph::Vertex v,
+										MolecularGraph& originalGraph);
 																		
-			HashSet<NodeItem<Index, Index>* > visited_;
-			HashSet<EdgeItem<Index, Index>* > visited_bonds_;
-			HashMap<NodeItem<Index, Index>* , Size> P_;
-			HashMap<NodeItem<Index, Index>*, NodeItem<Index, Index>* > parents_;
-			std::stack<EdgeItem<Index, Index>* > BCC_;
+			HashSet<MolecularGraph::Vertex > visited_;
+			HashSet<Bond* > visited_bonds_;
+			HashMap<MolecularGraph::Vertex , Size> P_;
+			HashMap<MolecularGraph::Vertex, MolecularGraph::Vertex > parents_;
+			std::stack<MolecularGraph::Edge > BCC_;
 	
 	
 			// Balducci and Pearlman algorithm
@@ -178,6 +183,12 @@ namespace BALL
 			*/
 			struct TNode_
 			{
+				/// Constructor
+				TNode_(MolecularGraph&);
+
+				/// reference to the graph the TNode beongs to
+				MolecularGraph &graph;
+
 				/// method to process the messages in the recieve buffer
 				void recieve();
 				
@@ -195,9 +206,9 @@ namespace BALL
 			*/
 			struct PathMessage_
 			{
-				void push(EdgeItem<Index, Index>* bond, TNode_* node);
+				void push(MolecularGraph::Edge bond, TNode_* node);
 		
-				// path of the message
+				// binary edge-encoded path of the message
 				BitVector beep;
 				
 				/// pointer to the first node this message was sent from
@@ -207,16 +218,16 @@ namespace BALL
 				TNode_* nlast;
 
 				/// pointer to the first edge of the message path
-				EdgeItem<Index, Index>* efirst;
+				MolecularGraph::Edge efirst;
 			};
 
 			/// mapping for internal TNode structure and the nodes of the molecular graph
-			static HashMap<TNode_*, NodeItem<Index, Index>* > tnode_to_atom_;
-			static HashMap<NodeItem<Index, Index>* , TNode_*> atom_to_tnode_;
+			static HashMap<TNode_*, MolecularGraph::Vertex > tnode_to_atom_;
+			static HashMap<MolecularGraph::Vertex , TNode_*> atom_to_tnode_;
 			
 			/// mapping for the path representation as bitvectors
-			static HashMap<EdgeItem<Index, Index>*, Size> bond_to_index_;
-			static HashMap<Size, EdgeItem<Index, Index>*> index_to_bond_;
+			static HashMap<MolecularGraph::Edge, Size> bond_to_index_;
+			static HashMap<Size, MolecularGraph::Edge> index_to_bond_;
 			
 			/// the SSSR detected by the algorithm
 			static std::vector<BitVector> rings_;
@@ -227,7 +238,7 @@ namespace BALL
 			/// the rings of the ith phase, which are to be forwarded to the ring selector
 			static std::vector<BitVector> forwarded_rings_;
 			
-			/// rings (beer) which have already been tested
+			/// rings (binary edge encoded rings) which have already been tested
 			static std::vector<BitVector> tested_beers_;
 
 			/// contains all 3 to 6 membered rings after the procedure of the Balducci-Pearlman algorithm
@@ -243,7 +254,7 @@ namespace BALL
 	
 			/*_ Implementation of the Balducci/Pearlman algorithm 
 			*/
-			Size BalducciPearlmanAlgorithm_(std::vector<std::vector<Atom*> >& sssr, SimpleMolecularGraph& graph);
+			Size BalducciPearlmanAlgorithm_(std::vector<std::vector<Atom*> >& sssr, MolecularGraph& graph);
 	};
 } // namespace BALL
 

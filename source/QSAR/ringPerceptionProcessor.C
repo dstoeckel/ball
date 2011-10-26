@@ -6,6 +6,8 @@
 
 #include <BALL/QSAR/ringPerceptionProcessor.h>
 #include <BALL/KERNEL/forEach.h>
+#include <BALL/KERNEL/atom.h>
+#include <BALL/KERNEL/bond.h>
 
 #include <limits>
 
@@ -86,41 +88,45 @@ namespace BALL
 		if (algorithm_name == "Balducci")
 		{
 			// build molecular graph
-			Molecule* mol = static_cast<Molecule*>(&ac);
-			SimpleMolecularGraph mol_graph(*mol);
-		
-			vector<Bond*> to_delete;
-      for (SimpleMolecularGraph::EdgeIterator eit = mol_graph.beginEdge(); eit != mol_graph.endEdge(); ++eit)
-      {
-        Bond::Type bond_type = eit->getBond()->getType();
-        if (bond_type == Bond::TYPE__HYDROGEN || bond_type == Bond::TYPE__DISULPHIDE_BRIDGE)
-        {
-          to_delete.push_back(eit->getBond());
-        }
-      }
+			MolecularGraph mol_graph(ac);
+			MolecularGraph::BondPtrMap edge2bond = boost::get(boost::edge_bond_ptr, mol_graph);
 
-      for (Size i = 0; i != to_delete.size(); ++i)
-      {
-      	mol_graph.deleteEdge(*to_delete[i]);
-      }
+			vector<MolecularGraph::Edge> to_delete;
+			MolecularGraph::EdgeIterator eit, eit_end;
+			boost::tie(eit,eit_end) = boost::edges(mol_graph);
+			for (; eit != eit_end; ++eit)
+			{
+				Bond* bond = boost::get(edge2bond, *eit);
+				Bond::Type bond_type = bond->getType();
+				if (bond_type == Bond::TYPE__HYDROGEN || bond_type == Bond::TYPE__DISULPHIDE_BRIDGE)
+				{
+					to_delete.push_back(*eit);
+				}
+			}
+
+			for (vector<MolecularGraph::Edge>::iterator edge = to_delete.begin();
+					 edge != to_delete.end(); ++edge)
+			{
+				mol_graph.remove_edge(*edge);
+			}
 
 			// detect the bccs
-			vector<SimpleMolecularGraph*> bccs;
+			vector<MolecularGraph*> bccs;
 			findAllBCC(bccs, mol_graph);
 
 			Size num_rings(0);
 
 			// for each bcc that potentially contains rings do the Balducci/Pearlman ring perception
-			for (vector<SimpleMolecularGraph*>::iterator it = bccs.begin(); it != bccs.end(); ++it)
+			for (vector<MolecularGraph*>::iterator it = bccs.begin(); it != bccs.end(); ++it)
 			{
-				if ((*it)->getNumberOfNodes() > 2 && (*it)->getNumberOfEdges() > 2)
+				if (boost::num_vertices(**it) > 2 && boost::num_edges(**it) > 2)
 				{
 					num_rings += BalducciPearlmanAlgorithm_(sssr_orig, **it);
 				}
 			}
 
 			// now delete the bccs
-			for (vector<SimpleMolecularGraph*>::iterator it = bccs.begin(); it != bccs.end(); ++it)
+			for (vector<MolecularGraph*>::iterator it = bccs.begin(); it != bccs.end(); ++it)
 			{
 				delete *it;
 			}
@@ -462,58 +468,69 @@ namespace BALL
 
 	// bcc code
 
-	Size RingPerceptionProcessor::findAllBCC(vector<SimpleMolecularGraph*>& bccs, SimpleMolecularGraph& graph)
+	Size RingPerceptionProcessor::findAllBCC(vector<MolecularGraph*>& bccs, MolecularGraph& graph)
 	{
 		// delete all content from the strcutures
 		visited_.clear();
 		Size dfbi(0);
-		HashMap<NodeItem<Index, Index>*, Size> DFBIndex;
+		HashMap<MolecularGraph::Vertex, Size> DFBIndex;
 		P_.clear();
 		parents_.clear();
-		BCC_ = stack<EdgeItem<Index, Index>* >();
+		BCC_ = stack<MolecularGraph::Edge >();
 		visited_bonds_.clear();
 
 		// for each node in the graph apply the recursive function
-		for (SimpleMolecularGraph::NodeIterator ait = graph.beginNode(); ait != graph.endNode(); ++ait)
+		MolecularGraph::VertexIterator ait, ait_end;
+		boost::tie(ait, ait_end) = boost::vertices(graph);
+		for (; ait != ait_end; ++ait)
 		{
-			NodeItem<Index, Index>* v = &*ait;
+			MolecularGraph::Vertex v = *ait;
 			if (!visited_.has(v))
 			{
-				DFSBCC_(bccs, dfbi, DFBIndex, v);
+				DFSBCC_(bccs, dfbi, DFBIndex, v, graph);
 			}
 		}
 
 		return bccs.size();
 	}
 
-	void RingPerceptionProcessor::DFSBCC_(vector<SimpleMolecularGraph*>& bccs, Size dfbi, 
-																				HashMap<NodeItem<Index, Index>*, Size> DFBIndex, 
-																				NodeItem<Index, Index>* v)
+	void RingPerceptionProcessor::DFSBCC_(vector<MolecularGraph*>& bccs, Size dfbi, 
+																				HashMap<MolecularGraph::Vertex, Size> DFBIndex, 
+																				MolecularGraph::Vertex v,
+																				MolecularGraph& originalGraph)
 	{
 		visited_.insert(v);
 		dfbi++;
 		DFBIndex[v] = dfbi;
 		P_[v] = dfbi;
-	
-		for (NodeItem<Index, Index>::Iterator bit = v->begin(); bit != v->end(); ++bit)
+		MolecularGraph::BondPtrMap edge2bond = boost::get(boost::edge_bond_ptr, originalGraph);
+		MolecularGraph::AtomPtrMap vert2atom = boost::get(boost::vertex_atom_ptr, originalGraph);
+
+		MolecularGraph::OutEdgeIterator oei, oei_end;
+		boost::tie(oei, oei_end) = boost::out_edges(v, originalGraph);
+		for (; oei != oei_end; ++oei)
 		{
-			if (!visited_bonds_.has(*bit))
+			MolecularGraph::Edge edge = *oei;
+			Bond* edgeBond = boost::get(edge2bond, edge); 
+			if (!visited_bonds_.has(edgeBond))
 			{
-				BCC_.push(*bit);
-				visited_bonds_.insert(*bit);
+				BCC_.push(edge);
+				visited_bonds_.insert(edgeBond);
 
 				#ifdef BALL_QSAR_RINGPERCEPTIONPROCESSOR_DEBUG
 				cerr << String('\t', dfbi) << "pushed: " << *bit << " (stack size: " << BCC_.size() << endl;
 				#endif
 
-				NodeItem<Index, Index>* v_prime = 0;
-				if (&(*bit)->getSource() == v)
+				MolecularGraph::Vertex v_prime;
+				if (boost::source(edge,originalGraph) == v)
 				{				
-					v_prime = &(*bit)->getTarget();
+					v_prime = boost::target(edge,originalGraph);
 				}
 				else
 				{
-					v_prime = &(*bit)->getSource();
+					// FIXME: since we iterate out_edges, this should
+					// never be taken...
+					v_prime = boost::source(edge,originalGraph);
 				}
 
 				if (!visited_.has(v_prime))
@@ -524,7 +541,7 @@ namespace BALL
 					cerr << String('\t', dfbi) << "Calling DFSBCC_" << endl;
 					#endif
 					
-					DFSBCC_(bccs, dfbi, DFBIndex, v_prime);
+					DFSBCC_(bccs, dfbi, DFBIndex, v_prime, originalGraph);
 					#ifdef BALL_QSAR_RINGPERCEPTIONPROCESSOR_DEBUG
 					cerr << String('\t', dfbi) << "returned DFSBCC_ " << P_[v_prime] << " " << DFBIndex[v] << endl;
 					#endif 
@@ -539,36 +556,26 @@ namespace BALL
 						// pop all the bcc member bonds from the stack
 						HashSet<Atom* > ac;
 						HashSet<Bond* > add_edges;
-						while (BCC_.top() != *bit)
+						while (BCC_.top() != *oei)
 						{
-							EdgeItem<Index, Index>* bond = BCC_.top();
-							add_edges.insert(bond->getBond());
-							ac.insert(bond->getSource().getAtom());
-							ac.insert(bond->getTarget().getAtom());
+							MolecularGraph::Edge bond = BCC_.top();
+							add_edges.insert(boost::get(edge2bond,bond));
+							ac.insert(boost::get(vert2atom,boost::source(bond,originalGraph)));
+							ac.insert(boost::get(vert2atom,boost::target(bond,originalGraph)));
 							BCC_.pop();
 						}
 						
-						EdgeItem<Index, Index>* bond = BCC_.top();
-						ac.insert(bond->getSource().getAtom());
-						ac.insert(bond->getTarget().getAtom());
-						add_edges.insert(bond->getBond());
+						MolecularGraph::Edge bond = BCC_.top();
+						ac.insert(boost::get(vert2atom,boost::source(bond,originalGraph)));
+						ac.insert(boost::get(vert2atom,boost::target(bond,originalGraph)));
+						add_edges.insert(boost::get(edge2bond,bond));
 						BCC_.pop();
 						
-						// now all items are collected, lets build the new graph						
+						// now all items are collected, lets build the new graph
 						// first adding the nodes!!!
-						SimpleMolecularGraph* new_graph = new SimpleMolecularGraph;
-						for (HashSet<Atom*>::Iterator it = ac.begin(); it != ac.end(); ++it)
-						{
-							new_graph->newNode(**it);
-						}
+						MolecularGraph* new_graph = new MolecularGraph(ac,add_edges);
 
-						// second add the edges
-						for (HashSet<Bond*>::Iterator it = add_edges.begin(); +it; ++it)
-						{
-							new_graph->newEdge(**it);
-						}
-
-						bccs.push_back(new_graph);							
+						bccs.push_back(new_graph);
 					}
 					#ifdef BALL_QSAR_RINGPERCEPTIONPROCESSOR_DEBUG
 					cerr << String('\t', dfbi) << "setting P[v] to min(" << P_[v] << 
@@ -600,16 +607,20 @@ namespace BALL
 
 
 	// Balducci, Pearlman algorithm
-	HashMap<RingPerceptionProcessor::TNode_*, NodeItem<Index, Index> *> RingPerceptionProcessor::tnode_to_atom_;
-	HashMap<NodeItem<Index, Index>* , RingPerceptionProcessor::TNode_*> RingPerceptionProcessor::atom_to_tnode_;
-	HashMap<EdgeItem<Index, Index> *, Size> RingPerceptionProcessor::bond_to_index_;
-	HashMap<Size, EdgeItem<Index, Index> *> RingPerceptionProcessor::index_to_bond_;
+	// BEEP = binary edge-encoded path, BEER = [...] ring.
+	HashMap<RingPerceptionProcessor::TNode_*, MolecularGraph::Vertex> RingPerceptionProcessor::tnode_to_atom_;
+	HashMap<MolecularGraph::Vertex , RingPerceptionProcessor::TNode_*> RingPerceptionProcessor::atom_to_tnode_;
+	HashMap<MolecularGraph::Edge, Size> RingPerceptionProcessor::bond_to_index_;
+	HashMap<Size, MolecularGraph::Edge> RingPerceptionProcessor::index_to_bond_;
 	vector<BitVector> RingPerceptionProcessor::rings_;
 	vector<BitVector> RingPerceptionProcessor::matrix_;
 	vector<BitVector> RingPerceptionProcessor::forwarded_rings_;
 	vector<BitVector> RingPerceptionProcessor::tested_beers_;
 	vector<vector<Atom*> > RingPerceptionProcessor::all_small_rings_;
 	vector<BitVector> RingPerceptionProcessor::all_small_beers_;
+
+	RingPerceptionProcessor::TNode_::TNode_(MolecularGraph & the_graph)
+	: graph(the_graph) {}
 
 	void RingPerceptionProcessor::TNode_::recieve()
 	{
@@ -624,14 +635,14 @@ namespace BALL
 		vector<BitVector> do_not_forward;
 
 		// build the A array
-		HashMap<EdgeItem<Index, Index>*, HashMap<TNode_*, vector<PathMessage_> > > array_A;
+		HashMap<MolecularGraph::Edge, HashMap<TNode_*, vector<PathMessage_> > > array_A;
 		for (vector<PathMessage_>::iterator it = recieve_buffer.begin(); it != recieve_buffer.end(); ++it)
 		{
 			array_A[it->efirst][it->nfirst].push_back(*it);
 		}
 
 		// merge the messages
-		for (HashMap<EdgeItem<Index, Index>*, HashMap<TNode_*, vector<PathMessage_> > >::Iterator it1 = array_A.begin(); it1 != array_A.end(); ++it1)
+		for (HashMap<MolecularGraph::Edge, HashMap<TNode_*, vector<PathMessage_> > >::Iterator it1 = array_A.begin(); it1 != array_A.end(); ++it1)
 		{
 			for (HashMap<TNode_*, vector<PathMessage_> >::Iterator it2 = it1->second.begin(); it2 != it1->second.end(); ++it2)
 			{
@@ -652,7 +663,7 @@ namespace BALL
 		HashMap<TNode_*, vector<PathMessage_> > array_B;
 
 		// handle inverse-edge collisions
-		for (HashMap<EdgeItem<Index, Index>*, HashMap<TNode_*, vector<PathMessage_> > >::Iterator it1 = array_A.begin(); it1 != array_A.end(); ++it1)
+		for (HashMap<MolecularGraph::Edge, HashMap<TNode_*, vector<PathMessage_> > >::Iterator it1 = array_A.begin(); it1 != array_A.end(); ++it1)
 		{
 			for (HashMap<TNode_*, vector<PathMessage_> >::Iterator it2 = it1->second.begin(); it2 != it1->second.end(); ++it2)
 			{
@@ -714,18 +725,22 @@ namespace BALL
 		for (Size i = 0; i != send_buffer.size(); ++i)
 		{
 			PathMessage_ pm = send_buffer[i];
-			NodeItem<Index, Index>* a = tnode_to_atom_[this];
-			for (NodeItem<Index, Index>::Iterator bit = a->begin(); bit != a->end(); ++bit)
+			MolecularGraph::Vertex a = tnode_to_atom_[this];
+			MolecularGraph::OutEdgeIterator bit, bit_end;
+			boost::tie(bit, bit_end) = boost::out_edges(a,graph);
+			for (; bit != bit_end; ++bit)
 			{
 				TNode_* node = 0;
 				// determine which node
-				if (&(*bit)->getSource() == a)
+				if (boost::source(*bit,graph) == a)
 				{
-					node = atom_to_tnode_[&(*bit)->getTarget()];
+					node = atom_to_tnode_[boost::target(*bit,graph)];
 				}
 				else
 				{
-					node = atom_to_tnode_[&(*bit)->getSource()];
+					// FIXME: this branch should never be taken
+					// since we're iterating over out_edges from a...
+					node = atom_to_tnode_[boost::source(*bit,graph)];
 				}
 				if (node != pm.nlast)
 				{
@@ -745,7 +760,7 @@ namespace BALL
 		send_buffer.clear();
 	}
 
-	void RingPerceptionProcessor::PathMessage_::push(EdgeItem<Index, Index>* bond, TNode_* node)
+	void RingPerceptionProcessor::PathMessage_::push(MolecularGraph::Edge bond, TNode_* node)
 	{
 		// set the bit, and the node the message arives from
 		beep.setBit(bond_to_index_[bond]);
@@ -865,10 +880,10 @@ namespace BALL
 		rings_.push_back(beer);
 	}
 
-	Size RingPerceptionProcessor::BalducciPearlmanAlgorithm_(vector<vector<Atom*> >& sssr, SimpleMolecularGraph& graph)
+	Size RingPerceptionProcessor::BalducciPearlmanAlgorithm_(vector<vector<Atom*> >& sssr, MolecularGraph& graph)
 	{
-		Size num_atoms = graph.getNumberOfNodes();
-		Size num_bonds = graph.getNumberOfEdges();
+		Size num_atoms = boost::num_vertices(graph);
+		Size num_bonds = boost::num_edges(graph);
 		
 		// clear old data from the static variables
 		bond_to_index_.clear();
@@ -883,51 +898,43 @@ namespace BALL
 		
 		// 1. init the flow-network
 
-		// do the node to tnode mapping
-		for (SimpleMolecularGraph::NodeIterator ait = graph.beginNode(); ait != graph.endNode(); ++ait)
-		{
-			TNode_* node = new TNode_();
-			atom_to_tnode_[&*ait] = node;
-			tnode_to_atom_[node] = &*ait;
-		}
-
 		// do the bond to index mapping for the bitvector
 		Size bond_num(0);
-		for (SimpleMolecularGraph::EdgeIterator bit = graph.beginEdge(); bit != graph.endEdge(); ++bit)
+		MolecularGraph::EdgeIterator eit,eit_end;
+		boost::tie(eit, eit_end) = boost::edges(graph);
+		for (; eit != eit_end; ++eit)
 		{
-			bond_to_index_[&*bit] = bond_num;
-			index_to_bond_[bond_num++] = &*bit;
+			bond_to_index_[*eit] = bond_num;
+			index_to_bond_[bond_num++] = *eit;
 		}
 
-		// fill in the messages
-		for (SimpleMolecularGraph::NodeIterator ait = graph.beginNode(); ait != graph.endNode(); ++ait)
+		// do the node to tnode mapping
+		MolecularGraph::VertexIterator ait, ait_end;
+		boost::tie(ait,ait_end) = boost::vertices(graph);
+		for (; ait != ait_end; ++ait)
 		{
-			for (NodeItem<Index, Index>::Iterator bit = ait->begin(); bit != ait->end(); ++bit)
+			TNode_* node = new TNode_(graph);
+			atom_to_tnode_[*ait] = node;
+			tnode_to_atom_[node] = *ait;
+
+			// add messages for all outgoing edges.
+			MolecularGraph::OutEdgeIterator oe, oe_end;
+			boost::tie(oe,oe_end) = boost::out_edges(*ait,graph);
+			for (; oe != oe_end; ++oe)
 			{
 				PathMessage_ pm;
 				BitVector beep(num_bonds);
 				beep.fill(false);
 				// set the bit for the first (outgoing) edge
-				beep.toggleBit(bond_to_index_[*bit]);
+				beep.toggleBit(bond_to_index_[*oe]);
 				pm.beep = beep;
-				TNode_* tnode = 0;
-				// determine which node to set
-				if ((*bit)->getSource() == *ait)
-				{
-					tnode = atom_to_tnode_[&(*bit)->getTarget()];
-				}
-				else
-				{
-					tnode = atom_to_tnode_[&(*bit)->getSource()];
-				}
-				pm.nfirst = tnode;
-				pm.nlast = tnode;
-				pm.efirst = *bit;
-				// append the message to the send_buff this node
-				atom_to_tnode_[&*ait]->send_buffer.push_back(pm);
+				pm.nfirst = node;
+				pm.nlast = node;
+				pm.efirst = *oe;
+				node->send_buffer.push_back(pm);
 			}
 		}
-	
+
 		// calculate how many rings we must find
 		Size num_rings = num_bonds - num_atoms + 1;
 
@@ -940,16 +947,17 @@ namespace BALL
 #ifdef BALL_QSAR_RINGPERCEPTIONPROCESSOR_DEBUG
 			cerr << count << ". round (" << rings_.size() << " of " << num_rings << ")" << endl;
 #endif
-			
+
+			HashMap<TNode_*, MolecularGraph::Vertex >::Iterator it;
 			// calling all sends 
-			for (SimpleMolecularGraph::NodeIterator ait = graph.beginNode(); ait != graph.endNode(); ++ait)
+			for (it = tnode_to_atom_.begin() ; it != tnode_to_atom_.end(); ++it)
 			{
-				atom_to_tnode_[&*ait]->send();
+				it->first->send();
 			}
 			// calling all recieves
-			for (SimpleMolecularGraph::NodeIterator ait = graph.beginNode(); ait != graph.endNode(); ++ait)
+			for (it = tnode_to_atom_.begin() ; it != tnode_to_atom_.end(); ++it)
 			{
-				atom_to_tnode_[&*ait]->recieve();
+				it->first->recieve();
 			}
 
 			// now invoke the BalducciPearlmanRingSelector_ which selects the correct rings of size > 2 * count -2
@@ -999,6 +1007,8 @@ namespace BALL
 			}
 		}
 
+		MolecularGraph::BondPtrMap edge2bond = boost::get(boost::edge_bond_ptr, graph);
+
 		// now set the named property InRing to true, for the ring bonds
 		for (Size i = 0; i != rings_.size(); ++i)
 		{
@@ -1008,7 +1018,7 @@ namespace BALL
 			{
 				if (rings_[i][j])
 				{
-					Bond* b = index_to_bond_[j]->getBond();
+					Bond* b = boost::get(edge2bond,index_to_bond_[j]);
 					b->setProperty("InRing", true);
 					Atom* a = b->getPartner(*b->getFirstAtom());
 					a->setProperty("InRing", true);
@@ -1038,7 +1048,7 @@ namespace BALL
 			{
 				if (all_small_beers_[i][j])
 				{
-					Bond* b = index_to_bond_[j]->getBond();
+					Bond* b = boost::get(edge2bond,index_to_bond_[j]);
 					Atom* a = b->getPartner(*b->getFirstAtom());
 					if (!in_ring.has(a))
 					{
@@ -1058,7 +1068,7 @@ namespace BALL
 		}
 		
 		// delete TNodes
-		for (HashMap<NodeItem<Index, Index>* , TNode_*>::Iterator it = atom_to_tnode_.begin(); 
+		for (HashMap<MolecularGraph::Vertex , TNode_*>::Iterator it = atom_to_tnode_.begin(); 
 				 it != atom_to_tnode_.end(); ++it)
 		{
 			delete it->second;
