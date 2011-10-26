@@ -23,6 +23,7 @@ namespace BALL {
 		{
 			return this;
 		}
+		return NULL;
 	}
 
 	bool NameMapQuery::selectsOn(QuerySelector q)
