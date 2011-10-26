@@ -53,8 +53,11 @@ namespace BALL
 			typedef boost::graph_traits<MolecularGraph>::vertex_descriptor Vertex;
 			typedef boost::graph_traits<MolecularGraph>::edge_descriptor   Edge;
 
-			typedef boost::graph_traits<MolecularGraph>::vertex_iterator VertexIterator;
-			typedef boost::graph_traits<MolecularGraph>::edge_iterator   EdgeIterator;
+			typedef boost::graph_traits<MolecularGraph>::vertex_iterator   VertexIterator;
+			typedef boost::graph_traits<MolecularGraph>::edge_iterator     EdgeIterator;
+			typedef boost::graph_traits<MolecularGraph>::out_edge_iterator OutEdgeIterator;
+			typedef boost::graph_traits<MolecularGraph>::in_edge_iterator  InEdgeIterator;
+
 			typedef boost::property_map<MolecularGraphBase, boost::vertex_atom_ptr_t>::type AtomPtrMap;
 			typedef boost::property_map<MolecularGraphBase, boost::edge_bond_ptr_t>::type   BondPtrMap;
 			typedef boost::property_map<MolecularGraphBase, boost::vertex_atom_ptr_t>::const_type ConstAtomPtrMap;
