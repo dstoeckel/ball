@@ -4,6 +4,9 @@
 
 #include <BALL/STRUCTURE/smartsMatcher.h>
 #include <BALL/QSAR/ringPerceptionProcessor.h>
+#include <BALL/KERNEL/molecule.h>
+#include <BALL/KERNEL/atom.h>
+#include <BALL/KERNEL/bond.h>
 
 #include <stack>
 
