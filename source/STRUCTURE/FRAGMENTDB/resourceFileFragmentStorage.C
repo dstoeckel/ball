@@ -42,7 +42,6 @@ namespace BALL
 			
 			if (query.getMaxResults() == 1)
 			{
-				// only want exactly one result, so we look up the excat name.
 				if (name_to_frag_index_.has(q->getFragmentName())) {
 					boost::shared_ptr<Residue> frag_copy_p(
 						new Residue(*fragments_[name_to_frag_index_[q->getFragmentName()]])
@@ -59,7 +58,7 @@ namespace BALL
 				bool fetch_all(remaining_results == 0);
 				
 				StringHashMap<list<Position> >::ConstIterator to_find = name_to_variants_.find(q->getFragmentName());
-				if (to_find == name_to_variants_.end())  
+				if (to_find == name_to_variants_.end())
 				{	
 					// TODO: maybe we want to try exact matching here then...
 					return false;	

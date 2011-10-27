@@ -92,7 +92,7 @@ namespace BALL
 		bool expandFirst_(ResourceEntry& root_entry);
 		
 		void init();
-		
+
 				// The filename of the master fragment file.
 		String 					filename_;
 
