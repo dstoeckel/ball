@@ -22,7 +22,7 @@
 #endif
 
 #ifdef BALL_USE_NEW_MOLECULAR_GRAPH
-#ifndef BALL_DATATYPE_MOLECULARGRAPH_H
+#ifndef BALL_DATATYPE_GRAPH_MOLECULARGRAPH_H
 # include <BALL/DATATYPE/GRAPH/molecularGraph.h>
 #endif
 #endif
