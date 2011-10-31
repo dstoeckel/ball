@@ -1,5 +1,5 @@
-#ifndef BALL_DATATYPE_MOLECULARGRAPH_H
-#define BALL_DATATYPE_MOLECULARGRAPH_H
+#ifndef BALL_DATATYPE_GRAPH_MOLECULARGRAPH_H
+#define BALL_DATATYPE_GRAPH_MOLECULARGRAPH_H
 
 #include <boost/graph/properties.hpp>
 #include <boost/graph/graph_traits.hpp>
@@ -86,4 +86,4 @@ namespace BALL
 	typedef MolecularGraph::EditableGraph EditableMolecularGraph;
 }
 
-#endif //BALL_DATATYPE_MOLECULARGRAPH_H
+#endif //BALL_DATATYPE_GRAPH_MOLECULARGRAPH_H
