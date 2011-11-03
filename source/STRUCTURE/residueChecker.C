@@ -104,8 +104,8 @@ namespace BALL
 		// of the residue
 		if (fragment_db_ != 0)
 		{
-			const Residue* reference = dynamic_cast<const Residue*>(fragment_db_->getReferenceFragment(residue));
-			if (reference == 0)
+			boost::shared_ptr<Residue> reference = fragment_db_->findReferenceFragment(residue);
+			if (!reference)
 			{
 				if (isEnabled(UNKNOWN_RESIDUES))
 				{

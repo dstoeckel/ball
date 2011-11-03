@@ -139,10 +139,10 @@ namespace BALL
 		Residue& residue = dynamic_cast<Residue&>(object);
 
 		// get the reference fragment from the fragment DB
-		const Fragment* reference_fragment = fragment_db_->getReferenceFragment(residue);
+		boost::shared_ptr<Residue> reference_fragment = fragment_db_->findReferenceFragment(residue);
 
 		// complain if no reference fragment could be found
-		if (reference_fragment == 0)
+		if (!reference_fragment)
 		{
 			Log.warn() << "ReconstructFragmentProcessor: no reference fragment found for " 
 							   << residue.getName() << ":" << residue.getID() << std::endl;
