@@ -68,11 +68,14 @@ CHECK(ReconstructFragmentProcessor::reconstructFragment(Fragment& fragment, cons
 	res.insert(CA);
 	Residue res2(res);
 
-	const Fragment& ref = *frag_db.getFragment("LYS");
+	Fragment* copy = frag_db.getFragmentCopy("LYS");
+	const Fragment& ref = *copy;
 
 	list<Atom*> reconstructed_atoms = ReconstructFragmentProcessor::reconstructFragment(res2, ref);
 	TEST_EQUAL(reconstructed_atoms.size(), ref.countAtoms() - 1)
 	TEST_EQUAL(res2.countAtoms(), ref.countAtoms())
+
+	delete copy;
 RESULT
 
 CHECK(ReconstructFragmentProcessor::operator ())
