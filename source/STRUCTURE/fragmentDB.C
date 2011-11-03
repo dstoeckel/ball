@@ -111,7 +111,8 @@ namespace BALL
 
 	FragmentDB::Type BALL_DEPRECATED FragmentDB::getFragmentType(const String& fragment_name) const
 	{
-		// FIXME: did anyone ever use this? The original backend does not have that data...
+		// did anyone ever use this? The original backend does not have that data...
+		// I'll deprecate it for now. -- wolfgang, 2011
 		NameFragmentQuery theFragment(fragment_name);
 		if (!query(theFragment))
 		{
