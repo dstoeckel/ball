@@ -44,24 +44,6 @@ namespace BALL {
 		return naming_standard_;
 	}
 
-	StringHashMap<StringHashMap<String> >& FragmentDB::getNamingStandards() 
-	{
-		throw std::exception();
-		// FIXME return standards_;
-	}
-
-	const StringHashMap<String>& FragmentDB::getNamingStandard(const String& standard) const
-	{
-		throw std::exception();
-		// FIXME return standards_[std];
-	}
-
-	std::vector<String> FragmentDB::getAvailableNamingStandards() const
-	{
-		throw std::exception();
-		// FIXME return result;
-	}
-
 	Processor::Result FragmentDB::NormalizeNamesProcessor::operator () (Fragment& fragment) 
 	{
 		fragments_.push_back(&fragment);
