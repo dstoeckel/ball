@@ -47,7 +47,7 @@ namespace BALL
 		virtual const ResultSet& getResults() { return results_; }
 
 		/** Add a Fragment to the result set of the Query. */
-		virtual void addResult(boost::shared_ptr<Residue> p) { results_.insert(p); }
+		virtual void addResult(const boost::shared_ptr<Residue> &p) { results_.insert(p); }
 
 		/** Check whether this Query has detailed information about a particular Fragment Feature. 
 		 *  A 'true' here implies that #getSelectorDeatil() will return the proper child type
