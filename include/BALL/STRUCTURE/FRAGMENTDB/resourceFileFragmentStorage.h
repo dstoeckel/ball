@@ -23,6 +23,8 @@ namespace BALL
 			explicit ResourceFileFragmentStorage(const ResourceFileFragmentStorage& other, bool deep = true);
 			explicit ResourceFileFragmentStorage(const String& path_to_root_resourcefile = "fragments/Fragments.db");
 
+			~ResourceFileFragmentStorage();
+
 			bool query(FragmentQuery&);
 
 			String getVersionTag();

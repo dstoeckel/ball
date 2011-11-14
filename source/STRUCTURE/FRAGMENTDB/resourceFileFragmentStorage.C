@@ -27,6 +27,15 @@ namespace BALL
 		init();
 	}
 
+	ResourceFileFragmentStorage::~ResourceFileFragmentStorage() {
+		delete tree_;
+		for (std::vector<Residue*>::iterator it = fragments_.begin();
+				 it != fragments_.end(); ++it)
+		{
+			delete (*it);
+		}
+	}
+
 	String ResourceFileFragmentStorage::getVersionTag()
 	{
 		return tree_->getRoot().findEntry("Version")->getValue();
