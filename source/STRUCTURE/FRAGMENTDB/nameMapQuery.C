@@ -17,11 +17,11 @@ namespace BALL {
 		return name;
 	}
 
-	void* NameMapQuery::getSelectorDetail(QuerySelector q)
+	boost::any NameMapQuery::getSelectorDetail(QuerySelector q)
 	{
 		if (selectsOn(q)) 
 		{
-			return this;
+			return boost::any(this);
 		}
 		return NULL;
 	}

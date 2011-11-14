@@ -18,7 +18,7 @@ class NameMapQuery : public FragmentQuery
 
 		NameMapQuery(const String& part_of_name);
 
-		void* getSelectorDetail(QuerySelector);
+		boost::any getSelectorDetail(QuerySelector);
 		bool selectsOn(QuerySelector);
 		void addMap(const String&, NameMap*);
 		String toString();

@@ -18,10 +18,10 @@ namespace BALL
 		return (s == QueryFragmentName);
 	}
 	
-	void* NameFragmentQuery::getSelectorDetail(QuerySelector s) {
+	boost::any NameFragmentQuery::getSelectorDetail(QuerySelector s) {
 		switch (s) {
 			case QueryFragmentName:
-				return this;
+				return boost::any(this);
 			default:
 				return NULL;
 		}

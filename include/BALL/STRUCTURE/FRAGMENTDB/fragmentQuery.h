@@ -9,6 +9,7 @@
 #include<BALL/KERNEL/fragment.h>
 
 #include<boost/smart_ptr.hpp>
+#include<boost/any.hpp>
 #include<set>
 
 namespace BALL
@@ -58,7 +59,7 @@ namespace BALL
 		 *  If the query doesn't #selectsOn() the #QuerySelector, this will return NULL.
 		 *  Think SQLs "WHERE" clauses.
 		 */
-		virtual void* getSelectorDetail(QuerySelector) = 0;
+		virtual boost::any getSelectorDetail(QuerySelector) = 0;
 
 		/** The maximum number of results to query for.
 		 *  Think SQLs "LIMIT" clause.

@@ -17,7 +17,7 @@ class PropertyFragmentQuery : public FragmentQuery
 		PropertyFragmentQuery(const PropertyManager& properties , unsigned int query_limit = 1);
 		
 		bool selectsOn(QuerySelector);
-		void* getSelectorDetail(QuerySelector);
+		boost::any getSelectorDetail(QuerySelector);
 		String toString();
 
 		const PropertyManager& getPropertyManager();

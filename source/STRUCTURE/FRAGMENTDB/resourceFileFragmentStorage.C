@@ -36,7 +36,14 @@ namespace BALL
 	{
 		bool found;
 		if (query.selectsOn(FragmentQuery::QueryFragmentName)) {
-			NameFragmentQuery* q = static_cast<NameFragmentQuery*>(query.getSelectorDetail(FragmentQuery::QueryFragmentName));
+			NameFragmentQuery* q;
+			try {
+				q = boost::any_cast<NameFragmentQuery*>(query.getSelectorDetail(FragmentQuery::QueryFragmentName));
+			} catch (boost::bad_any_cast& error) {
+				Log.error() << "ResourceFileFragmentStorage: Unable to process query: " << query.toString() << std::endl;
+				return false;
+			}
+
 			// TODO: Naming Standard!
 			// TODO: Delayed-Load is entirely possible here.
 			
@@ -85,7 +92,13 @@ namespace BALL
 		}
 		else if (query.selectsOn(FragmentQuery::QueryNameMap))
 		{
-			NameMapQuery* q = static_cast<NameMapQuery*>(query.getSelectorDetail(FragmentQuery::QueryNameMap));
+			NameMapQuery* q;
+			try {
+				q = boost::any_cast<NameMapQuery*>(query.getSelectorDetail(FragmentQuery::QueryNameMap));
+			} catch (boost::bad_any_cast& error) {
+				Log.error() << "ResourceFileFragmentStorage: Unable to process query: " << query.toString() << std::endl;
+				return false;
+			}
 			for (StringHashMap<NameMap>::Iterator it = standards_.begin(); it != standards_.end(); ++it)
 			{
 				if (it->first.hasSubstring(q->getMapName()))
@@ -97,8 +110,13 @@ namespace BALL
 		}
 		else if (query.selectsOn(FragmentQuery::QueryFragmentProperties))
 		{
-			PropertyFragmentQuery* q = static_cast<PropertyFragmentQuery*>(query.getSelectorDetail(FragmentQuery::QueryFragmentProperties));
-
+			PropertyFragmentQuery* q;
+			try {
+				q = boost::any_cast<PropertyFragmentQuery*>(query.getSelectorDetail(FragmentQuery::QueryFragmentProperties));
+			} catch (boost::bad_any_cast& error) {
+				Log.error() << "ResourceFileFragmentStorage: Unable to process query: " << query.toString() << std::endl;
+				return false;
+			}
 			BitVector tplate = q->getPropertyManager().getBitVector();
 
 			// TODO: yes, this is as inefficient as it looks.

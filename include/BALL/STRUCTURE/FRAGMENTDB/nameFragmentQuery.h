@@ -16,7 +16,7 @@ class NameFragmentQuery : public FragmentQuery
 		NameFragmentQuery(const String& fragment_name, const String& naming_standard = "PDB", unsigned int query_limit = 1);
 		
 		bool selectsOn(QuerySelector);
-		void* getSelectorDetail(QuerySelector);
+		boost::any getSelectorDetail(QuerySelector);
 		String toString();
 
 		String getFragmentName();

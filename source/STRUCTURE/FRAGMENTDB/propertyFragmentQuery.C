@@ -31,11 +31,11 @@ namespace BALL {
 		return (q == QueryFragmentProperties);
 	}
 
-	void* PropertyFragmentQuery::getSelectorDetail(QuerySelector q)
+	boost::any PropertyFragmentQuery::getSelectorDetail(QuerySelector q)
 	{
 		if (selectsOn(q))
 		{
-			return this;
+			return boost::any(this);
 		}
 		else
 		{
