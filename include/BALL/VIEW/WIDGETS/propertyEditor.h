@@ -12,9 +12,14 @@
 #include <BALL/VIEW/UIC/ui_propertyEditor.h>
 #include <BALL/VIEW/UIC/ui_propEditorWidget.h>
 #include <BALL/VIEW/UIC/ui_editorPDBInfoDialog.h>
+#include <BALL/VIEW/UIC/ui_editorConnectionDialog.h>
 
 #ifndef BALL_FORMAT_PDBINFO_H
 # include <BALL/FORMAT/PDBInfo.h>
+#endif
+
+#ifndef BALL_STRUCTURE_FRAGMENTDB_CONNECTION_H
+#include <BALL/STRUCTURE/FRAGMENTDB/connection.h>
 #endif
 
 #include <QtGui/QWidget>
@@ -270,6 +275,40 @@ namespace BALL
 
 				PDBInfo localCopy_;
 				EditorPDBInfoDialog* editorDialog_;
+		};
+		
+		class ConnectionEditorWidget : public PropEditorWidget
+		{
+			Q_OBJECT
+
+			public:
+				ConnectionEditorWidget(const NamedProperty& conn, QWidget* parent);
+				ConnectionEditorWidget(const String& name, const Connection& conn, QWidget* parent);
+				virtual ConnectionEditorWidget* clone(const std::string& name, QWidget* parent);
+
+			protected slots:
+				void startEditorDialog();
+
+			protected:
+				virtual void apply_(PropertyManager* man);
+				virtual void reset_(const NamedProperty& prop);
+
+			private:
+				class EditorConnectionDialog : public QDialog {
+				public:
+					EditorConnectionDialog(QWidget* parent) : QDialog(parent)
+					{
+						ui_.setupUi(this);
+					}
+				protected:
+					friend class ConnectionEditorWidget;
+					Ui::editorConnectionDialog ui_;
+				};
+
+				String name_;
+				Connection localCopy_;
+				EditorConnectionDialog* editorDialog_;
+
 		};
 
 		/**

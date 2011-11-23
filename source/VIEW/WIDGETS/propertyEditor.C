@@ -313,6 +313,10 @@ namespace BALL
 					{
 						return new PDBInfoEditorWidget(* (PDBInfo*)prop.getSmartObject().get(), ui_.editors);
 					}
+					else	 if (dynamic_cast<Connection*>(prop.getSmartObject().get()) != NULL)
+					{
+						return new ConnectionEditorWidget(prop, ui_.editors);
+					}
 					else
 					{
 						return new PropDeleteWidget(prop, ui_.editors);
@@ -731,5 +735,97 @@ namespace BALL
 			}
 		}
 
+		// Connection entries (FragmentDB)
+
+		ConnectionEditorWidget::ConnectionEditorWidget(const NamedProperty &prop, QWidget *parent)
+		 : PropEditorWidget(prop.getName(), parent)
+		{
+			editorDialog_ = new EditorConnectionDialog(this);
+			name_ = prop.getName();
+			reset_(prop);
+			QPushButton* launchEditor = new QPushButton(tr("Edit..."),this);
+			connect(launchEditor,SIGNAL(clicked()),this,SLOT(startEditorDialog()));
+			addWidget_(1,launchEditor);
+		}
+
+		ConnectionEditorWidget::ConnectionEditorWidget(const String &name, const Connection &conn, QWidget *parent)
+		 : PropEditorWidget(name_, parent),
+		   name_(name),
+		   localCopy_(conn)
+		{
+			editorDialog_ = new EditorConnectionDialog(this);
+			QPushButton* launchEditor = new QPushButton(tr("Edit..."),this);
+			connect(launchEditor,SIGNAL(clicked()),this,SLOT(startEditorDialog()));
+			addWidget_(1,launchEditor);
+		}
+
+		ConnectionEditorWidget* ConnectionEditorWidget::clone(const std::string &name, QWidget *parent)
+		{
+			return new ConnectionEditorWidget(name, localCopy_, parent);
+		}
+
+		void ConnectionEditorWidget::startEditorDialog()
+		{
+			editorDialog_->ui_.deviation_edit->setText(QString::number(localCopy_.delta));
+			editorDialog_->ui_.distance_edit->setText(QString::number(localCopy_.dist));
+			editorDialog_->ui_.partnertype_edit->setText(QString(localCopy_.connect_to.c_str()));
+			editorDialog_->ui_.type_edit->setText(QString(localCopy_.type_name.c_str()));
+			QStringList orders;
+			orders << "single" << "double" << "triple" << "quadruple" << "aromatic";
+			editorDialog_->ui_.order_combobox->clear();
+			editorDialog_->ui_.order_combobox->addItems(orders);
+
+			if (editorDialog_->exec() == QDialog::Accepted)
+			{
+				localCopy_.delta = editorDialog_->ui_.deviation_edit->text().toFloat();
+				localCopy_.dist = editorDialog_->ui_.distance_edit->text().toFloat();
+				localCopy_.connect_to = String(editorDialog_->ui_.partnertype_edit->text());
+				localCopy_.type_name = String(editorDialog_->ui_.type_edit->text());
+				QString order = editorDialog_->ui_.order_combobox->currentText();
+				if (order == "single")
+				{
+					localCopy_.order = Bond::ORDER__SINGLE;
+				}
+				else if (order == "double")
+				{
+					localCopy_.order = Bond::ORDER__DOUBLE;
+				}
+				else if (order == "triple")
+				{
+					localCopy_.order = Bond::ORDER__TRIPLE;
+				}
+				else if (order == "quadruple")
+				{
+					localCopy_.order = Bond::ORDER__QUADRUPLE;
+				}
+				else if (order == "aromatic")
+				{
+					localCopy_.order = Bond::ORDER__AROMATIC;
+				}
+				else
+				{
+					Log.error() << "Just hit a bug at "
+					            << __FILE__ << ":" << __LINE__ << std::endl;
+				}
+				// localCopy.atom? well, need to set it in the ReconstructFragmentProcessor...
+				emit valueChanged();
+			}
+		}
+
+		void ConnectionEditorWidget::apply_(PropertyManager *man)
+		{
+			boost::shared_ptr<PersistentObject> ptr(new Connection(localCopy_));
+			NamedProperty prop(name_, ptr);
+			man->setProperty(prop);
+		}
+
+		void ConnectionEditorWidget::reset_(const NamedProperty &prop)
+		{
+			Connection* pconn = dynamic_cast<Connection*>(prop.getSmartObject().get());
+			if (pconn != NULL)
+			{
+				localCopy_ = *pconn;
+			}
+		}
 	}
 }

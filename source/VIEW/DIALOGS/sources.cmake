@@ -18,6 +18,7 @@ SET(UI_LIST
 	editSettings.ui
 	editSingleShortcut.ui
 	editorPDBInfoDialog.ui
+	editorConnectionDialog.ui
 	displayProperties.ui
 	fieldLinesDialog.ui
 	FDPBDialog.ui
