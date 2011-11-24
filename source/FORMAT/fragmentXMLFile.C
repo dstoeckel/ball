@@ -131,6 +131,12 @@ namespace BALL
 		return moleculeForVariant(variants[currentVariant_++]);
 	}
 
+	GenericMolFile& FragmentXMLFile::operator >>(System& sys)
+	{
+		GenericMolFile::operator >>(sys);
+		sys.setProperty("SKIP_NORMALIZATION", true);
+		return *this;
+	}
 
 	void FragmentXMLFile::parse() {
 		// phase 1 - prepare all variants.

@@ -45,6 +45,7 @@ namespace BALL
 		virtual bool write(const Molecule &molecule);
 
 		virtual bool isOpen() const;
+		virtual GenericMolFile& operator>> (System& system);
 		//@}
 
 		/** @name Format specific functions
