@@ -22,103 +22,38 @@
 #include <BALL/KERNEL/PTE.h>
 #endif
 
+#ifndef BALL_SYSTEM_PATH_H
+#include <BALL/SYSTEM/path.h>
+#endif
+
+#ifndef BALL_DATATYPE_STRING_H
+#include <BALL/DATATYPE/string.h>
+#endif
+
+#ifndef BALL_KERNEL_RESIDUE_H
+#include <BALL/KERNEL/residue.h>
+#endif
+
+#ifndef BALL_COMMON_LIMITS_H
+#include <BALL/COMMON/limits.h>
+#endif
+
+#ifndef BALL_MATHS_VECTOR3_H
+#include <BALL/MATHS/vector3.h>
+#endif
+
+#ifndef BALL_STRUCTURE_FRAGMENTDB_CONNECTION_H
+#include <BALL/STRUCTURE/FRAGMENTDB/connection.h>
+#endif
+
 #include <set>
+#include <QXmlSchema>
+#include <QXmlSchemaValidator>
+
 
 namespace BALL
 {
 
-	/// a bond that knows which variants it occurs in
-	FragmentXMLFile::VariantedBond::VariantedBond(FragmentXMLFile::VariantedAtom* first, FragmentXMLFile::VariantedAtom* second)
-	{
-		first_ = first;
-		second_ = second;
-		first->bonds_.push_back(this);
-		second->bonds_.push_back(this);
-	}
-
-	void FragmentXMLFile::VariantedBond::addOccurenceWithOrder(FragmentXMLFile::Variant& v, Bond::BondOrder order)
-	{
-		occursAsIn_[order].push_back(v.getId());
-	}
-
-	Bond::BondOrder FragmentXMLFile::VariantedBond::orderIn(const Variant &v)
-	{
-		for (Size b = 0; b < (Size)Bond::NUMBER_OF_BOND_ORDERS; b++)
-		{
-			for (std::list<String>::const_iterator variantName = occursAsIn_[b].begin();
-					 variantName != occursAsIn_[b].end();
-					 ++variantName)
-			{
-				if (*variantName == v.getId())
-				{
-					return (Bond::BondOrder)b;
-				}
-			}
-		}
-
-		return Bond::ORDER__UNKNOWN;
-	}
-
-	FragmentXMLFile::Variant::Variant(String id, FragmentXMLFile& container) : id_(id)
-	{
-		container_ = &container;
-		container.variants_[id_] = this;
-	}
-
-	void FragmentXMLFile::Variant::addAtom(Atom &atom) {
-		FragmentXMLFile::VariantedAtom* vAtom = new FragmentXMLFile::VariantedAtom(atom.getElement());
-		container_->atomIndex_[atom.getName()] = vAtom;
-		atoms_.push_back(vAtom);
-		vAtom->addName(atom.getName(), *this);
-		// TODO: extract alternate names
-	}
-
-	const String& FragmentXMLFile::Variant::getId() const
-	{
-		return id_;
-	}
-
-	FragmentXMLFile::VariantedAtom::VariantedAtom(Element el)
-	{
-		element_ = el;
-	}
-
-	void FragmentXMLFile::VariantedAtom::addName(String name, Variant &v)
-	{
-		occursAsIn_[name].push_back(v.getId());
-	}
-
-	FragmentXMLFile::VariantedBond* FragmentXMLFile::VariantedAtom::getBondTo(FragmentXMLFile::VariantedAtom& second)
-	{
-				for (Position i = 0; i < bonds_.size(); i++)
-				{
-						if ((bonds_[i]->first_ == this && bonds_[i]->second_ == &second)
-								|| (bonds_[i]->second_ == this && bonds_[i]->first_ == &second))
-						{
-							return bonds_[i];
-						}
-				}
-				/// bond not yet found, create a new Bond.
-				FragmentXMLFile::VariantedBond* newBond = new FragmentXMLFile::VariantedBond(this, &second);
-				bonds_.push_back(newBond);
-				return newBond;
-	}
-
-	String FragmentXMLFile::VariantedAtom::getMajorityName()
-	{
-		String majorityName;
-		HashMap<String, std::list<String> >::const_iterator it = occursAsIn_.begin();
-		Size majoritySize = 0;
-		for (; it != occursAsIn_.end(); ++it)
-		{
-			if (it->second.size() > majoritySize)
-			{
-				majoritySize = it->second.size();
-				majorityName = it->first;
-			}
-		}
-		return majorityName;
-	}
 
 	FragmentXMLFile::FragmentXMLFile()
 		: GenericMolFile()
@@ -129,7 +64,7 @@ namespace BALL
 
 	FragmentXMLFile::FragmentXMLFile(const String &filename, File::OpenMode open_mode)
 		: GenericMolFile()
-	{
+		{
 		data_ = new QDomDocument;
 		File::name_ = filename;
 		File::open_mode_ = open_mode;
@@ -157,46 +92,6 @@ namespace BALL
 	FragmentXMLFile::~FragmentXMLFile() {
 		// free the DOM
 		delete data_;
-
-		// free out intermediate data
-		std::set<VariantedAtom* > atoms;
-		std::set<VariantedBond* > bonds;
-
-		// collect atoms
-		for (HashMap<String,VariantedAtom*>::Iterator it = atomIndex_.begin();
-		     it != atomIndex_.end();
-		     ++it)
-		{
-			atoms.insert(it->second);
-		}
-		for (std::set<VariantedAtom*>::iterator it = atoms.begin();
-		     it != atoms.end();
-		     ++it)
-		{
-			// collect each atoms bonds
-			for (std::vector<VariantedBond* >::iterator bond = (*it)->bonds_.begin();
-			     bond != (*it)->bonds_.end();
-			     ++it)
-			{
-				bonds.insert(*bond);
-			}
-			// delete the atom
-			delete *it;
-		}
-		// delete all bonds
-		for (std::set<VariantedBond*>::iterator it = bonds.begin();
-		     it != bonds.end();
-		     ++it)
-		{
-			delete *it;
-		}
-		// delete the variant containers
-		for (HashMap<String,Variant*>::Iterator it = variants_.begin();
-		     it != variants_.end();
-		     ++it)
-		{
-			delete it->second;
-		}
 	}
 
 	bool FragmentXMLFile::isOpen() const {
@@ -210,7 +105,8 @@ namespace BALL
 		// this has a definite order: the preorder of the nodes in the document.
 		std::vector<String> variants;
 		QDomNodeList nodes = data_->elementsByTagName("variant");
-		for (int i = 0; i < nodes.count(); i++) {
+		for (int i = 0; i < nodes.count(); i++)
+		{
 			QDomElement node = nodes.item(i).toElement();
 			if (node.hasAttribute("id")) {
 				variants.push_back(String(node.attribute("id")));
@@ -219,99 +115,12 @@ namespace BALL
 		return variants;
 	}
 
-
-	Atom* FragmentXMLFile::fromVariantedAtomForVariant(VariantedAtom *va, const Variant &variant)
-	{
-		Atom* theAtom = new Atom;
-		theAtom->setName(va->getMajorityName());
-		theAtom->setElement(va->element_);
-		theAtom->setPosition(va->positionIn_[variant.getId()]);
-		return theAtom;
-	}
-
-	Vector3 FragmentXMLFile::fromDomAtomNodeForVariant(QDomElement &element, const Variant &variant)
-	{
-		Vector3 posVector;
-		QDomNodeList positions = element.elementsByTagName("position");
-		for (int i = 0; i < positions.count(); i++)
-		{
-			QDomElement pos = positions.item(i).toElement();
-			if (pos.attribute("variant") == variant.getId().c_str())
-			{
-				posVector.x = pos.attribute("x").toFloat();
-				posVector.y = pos.attribute("y").toFloat();
-				posVector.z = pos.attribute("z").toFloat();
-			}
-		}
-		return posVector;
-	}
-
-	Molecule* FragmentXMLFile::fromVariant(Variant *v)
-	{
-		Molecule* molecule = new Molecule;
-		molecule->setName(v->getId());
-
-		HashMap<VariantedAtom* , Atom* > atomForVariantedAtom; // for creating the bonds later
-		std::list<VariantedAtom* >::iterator outerAtom = v->atoms_.begin();
-		for (; outerAtom != v->atoms_.end(); ++outerAtom) {
-			atomForVariantedAtom[*outerAtom] = fromVariantedAtomForVariant(*outerAtom, *v);
-			molecule->appendChild(*atomForVariantedAtom[*outerAtom]);
-		}
-
-		std::list<VariantedAtom* >::iterator innerAtom = outerAtom = v->atoms_.begin();
-		for (; outerAtom != v->atoms_.end(); ++outerAtom)
-		{
-			for (; innerAtom != v->atoms_.end(); ++innerAtom)
-			{
-				if (*innerAtom == *outerAtom)
-				{
-					continue;
-				}
-				// bond constructor takes care of registering the bond.
-				// also, WhyTF do bonds have names?
-				new Bond(String(""),
-				         *atomForVariantedAtom[*outerAtom],
-				         *atomForVariantedAtom[*innerAtom],
-				         (*outerAtom)->getBondTo(**innerAtom)->orderIn(*v));
-			}
-		}
-
-		return molecule;
-	}
-
-	bool FragmentXMLFile::bondFromInDomForMolecule(QDomElement& inElement, Molecule* molecule)
-	{
-		QDomElement asElement = inElement.parentNode().toElement();
-		QDomElement bondElement = asElement.parentNode().parentNode().toElement();
-		QDomNodeList partners = bondElement.elementsByTagName("partner");
-		if (partners.size() < 2) return false;
-		String partnerA(partners.at(0).toElement().attribute("atom"));
-		String partnerB(partners.at(1).toElement().attribute("atom"));
-		Atom* first = molecule->getAtom(partnerA);
-		Bond* theBond = first->createBond(* molecule->getAtom(partnerB));
-		theBond->setOrder(fromDomBondOccursAsNode(asElement));
-
-		return true;
-	}
-
-	Bond::BondOrder FragmentXMLFile::fromDomBondOccursAsNode(QDomElement &element)
-	{
-		Bond::BondOrder retVal;
-		float bondOrder = element.attribute("order").toFloat();
-		// bond order: x.5 = x, aromatic; x = x
-		bool isAromatic = (bondOrder - floorf(bondOrder)) > 0.4f;
-		// FIXME: this matches up with BALL::Bond::Order, but is not really future-proof.
-		retVal = (Bond::BondOrder)(int)floorf(bondOrder);
-		if (isAromatic) retVal = Bond::ORDER__AROMATIC;
-
-		return retVal;
-	}
-
-
 	bool FragmentXMLFile::write(const Molecule &molecule)
 	{
 		// idea: merge molecule into data, then write everything
 		// since this isn't necessarily a linear, linebased format, but interleaved.
+		Log.warn() << "Writing single Molecules is not supported as of now, please write a complete System." << std::endl;
+		throw (File::CannotWrite(__FILE__, __LINE__, File::name_));
 		return false;
 	}
 
@@ -319,136 +128,469 @@ namespace BALL
 	{
 		std::vector<String> variants = getVariantNames();
 		if (currentVariant_ >= variants.size()) return 0;
-		return fromVariant(variants_[variants[currentVariant_++]]);
+		return moleculeForVariant(variants[currentVariant_++]);
 	}
 
 
 	void FragmentXMLFile::parse() {
 		// phase 1 - prepare all variants.
-		QDomNodeList nodes = data_->elementsByTagName("variant");
-		for (int i = 0; i < nodes.count(); i++) {
-			QDomElement node = nodes.item(i).toElement();
-			if (node.hasAttribute("id")) {
-				String variantID = String(node.attribute("id"));
-				variants_[variantID] = new FragmentXMLFile::Variant(variantID, *this);
-			}
-			// TODO: preserve rest of variant metadata
-		}
-
-		// phase 2 - parse the atoms
-		nodes = data_->elementsByTagName("atom");
-		for (int i = 0; i < nodes.count(); i++)
+		QDomNodeList variants = data_->elementsByTagName("variant");
+		for (int i = 0; i < variants.count(); ++i)
 		{
-			QDomElement atomElement = nodes.item(i).toElement();
-
-			QDomNodeList occursInElements = atomElement.elementsByTagName("in");
-			for (int v = 0; v < occursInElements.count(); v++)
+			QDomElement node = variants.item(i).toElement();
+			if (node.hasAttribute("id"))
 			{
-				QDomElement inElement = occursInElements.item(v).toElement();
-				String variantWhereAtomOccurs = String(inElement.attribute("variant"));
-				if (!variants_.has(variantWhereAtomOccurs))
+				String variantID(node.attribute("id"));
+				Residue* res = new Residue();
+				res->setName(variantID);
+				residues_.push_back(res);
+				residue_by_name_.insert(variantID,residues_.size()-1);
+				Log.info() << "Created residue " << variantID << std::endl;
+				parseNames(node, *res);
+				QDomNodeList props = node.elementsByTagName("property");
+				for (int j = 0; j < props.count(); ++j) 
 				{
-					Log.error() << "Atom " << i << " occurs in a Variant that is not defined in the file. Skipping variant." << std::endl;
-					continue;
+					QDomElement propertyEl = props.at(i).toElement();
+					parseProperty(propertyEl, *res);
 				}
-				VariantedAtom* currentAtom = findOrCreateFromDomAtomNode(atomElement);
-				if (!currentAtom)
-				{
-					Log.error() << "Can't parse atom from DOM. Skipping Atom." << std::endl;
-					continue;
-				}
-
-				variants_[variantWhereAtomOccurs]->atoms_.push_back(currentAtom);
 			}
 		}
 
-		// pase 3 - parse the bonds
-		nodes = data_->elementsByTagName("bond");
-		for (int i = 0; i < nodes.count(); i++)
+		// phase 2 -- parse atoms
+		QDomNodeList atoms = data_->elementsByTagName("atom");
+		for (int i = 0; i < atoms.count(); ++i)
 		{
-			QDomElement bondElement = nodes.item(i).toElement();
-
-			QDomNodeList partnerElements = bondElement.elementsByTagName("partner");
-			if (partnerElements.count() != 2)
+			QDomElement atom = atoms.item(i).toElement();
+			if (atom.hasAttribute("id"))
 			{
-				Log.error() << "Bond with " << partnerElements.count() << " != 2 Atoms. Skipping bond." << std::endl;
-				continue;
-			}
-			String partner1 = String(partnerElements.item(0).toElement().attribute("atom"));
-			String partner2 = String(partnerElements.item(1).toElement().attribute("atom"));
-			if (atomIndex_.has(partner1) && atomIndex_.has(partner2))
-			{
-				VariantedBond* bond = atomIndex_[partner1]->getBondTo(*atomIndex_[partner2]);
-
-				QDomNodeList occursInElements = bondElement.elementsByTagName("in");
-				for (int v = 0; v < occursInElements.count(); v++)
+				String atomID(atom.attribute("id"));
+				// TODO: only occurs/in
+				QDomNodeList occurences = atom.elementsByTagName("in");
+				for (int j = 0; j < occurences.count(); ++j)
 				{
-					QDomElement inElement = occursInElements.item(v).toElement();
-					String variantWhereBondOccurs = String(inElement.attribute("variant"));
-					if (!variants_.has(variantWhereBondOccurs))
+					QDomElement occurs_in = occurences.item(j).toElement();
+					if (occurs_in.hasAttribute("variant"))
 					{
-						Log.error() << "Bond (" << partner1 << "," << partner2 <<") occurs in a Variant ("
-						            << variantWhereBondOccurs <<") that is not defined in the file. Skipping variant." << std::endl;
-						continue;
+						String occurence_variant(occurs_in.attribute("variant"));
+						if (residue_by_name_.has(occurence_variant)) {
+							if (!residues_[residue_by_name_[occurence_variant]]->getAtom(atomID))
+							{
+								parseAtom(atom, residues_[residue_by_name_[occurence_variant]]);
+							}
+						}
 					}
-					QDomElement asElement = inElement.parentNode().toElement();
-					bond->addOccurenceWithOrder(*variants_[variantWhereBondOccurs], fromDomBondOccursAsNode(asElement));
 				}
+			}
+		}
+
+		// phase 3 -- parse bonds
+		QDomNodeList bonds = data_->elementsByTagName("bond");
+		for (int i = 0; i < bonds.count(); ++i)
+		{
+			QDomElement bond = bonds.item(i).toElement();
+			QDomNodeList occurences = bond.elementsByTagName("in");
+			for (int j = 0; j < occurences.count(); ++j)
+			{
+				QDomElement occurs_in = occurences.item(j).toElement();
+				if (occurs_in.hasAttribute("variant"))
+				{
+					String occurence_variant(occurs_in.attribute("variant"));
+					if (residue_by_name_.has(occurence_variant))
+					{
+						parseBond(bond, residues_[residue_by_name_[occurence_variant]]);
+					}
+				}
+			}
+		}
+	}
+
+	void FragmentXMLFile::parseNames(QDomElement& name_container, PropertyManager& props)
+	{
+		QDomNodeList names = name_container.elementsByTagName("name");
+		for (int n = 0; n < names.count(); ++n)
+		{
+			QDomElement name = names.at(n).toElement();
+			if (name.hasAttribute("convention"))
+			{
+				String conventionName(name.text());
+				String convention(name.attribute("convention"));
+				registerNameForConventions(conventionName,convention,props);
+			}
+		}
+	}
+
+	void FragmentXMLFile::registerNameForConventions(String& name, String& conventions, PropertyManager& object)
+	{
+		// split the attribute since it may actually be multiple conventions.
+		std::vector<String> all_conventions;
+		conventions.split(all_conventions);
+		for (std::vector<String>::iterator cv = all_conventions.begin();
+		     cv != all_conventions.end(); ++cv)
+		{
+			// save every name as a property. (we'll reconstruct the
+			// compact representation with collectNameForConventions)
+			object.setProperty("NAME:"+*cv,name);
+		}
+	}
+
+	void FragmentXMLFile::collectNameForConventions(PropertyManager& object, StringHashMap<String>& names)
+	{
+		NamedPropertyIterator prop_it = object.beginNamedProperty();
+		for (;prop_it != object.endNamedProperty(); ++prop_it) {
+			if ((prop_it->getType() == NamedProperty::STRING) && 
+			    (prop_it->getName().substr(0,4) == "NAME:"))
+			{
+				String convention(prop_it->getName());
+				convention = convention.getField(1,":");
+				const String& name(prop_it->getString());
+				if (names.has(name))
+				{
+					names[name] += " ";
+					names[name] += convention;
+				}
+				else
+				{
+					names.insert(name, convention);
+				}
+			}
+		}
+	}
+
+	void FragmentXMLFile::parseAtom(QDomElement &domAtom, Residue *residue)
+	{
+		// first we create the atom
+		QDomElement domElement = domAtom.elementsByTagName("element").at(0).toElement();
+		String atom_id(domAtom.attribute("id"));
+		if (domElement.isNull())
+		{
+			Log.warn() << "No element defined for atom " << atom_id << ", ignoring." << std::endl;
+			return;
+		}
+		Atom* newAtom = new Atom();
+		newAtom->setElement(PTE[String(domElement.text())]);
+		newAtom->setName(atom_id);
+
+		const char* residuename = residue->getName().c_str();
+
+		// then figure out position...
+		QDomNodeList occurences = domAtom.elementsByTagName("in");
+		for (int n = 0; n < occurences.count(); ++n)
+		{
+			QDomElement domIn = occurences.at(n).toElement();
+			if (domIn.hasAttribute("variant") && 
+			    (domIn.attribute("variant") == residuename))
+			{
+				// so this atom occurs in this variant.
+				// go up in the tag hierarchy to figure out the details.
+				QDomElement domParent = domIn.parentNode().toElement();
+				// it may either be the position.
+				if (domParent.tagName() == "position") 
+				{
+					newAtom->setPosition(Vector3(
+					domParent.attribute("x").toFloat(),
+					domParent.attribute("y").toFloat(),
+					domParent.attribute("z").toFloat()
+					));
+				}
+				// or a plain occurence.
+				else if (domParent.tagName() == "occurs")
+				{
+					// in which case we don't even need to do something.
+				}
+				else
+				{
+					Log.warn() << "Unexpected tag " << String(domParent.tagName()) 
+					           << " on line " << domParent.lineNumber() << std::endl;
+				}
+			}
+		}
+
+		// parse the properties
+		QDomNodeList props = domAtom.elementsByTagName("property");
+		for (int j = 0; j < props.count(); ++j) 
+		{
+			QDomElement propertyEl = props.at(j).toElement();
+			parseProperty(propertyEl, *newAtom);
+		}
+
+		// the names
+		parseNames(domAtom, *newAtom);
+		// and connections
+		parseConnections(domAtom, newAtom);
+
+		residue->appendChild(*newAtom);
+	}
+
+	void FragmentXMLFile::parseConnections(QDomElement &domAtom, Atom* atom)
+	{
+		QDomNodeList connections = domAtom.elementsByTagName("connection");
+		for (int i = 0; i < connections.count(); ++i)
+		{
+			QDomElement connection = connections.at(i).toElement();
+#define ASSERT_ATTRIBUTE(x) if (!connection.hasAttribute(x)) { \
+				Log.warn() << "Connection for atom " << String(domAtom.attribute("id")) \
+				           << " is missing required attribute " << x \
+				           << " on line " << connection.lineNumber() \
+				           << ". Ignoring connection." << std::endl; \
+				continue; \
+			}
+			ASSERT_ATTRIBUTE("type")
+			ASSERT_ATTRIBUTE("partnertype")
+			ASSERT_ATTRIBUTE("order")
+			ASSERT_ATTRIBUTE("distance")
+			ASSERT_ATTRIBUTE("deviation")
+#undef ASSERT_ATTRIBUTE
+			Connection conn;
+			conn.atom = atom;
+			conn.type_name = String(connection.attribute("type"));
+			conn.connect_to = String(connection.attribute("partnertype"));
+			conn.dist = connection.attribute("distance").toFloat();
+			conn.delta = connection.attribute("deviation").toFloat();
+			conn.order = parseBondOrder(connection.attribute("order"));
+
+			boost::shared_ptr<PersistentObject> connptr(new Connection(conn));
+			String connID = "CONNECTION:";
+			connID += String(i);
+			atom->setProperty(NamedProperty(connID, connptr));
+		}
+	}
+
+	void FragmentXMLFile::parseBond(QDomElement &domBond, Residue *residue)
+	{
+		QDomNodeList partners = domBond.elementsByTagName("partner");
+		if (partners.count() != 2) {
+			Log.warn() << "Disregarding Bond without exactly 2 partner atoms on line"
+			           << domBond.lineNumber() << std::endl;
+			return;
+		}
+		String partner_a(partners.at(0).toElement().attribute("atom"));
+		String partner_b(partners.at(1).toElement().attribute("atom"));
+		Atom* atom_a = residue->getAtom(partner_a);
+		if (!atom_a)
+		{
+			Log.warn() << "Can't find atom "<< partner_a<< " in variant "
+			           << residue->getName() << ", disregarding bond on line "
+			           << domBond.lineNumber() << std::endl;
+			return;
+		}
+		Atom* atom_b = residue->getAtom(partner_b);
+		if (!atom_b)
+		{
+			Log.warn() << "Can't find atom "<< partner_b << " in variant "
+			           << residue->getName() << ", disregarding bond on line "
+			           << domBond.lineNumber() << std::endl;
+			return;
+		}
+		Bond::Order order = Bond::ORDER__UNKNOWN;
+		QDomNodeList inVariant = domBond.elementsByTagName("in");
+		for (int i = 0; i < inVariant.count(); ++i)
+		{
+			QDomElement domIn = inVariant.at(i).toElement();
+			if (domIn.attribute("variant") == residue->getName().c_str())
+			{
+				QDomElement domOrder = domIn.parentNode().toElement();
+				if (domOrder.nodeName() == "as" && domOrder.hasAttribute("order")) {
+					if (order != Bond::ORDER__UNKNOWN) {
+						Log.warn() << "Bond order redefinition for " << partner_a << "-" << partner_b
+						           << " in variant " << residue->getName() << " ignored "
+						           << "on line " << domOrder.lineNumber();
+					}
+					else
+					{
+						order = parseBondOrder(domOrder.attribute("order"));
+						if (order == Bond::ORDER__UNKNOWN)
+						{
+							Log.warn() << "Unknown Bond order '"<< String(domOrder.attribute("order")) 
+							           << "' on line " << domOrder.lineNumber() << std::endl;
+						}
+					}
+				}
+			}
+		}
+		// the constructor of bond takes care of the registration.
+		Bond* newBond = new Bond("",*atom_a,*atom_b,order);
+	}
+
+	Bond::Order FragmentXMLFile::parseBondOrder(const QString &theOrder)
+	{
+		String order(theOrder);
+		if (order == "aromatic")
+		{
+			return Bond::ORDER__AROMATIC;
+		}
+		else if (order == "1")
+		{
+			return Bond::ORDER__SINGLE;
+		}
+		else if (order == "2")
+		{
+			return Bond::ORDER__DOUBLE;
+		}
+		else if (order == "3")
+		{
+			return Bond::ORDER__TRIPLE;
+		}
+		else if (order == "4")
+		{
+			return Bond::ORDER__QUADRUPLE;
+		}
+		else
+		{
+			return Bond::ORDER__UNKNOWN;
+		}
+	}
+
+	void FragmentXMLFile::parseProperty(QDomElement &domProperty, PropertyManager &object)
+	{
+		if (domProperty.hasAttribute("type") && (domProperty.attribute("type") != "UNNAMED"))
+		{
+			if (!domProperty.hasAttribute("name")) {
+				Log.warn() << "Named property of type " 
+				           << String(domProperty.attribute("type")) << " has no name at line "
+				           << domProperty.lineNumber() << std::endl;
+				return;
 			}
 			else
 			{
-				Log.error() << "Partner not found for Bond, "<< partner1 << " or "<< partner2 <<" missing. Skipping bond." << std::endl;
-				continue;
+				String type(domProperty.attribute("type"));
+				String value(domProperty.text());
+				String name(domProperty.attribute("name"));
+				if (object.hasProperty(name))
+				{
+					Log.warn() << "Overwriting named property " << name << " with value "
+					           << value << " (was: " << object.getProperty(name).toString() << ") " 
+					           << "redefined on line " << domProperty.lineNumber() << std::endl;
+				}
+				// relying on the BALL::String conversions for consistency here,
+				// even though QString provides some of them as well
+				if (type == "bool") {
+					bool val = value.toBool();
+					object.setProperty(name, val);
+				}
+				else if (type == "int")
+				{
+					int val = value.toInt();
+					object.setProperty(name, val);
+				}
+				else if (type == "unsigned")
+				{
+					unsigned int val = value.toUnsignedInt();
+					object.setProperty(name, val);
+				}
+				else if (type == "float")
+				{
+					float val = value.toFloat();
+					object.setProperty(name, val);
+				}
+				else if (type == "double")
+				{
+					double val = value.toDouble();
+					object.setProperty(name, val);
+				}
+				else if (type == "string")
+				{
+					object.setProperty(name, value);
+				}
+
 			}
 		}
-	}
-
-	FragmentXMLFile::VariantedAtom* FragmentXMLFile::findOrCreateFromDomAtomNode(QDomElement& atomElement)
-	{
-		QDomNodeList occursAsElements = atomElement.elementsByTagName("as");
-		for (int n = 0; n < occursAsElements.count(); n++)
+		else
 		{
-			String atomName(occursAsElements.item(n).toElement().attribute("name"));
-			if (atomIndex_.has(atomName))
+			QString property = domProperty.text();
+			Property prop = Limits<Property>::max();
+			if (property == "NON_STANDARD")
 			{
-				Log.info() << "Atom "<< atomName << " already parsed, returning cached copy." << std::endl;
-				return atomIndex_[atomName];
+				prop = Residue::PROPERTY__NON_STANDARD;
+			}
+			else if (property == "AMINO_ACID")
+			{
+				prop = Residue::PROPERTY__AMINO_ACID;
+			}
+			else if (property == "WATER")
+			{
+				prop = Residue::PROPERTY__WATER;
+			}
+			else if (property == "HAS_SSBOND")
+			{
+				prop = Residue::PROPERTY__HAS_SSBOND;
+			}
+			else if (property == "C_TERMINAL")
+			{
+				prop = Residue::PROPERTY__C_TERMINAL;
+			}
+			else if (property == "N_TERMINAL")
+			{
+				prop = Residue::PROPERTY__N_TERMINAL;
+			}
+			else if (property == "NUCLEOTIDE")
+			{
+				prop = Nucleotide::PROPERTY__NUCLEOTIDE;
+			}
+
+			if (prop == Limits<Property>::max())
+			{
+				Log.warn() << "Unreconized unnamed property: " << String(property)
+				           << " on line " << domProperty.lineNumber() << std::endl;
+			}
+			else
+			{
+				object.setProperty(prop);
 			}
 		}
-
-		// none found, create.
-		// determine element from periodic table
-		QDomNodeList elementTags = atomElement.elementsByTagName("element");
-		if (elementTags.count() != 1)
-		{
-			Log.info() << "No ("<<elementTags.count()<< ") element Tag for Atom " << ". Skipping." << std::endl;
-			return 0; // can't create this atom :-(
-		}
-		String element(elementTags.at(0).toElement().text());
-		VariantedAtom* theAtom = new VariantedAtom(PTE[element]);
-		for (int n = 0; n < occursAsElements.count(); n++)
-		{
-			String atomName(occursAsElements.item(n).toElement().attribute("name"));
-			atomIndex_[atomName] = theAtom;
-		}
-
-		// TODO: preserve rest of Atom Metadata (?)
-
-		return theAtom;
 	}
 
-	FragmentXMLFile::VariantedAtom* FragmentXMLFile::findOrCreateFromAtom(Atom &atom)
+	bool FragmentXMLFile::validate() {
+		Path p;
+		String schemaInPath = "file://" + p.find("fragments_xml/FragmentXML.xsd");
+		QUrl schemaUrl(schemaInPath.c_str());
+
+		QXmlSchema schema;
+		schema.load(schemaUrl);
+
+		if (schema.isValid()) {
+			QFile file(File::name_.c_str());
+			if (file.open(QIODevice::ReadOnly))
+			{
+				QXmlSchemaValidator validator(schema);
+				return validator.validate(&file, QUrl::fromLocalFile(file.fileName()));
+			}
+			else
+			{
+				Log.warn() << "Cannot open File for verification of Schema: " << File::name_;
+				return false;
+			}
+		}
+		else
+		{
+			Log.warn() << "Cannot find Schema or Schema is invalid: " << schemaInPath;
+			return false;
+		}
+	}
+
+	Molecule* FragmentXMLFile::moleculeForVariant(const String & variant)
 	{
-		if (atomIndex_.has(atom.getName()))
-		{
-			return atomIndex_[atom.getName()];
+		Molecule* mol = new Molecule();
+		Residue* res = residueForVariant(variant);
+		if (res) {
+			mol->append(*res);
+			return mol;
 		}
-
-		// TODO: import multiple names (named properties?)
-		// TODO: import rest of atom metadata?
-
-		VariantedAtom* theAtom = new VariantedAtom(atom.getElement());
-		atomIndex_[atom.getName()] = theAtom;
-		return theAtom;
+		else
+		{
+			delete mol;
+			return NULL;
+		}
 	}
+
+	Residue* FragmentXMLFile::residueForVariant(const String & variant)
+	{
+		if (residue_by_name_.has(variant)) {
+			return residues_[residue_by_name_[variant]];
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
 } // namespace BALL
