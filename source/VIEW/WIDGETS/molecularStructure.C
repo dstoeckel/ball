@@ -777,12 +777,17 @@ namespace BALL
 
 			// properties will be used only for atom containers
 			if (!RTTI::isKindOf<AtomContainer>(composite)) return;
+			AtomContainer& atom_container = *RTTI::castTo<AtomContainer>(composite);
+			if (atom_container.hasProperty("SKIP_NORMALIZATION")) 
+			{
+				CompositeMessage* mol_message = new CompositeMessage(composite, CompositeMessage::NEW_MOLECULE);
+				notify_(mol_message);
+				return;
+			}
 
 			Log.info() << "> " + (String)tr("applying molecular properties") + " ... " << endl;
 
-			AtomContainer& atom_container = *RTTI::castTo<AtomContainer>(composite);
-
-			if (normalize)
+			if(normalize)
 			{
 				try
 				{
