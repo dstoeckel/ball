@@ -50,9 +50,6 @@ namespace BALL
 	{
 		public:
 
-		class AddHydrogensProcessor;
-		friend class FragmentDB::AddHydrogensProcessor;
-
 		BALL_CREATE_DEEP(FragmentDB)
 	
 		/**	@name	Enums 
