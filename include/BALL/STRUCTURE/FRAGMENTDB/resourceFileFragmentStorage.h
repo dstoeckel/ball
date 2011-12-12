@@ -96,7 +96,7 @@ namespace BALL
 		void init();
 
 				// The filename of the master fragment file.
-		String 					filename_;
+		String 				filename_;
 
 		// The naming standard we default to.
 		String					default_standard_;
@@ -105,9 +105,6 @@ namespace BALL
 		std::vector<Residue*>						fragments_;
 
 		typedef StringHashMap<String>		NameMap;
-
-		// Maps a fragment name back to a path in the database
-		NameMap													name_to_path_;
 
 		// Maps a fragment name back to the array index in fragments_
 		StringHashMap<Position>					name_to_frag_index_;

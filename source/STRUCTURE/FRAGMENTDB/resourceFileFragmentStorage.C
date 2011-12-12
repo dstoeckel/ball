@@ -666,7 +666,6 @@ namespace BALL
 						
 				// insert the fragment name into the corresponding lists
 				Position fragment_index = addNewFragment_(fragment);
-				name_to_path_[fragment_name] = "/Fragments/" + fragment_name;
 		
 				// if there are no atoms in the database, something went wrong
 				entry = frag_entry_it->getEntry("Atoms");
@@ -722,7 +721,6 @@ namespace BALL
 					String path = "/Fragments/" + fragment_name;
 					for (entry_it = ++entry->begin(); +entry_it; ++entry_it)
 					{
-						name_to_path_[entry_it->getKey()] = path;
 						name_to_frag_index_[entry_it->getKey()] = fragment_index;
 					}
 				}
@@ -753,7 +751,6 @@ namespace BALL
 								fragments_[fragment_index] = variant;
 								name_to_variants_[fragment_name].push_back(fragment_index);
 								name_to_frag_index_[fragment_name] = fragment_index;
-								name_to_path_[fragment_name] = "/Fragments/" + fragment_name + "/Variants/" + variant_name;
 							} 
 							else 
 							{
@@ -763,7 +760,6 @@ namespace BALL
 
 								name_to_frag_index_[variant_name] = index;
 								name_to_variants_[fragment_name].push_back(index);
-								name_to_path_[variant_name] = "/Fragments/" + fragment_name + "/Variants/" + variant_name;
 							}
 
 							// Remember all variants of a certain fragment in a list.
