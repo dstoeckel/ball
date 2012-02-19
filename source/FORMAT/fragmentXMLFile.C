@@ -298,11 +298,6 @@ namespace BALL
 					domParent.attribute("z").toFloat()
 					));
 				}
-				// or a plain occurence.
-				else if (domParent.tagName() == "occurs")
-				{
-					// in which case we don't even need to do something.
-				}
 				else
 				{
 					Log.warn() << "Unexpected tag " << String(domParent.tagName()) 
