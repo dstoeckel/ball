@@ -19,7 +19,7 @@
 	
 using namespace std;
 
-#define BALL_DEBUG_RECONSTRUCTFRAGMENTPROCESSOR
+//#define BALL_DEBUG_RECONSTRUCTFRAGMENTPROCESSOR
 
 #ifdef BALL_DEBUG_RECONSTRUCTFRAGMENTPROCESSOR
 #	define DEBUG(a) Log.info() << "ReconstructFragmentProcessor: " << a << std::endl;
