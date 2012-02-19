@@ -39,33 +39,53 @@ namespace BALL
 		/** @name IO Operations
 		 */
 		//@{
-		/// Read a single molecule, in this case the first variant in the file.
+		/** Read a single molecule.
+		 *  Returns a molecule for each variant in the file.
+		 *  Subsequent calls iterate through the variants
+		 */
 		virtual Molecule* read();
 
-		virtual bool write(const Molecule &molecule);
+		/** Write a single molecule.
+		 *  Unsupported, will print an error and do nothing.
+		 */
+		virtual bool write(const Molecule& molecule);
 
+		/** Check whether the file is open.
+		 */
 		virtual bool isOpen() const;
+
+		/** Load a System from this file.
+		 *  Specialty: Tells BALLView to skip name normalization and fragment reconstruction.
+		 *  @see MolecularStructure::addComposite_
+		 */
 		virtual GenericMolFile& operator>> (System& system);
 		//@}
 
 		/** @name Format specific functions
 		 */
 		//@{
+		/** Performs a validation of the file against the XML Schema.
+		 */
 		bool validate();
 		//@}
 
 		FragmentXMLFile& operator = (const FragmentXMLFile& rhs);
 
-		// (no need to reimplement operators, they call read/write in the superclass)
+		// (no need to reimplement other operators, they call our read/write from the superclass)
 		private:
 		/// returns the names of all known variants in the file
 		std::vector<String> getVariantNames();
-		/// returns a Molecule for a given Variant.
+		/** returns a Molecule for a given Variant.
+		 *  the return value is not cleaned up on destruction.
+		 */
 		Molecule* moleculeForVariant(const String&);
-		/// returns a Residue for a given Variant
+		/** returns a Residue for a given Variant.
+		 *  this gives an internal pointer, which IS DELETED on destruction.
+		 */
 		Residue* residueForVariant(const String&);
+		/// main dom interpreation routine.
 		void parse();
-		/// parses a property tag into the PropertyManager
+		/// parses a property tag into a PropertyManager (Residue, Atom or Bond)
 		void parseProperty(QDomElement&, PropertyManager&);
 		/// parses a new atom into the Residue from an <atom> QDomElement
 		void parseAtom(QDomElement&, Residue*);
