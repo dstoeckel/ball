@@ -12,6 +12,7 @@
 
 #include <BALL/STRUCTURE/FRAGMENTDB/resourceFileFragmentStorage.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/nameMapQuery.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/xmlFragmentStorage.h>
 	
 /*			Things still missing (among others)
 				===================================
@@ -56,7 +57,8 @@ namespace BALL
 			Log.error() << "FragmentDB: using an empty filename is deprecated. Simulating previous behaviour by only using ResourceFile storage." << std::endl;
 			Log.error() << "FragmentDB: Note that this may change in a near future release." << std::endl;
 			/* RFFS's default constructor simulates the old behaviour, "fragments/Fragments.db" */
-			stores_.insert(boost::shared_ptr<FragmentStorage>(new ResourceFileFragmentStorage()));
+			//stores_.insert(boost::shared_ptr<FragmentStorage>(new ResourceFileFragmentStorage()));
+			stores_.insert(boost::shared_ptr<FragmentStorage>(new XMLFragmentStorage()));
 		}
 		else
 		{
