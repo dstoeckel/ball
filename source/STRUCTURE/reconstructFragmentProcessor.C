@@ -227,6 +227,7 @@ namespace BALL
 		       != mapping.unmappedAtomsFromRight().end()
 		     ; ++unmapped_atom_from_template)
 		{
+			// FIXME: add option for only adding hydrogens (bug#17)
 			Atom* copy_of_unmapped = reinterpret_cast<Atom*>(
 				(*unmapped_atom_from_template)->create(false)
 			);
