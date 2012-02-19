@@ -196,10 +196,10 @@ namespace BALL {
 			else
 			{
 				// if we couldn't find an appropriate table, complain about it!
-				Log.error() << error_msg << endl;
+				Log.info() << error_msg << endl;
 				StringHashMap<NameMapQuery::NameMap*>::ConstIterator it = table.begin();
 				for (; it != table.end(); ++it) {
-					Log.error() << "Score:" << it->first << " = " << usable_maps[it->second] << std::endl;
+					Log.info() << "Score:" << it->first << " = " << usable_maps[it->second] << std::endl;
 				}
 			}
 
