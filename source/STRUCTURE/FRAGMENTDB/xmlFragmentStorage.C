@@ -13,7 +13,7 @@
 #define BALL_DEBUG_XMLFRAGMENTSTORAGE
 
 #ifdef BALL_DEBUG_XMLFRAGMENTSTORAGE
-# define DEBUG(a) Log.info() << a << std::endl
+# define DEBUG(a) Log.info() << "XMLFragmentStorage:" << a << std::endl
 #else
 # define DEBUG(a)
 #endif
@@ -38,7 +38,6 @@ const String XMLFragmentStorage::XML_FRAGMENT_FILE_SUFFIX = ".fdb";
 		unsigned int fragment_number = 0;
 		while (dir.getNextEntry(filename))
 		{
-			DEBUG("Considering " << filename);
 			if (!filename.hasSuffix(XML_FRAGMENT_FILE_SUFFIX)) continue;
 			DEBUG("Loading " << filename);
 			FragmentXMLFile file(dir.getPath() + "/" + filename);
@@ -64,10 +63,13 @@ const String XMLFragmentStorage::XML_FRAGMENT_FILE_SUFFIX = ".fdb";
 				by_props_[our_res->getBitVector().getUnsignedLong()].push_back(fragment_number);
 				fragment_number++;
 			}
-			DEBUG("Done with " << filename << " got " << fragment_number << " fragments so far.");
+			DEBUG("Done with " << filename << ", got " << fragment_number << " fragments so far.");
 		}
-		DEBUG("Loaded " << fragment_number << " fragments from " << path_to_root_directory << "*"
+		DEBUG("Loaded " << fragment_number << " fragments from " << path_to_root_directory << "/*"
 					<< XML_FRAGMENT_FILE_SUFFIX );
+#ifdef BALL_DEBUG_XMLFRAGMENTSTORAGE
+		dumpTables_();
+#endif
 	}
 
 	XMLFragmentStorage::XMLFragmentStorage(const XMLFragmentStorage &other, bool deep)
@@ -250,6 +252,24 @@ const String XMLFragmentStorage::XML_FRAGMENT_FILE_SUFFIX = ".fdb";
 		a_to_b[residuename_a+":"+atomname_a] = residuename_b+":"+atomname_b;
 		NameMap& b_to_a(translation_tables_[convention_b+"-"+convention_a]);
 		b_to_a[residuename_b+":"+atomname_b] = residuename_a+":"+atomname_a;
+	}
+
+	void XMLFragmentStorage::dumpTables_()
+	{
+		Log.info() << "Dumping Translation Tables" << std::endl << std::endl;
+
+		StringHashMap< NameMap >::iterator it;
+		for (it = translation_tables_.begin(); it != translation_tables_.end(); ++it)
+		{
+			Log.info() << "Table " << it->first << std::endl
+			           << "----------------------------" << std::endl;
+			NameMap& the_map(it->second);
+			for (NameMap::iterator entry = the_map.begin(); entry != the_map.end(); ++entry)
+			{
+				Log.info() << entry->first << " -> " << entry->second << std::endl;
+			}
+			Log.info() << std::endl;
+		}
 	}
 
 	class RenameAtoms : public UnaryProcessor<Atom>

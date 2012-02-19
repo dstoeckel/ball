@@ -41,6 +41,7 @@ namespace BALL
 			StringHashMap< size_t > by_name_;
 			StringHashMap< NameMap > translation_tables_;
 			HashMap< unsigned long , list< size_t > > by_props_;
+			void dumpTables_();
 	};
 
 }
