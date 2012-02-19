@@ -23,7 +23,7 @@ namespace BALL
 			case QueryFragmentName:
 				return boost::any(this);
 			default:
-				return NULL;
+				return boost::any();
 		}
 	}
 	
