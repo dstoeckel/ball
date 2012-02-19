@@ -586,6 +586,13 @@ namespace BALL
 		*/
 		void clearProperty(const std::string& name);
 
+		/** Remove named properties with a substring.
+		    Any properties containing <tt>part_of_name</tt> in their name
+		    are removed from the array of properties.
+		    @param substring of the name of the properties which should be removed.
+		*/
+		void clearPropertiesContaining(const string& part_of_name);
+
 		/**	Return the number of named properties.
 				@return Size the number of named properties stored in the ProprtyManager object
 		*/

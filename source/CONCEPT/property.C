@@ -252,6 +252,23 @@ namespace BALL
 		}
 	}
 
+	void PropertyManager::clearPropertiesContaining(const string& part_of_name)
+	{
+		bool end_reached = false;
+		while (!end_reached) {
+			vector<NamedProperty>::iterator it = named_properties_.begin();
+			for (; it != named_properties_.end(); ++it)
+			{
+				if (it->getName().find(part_of_name) != string::npos)
+				{
+					named_properties_.erase(it);
+					break;
+				}
+			}
+			end_reached = true;
+		}
+	}
+
 	bool PropertyManager::hasProperty(const string& name) const
 	{
 		for (std::vector<NamedProperty>::const_iterator it = named_properties_.begin(); it != named_properties_.end(); ++it)
