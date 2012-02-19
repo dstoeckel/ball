@@ -46,6 +46,10 @@
 #include <BALL/STRUCTURE/FRAGMENTDB/connection.h>
 #endif
 
+#ifndef BALL_KERNEL_RESIDUEITERATOR_H
+#include <BALL/KERNEL/residueIterator.h>
+#endif
+
 #include <set>
 #include <QXmlSchema>
 #include <QXmlSchemaValidator>
@@ -113,6 +117,109 @@ namespace BALL
 			}
 		}
 		return variants;
+	}
+
+	class BondCollector : public UnaryProcessor<Bond>
+	{
+		public:
+			BondCollector(StringHashMap< std::vector<const Bond*> > &btp)
+				: bonds_by_partners_(btp)
+			{
+			}
+
+			Processor::Result operator()(Bond& bond)
+			{
+				String partnerA = bond.getFirstAtom()->getName();
+				String partnerB = bond.getSecondAtom()->getName();
+				if (bonds_by_partners_.has(partnerB+"-"+partnerA))
+				{
+					bonds_by_partners_[partnerB+"-"+partnerA].push_back(&bond);
+				}
+				else
+				{
+					// doesn't matter if it doesn't exist then.
+					bonds_by_partners_[partnerA+"-"+partnerB].push_back(&bond);
+				}
+
+				return Processor::CONTINUE;
+			}
+
+		private:
+			StringHashMap< std::vector<const Bond*> > &bonds_by_partners_;
+	};
+
+class AtomCollector : public UnaryProcessor<Atom>
+	{
+		public:
+			AtomCollector(StringHashMap< std::vector<const Atom*> > &atp)
+				: atoms_by_id_(atp)
+			{
+			}
+
+			Processor::Result operator()(Atom& atom)
+			{
+				atoms_by_id_[atom.getName()].push_back(&atom);
+
+				return Processor::CONTINUE;
+			}
+
+		private:
+			StringHashMap< std::vector<const Atom*> > &atoms_by_id_;
+	};
+
+	bool FragmentXMLFile::write(const System &system) {
+		// variants: just collect the names as properties, and separate them on
+		// constructing the dom.
+		StringHashMap< const Residue* > variants;
+		// atoms: collect them grouped by ID.
+		StringHashMap< std::vector<const Atom*> > atoms_by_id;
+		// bonds: collect them grouped by both partners irrelevant of partner order.
+		StringHashMap< std::vector<const Bond*> > bonds_by_partners;
+
+		ResidueConstIterator residue = system.beginResidue();
+		while (residue != system.endResidue())
+		{
+			variants.insert(residue->getName(), &*residue);
+
+			// I'll have to throw away const'ness for a minute
+			// for the processor solution. (Which is far more elegant
+			// compared to a bunch of for loops.) We'll reinstate
+			// const'ness inside the processors...
+			// BTW, why is there no const apply(Processor< const T >) ?
+			Residue& res = const_cast<Residue&>(*residue);
+
+			AtomCollector ac(atoms_by_id);
+			res.apply(ac);
+
+			BondCollector bc(bonds_by_partners);
+			res.applyIntraBond(bc);
+		}
+
+		// okay, all collected, let's build the DOM.
+		delete data_;
+		data_ = new QDomDocument();
+		QDomElement root = data_->createElementNS("http://www.ballview.org/FragmentXML","fragment");
+		data_->appendChild(root);
+		createVariantTags(variants, *data_, root);
+		createAtomTags(atoms_by_id, *data_, root);
+		createBondTags(bonds_by_partners,*data_, root);
+
+		// save the DOM.
+	}
+
+	void FragmentXMLFile::createVariantTags(StringHashMap<const Residue *> &, QDomDocument &, QDomElement &)
+	{
+		// parse names off of residues, create property tags
+	}
+
+	void FragmentXMLFile::createAtomTags(StringHashMap<std::vector<const Atom *> > &, QDomDocument &, QDomElement &)
+	{
+		// figure out properties by variants, connections, occurences...
+	}
+
+	void FragmentXMLFile::createBondTags(StringHashMap<std::vector<const Bond *> > &, QDomDocument &, QDomElement &)
+	{
+		// figure out different orders (if any) and occurences...
 	}
 
 	bool FragmentXMLFile::write(const Molecule &molecule)

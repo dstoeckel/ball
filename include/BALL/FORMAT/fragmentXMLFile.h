@@ -24,6 +24,7 @@ namespace BALL
 				: public GenericMolFile
 	{
 		public:
+		friend class XMLFragmentStorage;
 
 		/**	@name	Constructors and Destructors
 		*/
@@ -44,6 +45,16 @@ namespace BALL
 		 *  Subsequent calls iterate through the variants
 		 */
 		virtual Molecule* read();
+
+		/** Write a System to the file.
+		 *  The System needs to be in FragmentXML layout, i.e.
+		 *  Consist of a molecule per variant, with a residue that
+		 *  contains the information for the variant.
+		 *  (Creating a FragmentXML File is usually done through XML
+		 *  processing outside BALL, so the save functionality
+		 *  is mainly used for editing these files.)
+		 */
+		virtual bool write(const System& system);
 
 		/** Write a single molecule.
 		 *  Unsupported, will print an error and do nothing.
@@ -99,7 +110,11 @@ namespace BALL
 		void collectNameForConventions(PropertyManager& object, StringHashMap<String>& names);
 		/// 
 		void parseConnections(QDomElement&, Atom*);
-		
+
+		void createVariantTags(StringHashMap< const Residue* >&, QDomDocument&, QDomElement&);
+		void createAtomTags(StringHashMap< std::vector<const Atom*> >&, QDomDocument&, QDomElement&);
+		void createBondTags(StringHashMap< std::vector<const Bond*> >&, QDomDocument&, QDomElement&);
+
 		Bond::Order parseBondOrder(const QString&);
 		QDomDocument* data_;
 		Position currentVariant_;
