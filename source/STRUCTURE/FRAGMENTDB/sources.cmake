@@ -6,6 +6,7 @@ propertyFragmentQuery.C
 nameMapQuery.C
 normalizeNamesProcessor.C
 buildBondsProcessor.C
+xmlFragmentStorage.C
 )
 
 ADD_BALL_SOURCES("STRUCTURE/FRAGMENTDB" "${SOURCES_LIST}")
