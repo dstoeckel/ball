@@ -62,6 +62,7 @@ const String XMLFragmentStorage::XML_FRAGMENT_FILE_SUFFIX = ".fdb";
 				by_parent_[our_res->getName()].push_back(fragment_number);
 				// index by unnamed properties
 				by_props_[our_res->getBitVector().getUnsignedLong()].push_back(fragment_number);
+				DEBUG("Registered " << our_res->getFullName() << " alias " << our_res->getName() << " as fragment " << fragment_number);
 				fragment_number++;
 			}
 			DEBUG("Done with " << filename << ", got " << fragment_number << " fragments so far.");
