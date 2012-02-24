@@ -1,6 +1,7 @@
 #include <BALL/STRUCTURE/FRAGMENTDB/xmlFragmentStorage.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/fragmentQuery.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/nameFragmentQuery.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/nameMapQuery.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/propertyFragmentQuery.h>
 #include <BALL/SYSTEM/directory.h>
 #include <BALL/SYSTEM/path.h>
@@ -132,6 +133,24 @@ const String XMLFragmentStorage::XML_FRAGMENT_FILE_SUFFIX = ".fdb";
 							--remaining_results;
 						}
 				}
+		}
+		else if (query.selectsOn(FragmentQuery::QueryNameMap))
+		{
+			NameMapQuery* q;
+			try {
+				q = boost::any_cast<NameMapQuery*>(query.getSelectorDetail(FragmentQuery::QueryNameMap));
+			} catch (boost::bad_any_cast& error) {
+				Log.error() << "ResourceFileFragmentStorage: Unable to process query: " << query.toString() << std::endl;
+				return false;
+			}
+			for (StringHashMap<NameMap>::Iterator it = translation_tables_.begin(); it != translation_tables_.end(); ++it)
+			{
+				if (it->first.hasSubstring(q->getMapName()))
+				{
+					found = true;
+					q->addMap(it->first,& it->second);
+				}
+			}
 		}
 		else if (query.selectsOn(FragmentQuery::QueryFragmentProperties))
 		{
