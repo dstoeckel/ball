@@ -115,7 +115,7 @@ class BuildBondsProcessor
 %End
 	Size getNumberOfBondsBuilt();
 	void setFragmentDB(const FragmentDB&);
-	Size buildFragmentBonds(Fragment&) const;
+	Size buildFragmentBonds(Fragment&);
 	Size buildInterFragmentBonds(Fragment&, Fragment&) const;
 };
 
