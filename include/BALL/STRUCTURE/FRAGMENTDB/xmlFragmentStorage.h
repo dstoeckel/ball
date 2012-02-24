@@ -18,7 +18,7 @@ namespace BALL
 		public:
 			static const String XML_FRAGMENT_FILE_SUFFIX;
 			explicit XMLFragmentStorage(const XMLFragmentStorage& other, bool deep = true);
-			explicit XMLFragmentStorage(const String& our_naming_convention = "BALL",
+			explicit XMLFragmentStorage(const String& our_naming_convention = "PDB/3",
 			                            const String& path_to_root_directory = "fragments_xml");
 
 			bool query(FragmentQuery&);

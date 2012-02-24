@@ -145,7 +145,7 @@ namespace BALL
 		return *this;
 	}
 
-	static String fragmentdb_pdb_dummy_ = "PDB";
+	static String fragmentdb_pdb_dummy_ = "PDB/3";
 
 	const String& FragmentDB::getDefaultNamingStandard() const 
 	{
@@ -223,7 +223,7 @@ namespace BALL
 			make use of more properties of &fragment than is used here. (we only use the name here).
 		*/
 	
-		NameFragmentQuery q(fragment.getName(),"PDB",0);
+		NameFragmentQuery q(fragment.getName(),"PDB/3",0);
 		if (!query(q))
 		{
 			return boost::shared_ptr<Residue>();
@@ -328,7 +328,7 @@ namespace BALL
 
 	list<String> FragmentDB::getVariantNames(const String& name) const
 	{
-		NameFragmentQuery q(name, "PDB", /* unlimited */ 0);
+		NameFragmentQuery q(name, "PDB/3", /* unlimited */ 0);
 		list<String> names;
 
 		if (!query(q))
