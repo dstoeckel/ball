@@ -189,7 +189,7 @@ namespace BALL
 		if (key.split(key_fields, ":") != 2)
 		{
 			// if the include directive is invalid, remove the entry
-			Log.error() << "FragmentDB: illegal #include directive: " << key << endl;
+			Log.error() << "FragmentDB: illegal #include directive: " << key << std::endl;
 			root_entry.getParent()->removeChild(key, 0);
 			return false;
 		} 
@@ -213,14 +213,14 @@ namespace BALL
 			ResourceFile file(filename);
 			if (!file.isValid())
 			{
-				Log.error() << "FragmentDB: cannot open include file " << value_fields[0] << endl;
+				Log.error() << "FragmentDB: cannot open include file " << value_fields[0] << std::endl;
 				return false;
 			}
 				
 			ResourceEntry* tree_entry = file.getRoot().getEntry(value_fields[1]);
 			if (tree_entry == 0)
 			{
-				Log.error() << "FragmentDB: cannot find node " << value_fields[1] << " in file " << value_fields[0] << endl;
+				Log.error() << "FragmentDB: cannot find node " << value_fields[1] << " in file " << value_fields[0] << std::endl;
 			} 
 			else 
 			{
@@ -249,7 +249,7 @@ namespace BALL
 				if (entry_it->getValue().countFields(" ") != 4)
 				{
 					Log.error() << "FragmentDB: wrong entry for atom " << entry_it->getKey() 
-							 << ": " << entry_it->getValue() << endl;
+							 << ": " << entry_it->getValue() << std::endl;
 				} 
 				else 
 				{
@@ -309,7 +309,7 @@ namespace BALL
 					// if at least on of the atoms doesn`t exist: complain about it
 					Log.error() << "FragmentDB: Bond to a non-existing atom: " 
 											<< fields[0] << "-" << fields[1] 
-											<< " (in " << entry_it->getPath() << ")" << endl;
+											<< " (in " << entry_it->getPath() << ")" << std::endl;
 				} 
 				else	
 				{
@@ -319,7 +319,7 @@ namespace BALL
 						Log.error() << "FragmentDB: too many bonds - cannot create bond: " 
 												<< atom1->getName() << "-" << atom2->getName()
 												<< " in fragment " << fragment.getName() 
-												<< " (in " << entry_it->getPath() << ")" << endl;
+												<< " (in " << entry_it->getPath() << ")" << std::endl;
 					} 
 					else 
 					{
@@ -347,7 +347,7 @@ namespace BALL
 										bond->setOrder(Bond::ORDER__SINGLE); break;
 									default:
 										Log.error() << "FragmentDB::parseBonds_: unknown bond type " 
-																<< fields[2] << " (in " << entry_it->getPath() << ")" << endl;
+																<< fields[2] << " (in " << entry_it->getPath() << ")" << std::endl;
 								}
 							}
 						}
@@ -382,7 +382,7 @@ namespace BALL
 				{
 					// if the atom to be deleted doesn`t exist - complain about it!
 					Log.error() << "FragmentDB: cannot delete non-existing atom: "
-																			<< entry_it->getKey() << endl;
+																			<< entry_it->getKey() << std::endl;
 				} 
 				else 
 				{
@@ -419,7 +419,7 @@ namespace BALL
 				{
 					// if the atom to be renamed doesn`t exist - complain about it!
 					Log.error() << "FragmentDB: cannot rename non-existing atom: "
-																			<< entry_it->getKey() << endl;
+																			<< entry_it->getKey() << std::endl;
 				} 
 				else 
 				{
@@ -672,7 +672,7 @@ namespace BALL
 				if (entry == 0)
 				{
 					Log.error() << "FragmentDB: cannot find Atoms entry for " 
-											<< fragment_name << endl;
+											<< fragment_name << std::endl;
 					return;
 				} 
 				else	

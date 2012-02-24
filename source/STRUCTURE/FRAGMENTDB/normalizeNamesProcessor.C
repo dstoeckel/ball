@@ -123,7 +123,7 @@ namespace BALL {
 
 		NameMapQuery query(map_name);
 		if (!fragment_db_->query(query)) {
-			Log.error() << error_msg << "(Tried to find: "<<map_name <<")" << endl;
+			Log.error() << error_msg << "(Tried to find: "<<map_name <<")" << std::endl;
 			return false;
 		}
 		const StringHashMap<NameMapQuery::NameMap*>& table = query.getMaps();
@@ -179,7 +179,7 @@ namespace BALL {
 			else
 			{
 				// if we couldn't find an appropriate table, complain about it!
-				Log.error() << error_msg << endl;
+				Log.error() << error_msg << std::endl;
 			}
 		}
 
@@ -196,7 +196,7 @@ namespace BALL {
 			else
 			{
 				// if we couldn't find an appropriate table, complain about it!
-				Log.info() << error_msg << endl;
+				Log.info() << error_msg << std::endl;
 				StringHashMap<NameMapQuery::NameMap*>::ConstIterator it = table.begin();
 				for (; it != table.end(); ++it) {
 					Log.info() << "Score:" << it->first << " = " << usable_maps[it->second] << std::endl;
