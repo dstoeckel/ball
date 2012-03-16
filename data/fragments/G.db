@@ -70,7 +70,7 @@
 		<node>28<value>C1* H1* s</value></node>
 		<node>29<value>C3* H3* s</value></node>
 		<node>30<value>C2* 1H2* s</value></node>
-	        <node>31<value>C2* 2H2* s</value></node>
+	    <node>31<value>C2* 2H2* s</value></node>
 		<node>32<value>C8 H8 s</value></node>
 		<node>33<value>N1 1H s</value></node>
 		<node>34<value>N2 1H2 s</value></node>
@@ -82,7 +82,7 @@
 	</node>
   	<node>Properties
     		<node>NUCLEOTIDE</node>
-  		</node>
+    </node>
   	<node>Variants
     		<node>G-M
       			<node>Properties
@@ -95,8 +95,9 @@
       			</node>
     		</node>
     		<node>G-5
-      		<node>Properties
-        		<node>5_PRIME</node>
+      			<node>Properties
+        			<node>5_PRIME</node>
+      			</node>
       		</node>
     		<node>G-3
       			<node>Properties
