@@ -77,6 +77,7 @@ namespace BALL
 			private:
 				void checkBondOrderActions_(unsigned int bo);
 				void createContextMenuEntries_();
+				FragmentDB* createFragmentDB_();
 		};
 
 	}

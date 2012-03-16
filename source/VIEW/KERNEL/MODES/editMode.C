@@ -538,7 +538,7 @@ namespace BALL
 
 			if (!fragment_db_)
 			{
-				fragment_db_ = new FragmentDB("fragments/Editing-Fragments.db");
+				fragment_db_ = createFragmentDB_();
 			}
 
 			list<AtomContainer*> acs = scene_->getContainers();
@@ -674,7 +674,7 @@ namespace BALL
 
 			if (!fragment_db_)
 			{
-				fragment_db_ = new FragmentDB("fragments/Editing-Fragments.db");
+				fragment_db_ = createFragmentDB_();
 			}
 
 			createContextMenuEntries_();
@@ -741,7 +741,7 @@ namespace BALL
 
 			if (!fragment_db_)
 			{
-				fragment_db_ = new FragmentDB("fragments/Editing-Fragments.db");
+				fragment_db_ = createFragmentDB_();
 			}
 
 			list<AtomContainer*> containers = scene_->getContainers();
@@ -1123,6 +1123,13 @@ namespace BALL
 				nas->addAction(tr("Uracil"),   this, SLOT(addStructure_()));
 			}
 
+		}
+
+		FragmentDB* EditMode::createFragmentDB_() {
+			FragmentDB* db = new FragmentDB();
+			boost::shared_ptr<FragmentStorage> store(new ResourceFileFragmentStorage("fragments/Editing-Fragments.db"));
+			db.addStore(store);
+			return db;
 		}
 
 		void EditMode::checkBondOrderActions_(unsigned int bo)
