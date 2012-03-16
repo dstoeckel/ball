@@ -83,8 +83,10 @@ void AddCartoonModel::assignModelType(ModelPart& part)
 	
 	// is this a chain with nucleic acids?
 	const String name = residue.getName();
-	if (name.size() == 1 &&
+	if ((name.size() == 1 &&
 			(name == "A" || name == "C" || name == "G" || name == "T" || name == "U"))
+	  ||(name.size() == 2 &&
+			(name == "DC" || name == "DG" || name == "DT" || name == "DA" || name == "DU")))
 	{
 		part.type = NUCLEIC_ACID;
 		return;
@@ -542,7 +544,17 @@ void AddCartoonModel::createWatsonCrickModel_(Position set_pos, Position part_po
 	for (Position p = 0; p < residues.size(); p++)
 	{
 		Residue* r = residues[p];
-		if (r->getName().size() != 1) continue;
+		char rname;
+		if (r->getName().size() > 2) continue;
+		if (r->getName().size() == 1)
+		{
+			rname = r->getName()[0];
+		}
+		else
+		{
+			if (r->getName()[0] != 'D') continue;
+			rname = r->getName()[1];
+		}
 		Mesh* mesh;
 
 		vector<Vector3> positions;
@@ -550,7 +562,6 @@ void AddCartoonModel::createWatsonCrickModel_(Position set_pos, Position part_po
 		Atom* atoms[11];
 
 		vector<Atom*> hbond_atoms;
-		char rname = r->getName()[0];
 
 		if (rname == 'A' ||
 				rname == 'G')
@@ -633,7 +644,11 @@ void AddCartoonModel::createWatsonCrickModel_(Position set_pos, Position part_po
 		// --------------------------------------------
 
 		String atom_names[9] = {"C1*", "C2*", "C3*", "C4*", "O4*", "", "", "", ""};
-		if (!assignNucleotideAtoms_(*r, 5, atom_names, atoms)) continue;
+		if (!assignNucleotideAtoms_(*r, 5, atom_names, atoms))
+		{
+			String atom_names_new[9] = {"C1'", "C2'", "C3'", "C4'", "O4'", "", "", "", ""};
+			if (!assignNucleotideAtoms_(*r, 5, atom_names_new, atoms)) continue;
+		}
 
 		atoms[5] = atoms[0];
 
@@ -1033,13 +1048,13 @@ void AddCartoonModel::createSimpleNucleicAcid_(Position set_pos, Position part_p
 		if (!complementary_bases_.has(res))
 		{
 			String atom_name;
-			if (res->getName() == "A" ||
+			if (res->getName() == "A" || res->getName() == "DA" || res->getName() == "DG" ||
 					res->getName() == "G")
 			{
 				atom_name = "C6";
 			}
-			else if (res->getName() == "C") atom_name = "C4";
-			else if (res->getName() == "T") atom_name = "N3";
+			else if (res->getName() == "C"|| res->getName() == "DC") atom_name = "C4";
+			else if (res->getName() == "T"|| res->getName() == "DT") atom_name = "N3";
 				
 			const Atom* end_atom = 0;
 			BALL_FOREACH_ATOM(*res, ait)

@@ -123,7 +123,8 @@ bool AddBackboneModel::collectPositions(vector<Residue*> residues)
 	vector<Index> sss;
 
 	// nucleotides?
-	if (name.size() == 1 && (c == 'C' || c == 'G' || c == 'T' || c == 'A' || c == 'U'))
+	if ((name.size() == 1 && (c == 'C' || c == 'G' || c == 'T' || c == 'A' || c == 'U'))
+	 || (name.size() == 2 && (name == "DC" || name == "DG" || name == "DT" || name == "DA" || name == "DU")))
 	{
 		for (Position r = 0; r < residues.size(); r++)
 		{
@@ -134,7 +135,7 @@ bool AddBackboneModel::collectPositions(vector<Residue*> residues)
 			{
 				if (r == 0)
 				{
-					if (it->getName() == "O5*")
+					if (it->getName() == "O5*" || it->getName() == "O5'")
 					{
 						backbones.push_back(it->getPosition());
 						found ++;
@@ -149,7 +150,7 @@ bool AddBackboneModel::collectPositions(vector<Residue*> residues)
 					}
 				}
 
-				if (it->getName() == "C1*")
+				if (it->getName() == "C1*" || it->getName() == "C1'")
 				{
 					offsets.push_back(it->getPosition());
 					found ++;
