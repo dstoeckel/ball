@@ -3,6 +3,8 @@
 #include <BALL/KERNEL/nucleicAcid.h>
 #include <BALL/KERNEL/chain.h>
 
+#include <boost/algorithm/string/predicate.hpp>
+
 //#define BALL_DEBUG_BUILDBONDSPROCESSOR
 
 #ifdef BALL_DEBUG_BUILDBONDSPROCESSOR
@@ -188,17 +190,21 @@ namespace BALL {
 			
 			// if tplate_atom has a connection, store it for &*frag_atom_it.
 			// so inter-fragment connections can be built in the finish() step.
-			if (tplate_atom->hasProperty("CONNECTION")) {
-				DEBUG(tplate_atom->getName() << " has a Connection entry (inter-fragment bond).")
-				boost::shared_ptr<Connection> con;
-				con = boost::dynamic_pointer_cast<Connection>(tplate_atom->getProperty("CONNECTION").getSmartObject());
-				if (con) {
-					Connection conn = *con;
-					conn.atom = &*frag_atom_it;
-					DEBUG("Storing connection entry (" << conn.type_name << ") for later.")
+			NamedPropertyIterator it = tplate_atom->beginNamedProperty();
+			while (it != tplate_atom->endNamedProperty()) {
+				if ((it->getType() == NamedProperty::SMART_OBJECT) && boost::starts_with(it->getName(),"CONNECTION")) {
+					DEBUG(tplate_atom->getName() << " has a Connection entry (inter-fragment bond).")
+					boost::shared_ptr<Connection> con;
+					con = boost::dynamic_pointer_cast<Connection>(it->getSmartObject());
+					if (con) {
+						Connection conn = *con;
+						conn.atom = &*frag_atom_it;
+						DEBUG("Storing connection entry (" << conn.type_name << ") for later.")
 
-					connections_.push_back(conn);
+						connections_.push_back(conn);
+					}
 				}
+				++it;
 			}
 
 			// we found two matching atoms. Great! Now check their bonds..
