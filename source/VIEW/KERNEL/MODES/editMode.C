@@ -19,6 +19,7 @@
 #include <BALL/QSAR/ringPerceptionProcessor.h>
 #include <BALL/STRUCTURE/geometricTransformations.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/propertyFragmentQuery.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/resourceFileFragmentStorage.h>
 
 #include <BALL/VIEW/WIDGETS/scene.h>
 #include <BALL/VIEW/KERNEL/mainControl.h>
@@ -1128,7 +1129,7 @@ namespace BALL
 		FragmentDB* EditMode::createFragmentDB_() {
 			FragmentDB* db = new FragmentDB();
 			boost::shared_ptr<FragmentStorage> store(new ResourceFileFragmentStorage("fragments/Editing-Fragments.db"));
-			db.addStore(store);
+			db->addStore(store);
 			return db;
 		}
 
