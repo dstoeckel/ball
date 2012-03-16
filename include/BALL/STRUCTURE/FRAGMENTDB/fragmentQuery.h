@@ -26,7 +26,8 @@ namespace BALL
 		 *  will return a pointer to the corresponding detail Class.
 		 */
 		enum QuerySelector {
-			QueryFragmentName,     //< will return a pointer to a #NameFragmentQuery
+			QueryFragmentName = 0,     //< will return a pointer to a #NameFragmentQuery
+			QueryFragmentProperties = 1,
 //			QueryFragmentVariants, //< will return a pointer to a #VariantFragmentQuery
 			QueryConnectionTable,
 			MAX_QUERYSELECTORS

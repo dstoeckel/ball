@@ -1,5 +1,7 @@
 #include <BALL/STRUCTURE/FRAGMENTDB/resourceFileFragmentStorage.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/fragmentQuery.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/propertyFragmentQuery.h>
+
 #include <BALL/KERNEL/atom.h>
 #include <BALL/KERNEL/bond.h>
 #include <BALL/KERNEL/PTE.h>
@@ -76,6 +78,40 @@ namespace BALL
 					found = true;
 					++it;
 					--remaining_results;
+				}
+			}
+		}
+		else if (query.selectsOn(FragmentQuery::QueryFragmentProperties))
+		{
+			PropertyFragmentQuery* q = static_cast<PropertyFragmentQuery*>(query.getSelectorDetail(FragmentQuery::QueryFragmentProperties));
+
+			BitVector tplate = q->getPropertyManager().getBitVector();
+
+			// TODO: yes, this is as inefficient as it looks.
+			std::vector<Residue*>::iterator fragment = fragments_.begin();
+			for (; fragment != fragments_.end(); ++fragment)
+			{
+				if ((tplate & (*fragment)->getBitVector()) == tplate)
+				{
+					// all bits in the template are also present in the fragment
+					// now check the named properties. (TODO: test equality here?)
+					bool namedPropsOK = true;
+					NamedPropertyIterator namedProp = q->getPropertyManager().beginNamedProperty();
+					NamedPropertyIterator end = q->getPropertyManager().endNamedProperty();
+					for (; (namedProp != end) && namedPropsOK; ++namedProp)
+					{
+						if (!(*fragment)->hasProperty(namedProp->getName()))
+						{
+							namedPropsOK = false;
+						}
+					}
+					if (namedPropsOK)
+					{
+						boost::shared_ptr<Residue> frag_copy_p(
+							new Residue(**fragment)
+						);
+						query.addResult(frag_copy_p);
+					}
 				}
 			}
 		}

@@ -18,6 +18,7 @@
 #include <BALL/KERNEL/system.h>
 #include <BALL/QSAR/ringPerceptionProcessor.h>
 #include <BALL/STRUCTURE/geometricTransformations.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/propertyFragmentQuery.h>
 
 #include <BALL/VIEW/WIDGETS/scene.h>
 #include <BALL/VIEW/KERNEL/mainControl.h>
@@ -1101,19 +1102,18 @@ namespace BALL
 				nas_action->setText(tr("Nucleic acids"));
 
 				HashSet<String> names;
-				const std::vector<Residue*>& residues = fragment_db_->getFragments();
-				vector<Residue*>::const_iterator rit = residues.begin();
-				vector<Residue*> nucleotides;
-				for (;rit != residues.end();++rit)
+				PropertyManager desired_props;
+				desired_props.setProperty(Residue::PROPERTY__AMINO_ACID);
+				PropertyFragmentQuery nucleotideQuery(desired_props);
+				fragment_db_->query(nucleotideQuery);
+				FragmentQuery::ResultSet::iterator nucleotide = nucleotideQuery.getResults().begin();
+				for (;nucleotide != nucleotideQuery.getResults().end(); ++nucleotide)
 				{
-					String name = (**rit).getName();
-					if ((**rit).isAminoAcid())
-					{
-						if (names.has(name)) continue;
-						names.insert(name);
-						aas->addAction(name.c_str(), this, SLOT(addStructure_()));
-						continue;
-					}
+					String name = (*nucleotide)->getName();
+					if (names.has(name)) continue;
+					names.insert(name);
+					aas->addAction(name.c_str(), this, SLOT(addStructure_()));
+					continue;
 				}
 
 				nas->addAction(tr("Alanine"),  this, SLOT(addStructure_()));
