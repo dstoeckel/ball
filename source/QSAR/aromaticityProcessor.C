@@ -9,6 +9,7 @@
 #include <BALL/QSAR/ringPerceptionProcessor.h>
 #include <BALL/KERNEL/forEach.h>
 #include <BALL/KERNEL/PTE.h>
+#include <BALL/KERNEL/bond.h>
 
 #include <limits>
 
