@@ -1,0 +1,621 @@
+<?xml version="1.0"?>
+<fragment xmlns="http://www.ballview.org/FragmentXML">
+  <variant id="DT">
+    <name convention="PDB/2 PDB/3">DT</name>
+    <name convention="HumanReadable_en">THYMIDINE-5'-MONOPHOSPHATE</name>
+  </variant>
+  <atoms>
+    <atom id="OP3">
+      <element>O</element>
+      <name convention="PDB/3">OP3</name>
+      <name convention="PDB/2">O3P</name>
+      <position x="-3.912" y="-2.311" z="1.636">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="P">
+      <element>P</element>
+      <name convention="PDB/2 PDB/3">P</name>
+      <position x="-3.968" y="-1.665" z="3.118">
+        <in variant="DT"/>
+      </position>
+    <connection type="5-term" partnertype="3-term" order="1" distance="1.62" deviation="0.5"/></atom>
+    <atom id="OP1">
+      <element>O</element>
+      <name convention="PDB/3">OP1</name>
+      <name convention="PDB/2">O1P</name>
+      <position x="-4.406" y="-2.599" z="4.208">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="OP2">
+      <element>O</element>
+      <name convention="PDB/3">OP2</name>
+      <name convention="PDB/2">O2P</name>
+      <position x="-4.901" y="-0.360" z="2.920">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="O5'">
+      <element>O</element>
+      <name convention="PDB/3">O5'</name>
+      <name convention="PDB/2">O5*</name>
+      <position x="-2.493" y="-1.028" z="3.315">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C5'">
+      <element>C</element>
+      <name convention="PDB/3">C5'</name>
+      <name convention="PDB/2">C5*</name>
+      <position x="-2.005" y="-0.136" z="2.327">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C4'">
+      <element>C</element>
+      <name convention="PDB/3">C4'</name>
+      <name convention="PDB/2">C4*</name>
+      <position x="-0.611" y="0.328" z="2.728">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="O4'">
+      <element>O</element>
+      <name convention="PDB/3">O4'</name>
+      <name convention="PDB/2">O4*</name>
+      <position x="0.247" y="-0.829" z="2.764">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C3'">
+      <element>C</element>
+      <name convention="PDB/3">C3'</name>
+      <name convention="PDB/2">C3*</name>
+      <position x="0.008" y="1.286" z="1.720">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="O3'">
+      <element>O</element>
+      <name convention="PDB/3">O3'</name>
+      <name convention="PDB/2">O3*</name>
+      <position x="0.965" y="2.121" z="2.368">
+        <in variant="DT"/>
+      </position>
+    <connection type="3-term" partnertype="5-term" order="1" distance="1.62" deviation="0.5"/></atom>
+    <atom id="C2'">
+      <element>C</element>
+      <name convention="PDB/3">C2'</name>
+      <name convention="PDB/2">C2*</name>
+      <position x="0.710" y="0.360" z="0.754">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C1'">
+      <element>C</element>
+      <name convention="PDB/3">C1'</name>
+      <name convention="PDB/2">C1*</name>
+      <position x="1.157" y="-0.778" z="1.657">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="N1">
+      <element>N</element>
+      <name convention="PDB/2 PDB/3">N1</name>
+      <position x="1.164" y="-2.047" z="0.989">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C2">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3">C2</name>
+      <position x="2.333" y="-2.544" z="0.374">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="O2">
+      <element>O</element>
+      <name convention="PDB/2 PDB/3">O2</name>
+      <position x="3.410" y="-1.945" z="0.363">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="N3">
+      <element>N</element>
+      <name convention="PDB/2 PDB/3">N3</name>
+      <position x="2.194" y="-3.793" z="-0.240">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C4">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3">C4</name>
+      <position x="1.047" y="-4.570" z="-0.300">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="O4">
+      <element>O</element>
+      <name convention="PDB/2 PDB/3">O4</name>
+      <position x="0.995" y="-5.663" z="-0.857">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C5">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3">C5</name>
+      <position x="-0.143" y="-3.980" z="0.369">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C7">
+      <element>C</element>
+      <name convention="PDB/3">C7</name>
+      <name convention="PDB/2">C5M</name>
+      <position x="-1.420" y="-4.757" z="0.347">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="C6">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3">C6</name>
+      <position x="-0.013" y="-2.784" z="0.958">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="HOP3">
+      <element>H</element>
+      <name convention="PDB/3">HOP3</name>
+      <name convention="PDB/2">3HOP</name>
+      <position x="-4.684" y="-2.823" z="1.313">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="HOP2">
+      <element>H</element>
+      <name convention="PDB/3">HOP2</name>
+      <name convention="PDB/2">2HOP</name>
+      <position x="-5.874" y="-0.475" z="2.871">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H5'">
+      <element>H</element>
+      <name convention="PDB/3">H5'</name>
+      <name convention="PDB/2">1H5*</name>
+      <position x="-1.971" y="-0.654" z="1.366">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H5''">
+      <element>H</element>
+      <name convention="PDB/3">H5''</name>
+      <name convention="PDB/2">2H5*</name>
+      <position x="-2.683" y="0.718" z="2.254">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H4'">
+      <element>H</element>
+      <name convention="PDB/3">H4'</name>
+      <name convention="PDB/2">H4*</name>
+      <position x="-0.644" y="0.753" z="3.736">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H3'">
+      <element>H</element>
+      <name convention="PDB/3">H3'</name>
+      <name convention="PDB/2">H3*</name>
+      <position x="-0.722" y="1.941" z="1.236">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="HO3'">
+      <element>H</element>
+      <name convention="PDB/3">HO3'</name>
+      <name convention="PDB/2">H3T</name>
+      <position x="0.743" y="3.042" z="2.146">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H2'">
+      <element>H</element>
+      <name convention="PDB/3">H2'</name>
+      <name convention="PDB/2">1H2*</name>
+      <position x="-0.003" y="-0.001" z="0.003">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H2''">
+      <element>H</element>
+      <name convention="PDB/3">H2''</name>
+      <name convention="PDB/2">2H2*</name>
+      <position x="1.556" y="0.818" z="0.232">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H1'">
+      <element>H</element>
+      <name convention="PDB/3">H1'</name>
+      <name convention="PDB/2">H1*</name>
+      <position x="2.163" y="-0.604" z="2.054">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H3">
+      <element>H</element>
+      <name convention="PDB/2 PDB/3">H3</name>
+      <position x="3.023" y="-4.171" z="-0.689">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H71">
+      <element>H</element>
+      <name convention="PDB/3">H71</name>
+      <name convention="PDB/2">1H5M</name>
+      <position x="-1.735" y="-4.916" z="-0.683">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H72">
+      <element>H</element>
+      <name convention="PDB/3">H72</name>
+      <name convention="PDB/2">2H5M</name>
+      <position x="-2.195" y="-4.208" z="0.881">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H73">
+      <element>H</element>
+      <name convention="PDB/3">H73</name>
+      <name convention="PDB/2">3H5M</name>
+      <position x="-1.272" y="-5.721" z="0.833">
+        <in variant="DT"/>
+      </position>
+    </atom>
+    <atom id="H6">
+      <element>H</element>
+      <name convention="PDB/2 PDB/3">H6</name>
+      <position x="-0.857" y="-2.318" z="1.458">
+        <in variant="DT"/>
+      </position>
+    </atom>
+  </atoms>
+  <bonds>
+    <bond>
+      <partner atom="OP3"/>
+      <partner atom="P"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="OP3"/>
+      <partner atom="HOP3"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="P"/>
+      <partner atom="OP1"/>
+      <occurs>
+        <as order="2">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="P"/>
+      <partner atom="OP2"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="P"/>
+      <partner atom="O5'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="OP2"/>
+      <partner atom="HOP2"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="O5'"/>
+      <partner atom="C5'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C5'"/>
+      <partner atom="C4'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C5'"/>
+      <partner atom="H5'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C5'"/>
+      <partner atom="H5''"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C4'"/>
+      <partner atom="O4'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C4'"/>
+      <partner atom="C3'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C4'"/>
+      <partner atom="H4'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="O4'"/>
+      <partner atom="C1'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C3'"/>
+      <partner atom="O3'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C3'"/>
+      <partner atom="C2'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C3'"/>
+      <partner atom="H3'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="O3'"/>
+      <partner atom="HO3'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C2'"/>
+      <partner atom="C1'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C2'"/>
+      <partner atom="H2'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C2'"/>
+      <partner atom="H2''"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C1'"/>
+      <partner atom="N1"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C1'"/>
+      <partner atom="H1'"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="N1"/>
+      <partner atom="C2"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="N1"/>
+      <partner atom="C6"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C2"/>
+      <partner atom="O2"/>
+      <occurs>
+        <as order="2">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C2"/>
+      <partner atom="N3"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="N3"/>
+      <partner atom="C4"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="N3"/>
+      <partner atom="H3"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C4"/>
+      <partner atom="O4"/>
+      <occurs>
+        <as order="2">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C4"/>
+      <partner atom="C5"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C5"/>
+      <partner atom="C7"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C5"/>
+      <partner atom="C6"/>
+      <occurs>
+        <as order="2">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C7"/>
+      <partner atom="H71"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C7"/>
+      <partner atom="H72"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C7"/>
+      <partner atom="H73"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C6"/>
+      <partner atom="H6"/>
+      <occurs>
+        <as order="1">
+          <in variant="DT"/>
+        </as>
+      </occurs>
+    </bond>
+  </bonds>
+</fragment>

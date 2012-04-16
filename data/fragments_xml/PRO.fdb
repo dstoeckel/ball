@@ -1,0 +1,290 @@
+<?xml version="1.0"?>
+<fragment xmlns="http://www.ballview.org/FragmentXML">
+  <variant id="PRO">
+    <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">PRO</name>
+    <name convention="HumanReadable_en">PROLINE</name>
+  </variant>
+  <atoms>
+    <atom id="N">
+      <element>N</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">N</name>
+      <position x="-0.816" y="1.108" z="0.254">
+        <in variant="PRO"/>
+      </position>
+    <connection type="N-term" partnertype="C-term" order="1" distance="1.33" deviation="0.5"/></atom>
+    <atom id="CA">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">CA</name>
+      <position x="0.001" y="-0.107" z="0.509">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="C">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">C</name>
+      <position x="1.408" y="0.091" z="0.005">
+        <in variant="PRO"/>
+      </position>
+    <connection type="C-term" partnertype="N-term" order="1" distance="1.33" deviation="0.5"/></atom>
+    <atom id="O">
+      <element>O</element>
+      <name convention="PDB/2 PDB/3 Amber Discover Star XPLOR">O</name><name convention="CHARMM">OCT1</name>
+      <position x="1.650" y="0.980" z="-0.777">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="CB">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">CB</name>
+      <position x="-0.703" y="-1.227" z="-0.286">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="CG">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">CG</name>
+      <position x="-2.163" y="-0.753" z="-0.439">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="CD">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">CD</name>
+      <position x="-2.218" y="0.614" z="0.276">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="OXT">
+      <element>O</element>
+      <name convention="PDB/2 PDB/3 Amber">OXT</name><name convention="CHARMM">OCT2</name><name convention="Star">OT2</name>
+      <position x="2.391" y="-0.721" z="0.424">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="H">
+      <element>H</element>
+      <name convention="PDB/3 Amber CHARMM Star XPLOR">H</name>
+      <name convention="PDB/2">HT1</name><name convention="Discover">HN</name>
+      <position x="-0.707" y="1.708" z="1.057">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="HA">
+      <element>H</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">HA</name>
+      <position x="0.009" y="-0.343" z="1.573">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="HB2">
+      <element>H</element>
+      <name convention="PDB/3 Amber CHARMM Star">HB2</name>
+      <name convention="PDB/2">1HB</name><name convention="Discover XPLOR">HB1</name>
+      <position x="-0.240" y="-1.345" z="-1.266">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="HB3">
+      <element>H</element>
+      <name convention="PDB/3 Amber CHARMM Star">HB3</name>
+      <name convention="PDB/2">2HB</name><name convention="Discover XPLOR">HB2</name>
+      <position x="-0.666" y="-2.165" z="0.267">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="HG2">
+      <element>H</element>
+      <name convention="PDB/3 Amber CHARMM Star">HG2</name>
+      <name convention="PDB/2">1HG</name><name convention="Discover XPLOR">HG1</name>
+      <position x="-2.416" y="-0.638" z="-1.493">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="HG3">
+      <element>H</element>
+      <name convention="PDB/3 Amber CHARMM Star">HG3</name>
+      <name convention="PDB/2">2HG</name><name convention="Discover XPLOR">HG2</name>
+      <position x="-2.843" y="-1.458" z="0.040">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="HD2">
+      <element>H</element>
+      <name convention="PDB/3 Amber CHARMM Star">HD2</name>
+      <name convention="PDB/2">1HD</name><name convention="Discover XPLOR">HD1</name>
+      <position x="-2.872" y="1.300" z="-0.263">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="HD3">
+      <element>H</element>
+      <name convention="PDB/3 Amber CHARMM Star">HD3</name>
+      <name convention="PDB/2">2HD</name><name convention="Discover XPLOR">HD2</name>
+      <position x="-2.559" y="0.492" z="1.304">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+    <atom id="HXT">
+      <element>H</element>
+      <name convention="PDB/2 PDB/3">HXT</name>
+      <position x="3.293" y="-0.594" z="0.101">
+        <in variant="PRO"/>
+      </position>
+    </atom>
+  </atoms>
+  <bonds>
+    <bond>
+      <partner atom="N"/>
+      <partner atom="CA"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="N"/>
+      <partner atom="CD"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="N"/>
+      <partner atom="H"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CA"/>
+      <partner atom="C"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CA"/>
+      <partner atom="CB"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CA"/>
+      <partner atom="HA"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C"/>
+      <partner atom="O"/>
+      <occurs>
+        <as order="2">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C"/>
+      <partner atom="OXT"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CB"/>
+      <partner atom="CG"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CB"/>
+      <partner atom="HB2"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CB"/>
+      <partner atom="HB3"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CG"/>
+      <partner atom="CD"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CG"/>
+      <partner atom="HG2"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CG"/>
+      <partner atom="HG3"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CD"/>
+      <partner atom="HD2"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CD"/>
+      <partner atom="HD3"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="OXT"/>
+      <partner atom="HXT"/>
+      <occurs>
+        <as order="1">
+          <in variant="PRO"/>
+        </as>
+      </occurs>
+    </bond>
+  </bonds>
+</fragment>

@@ -1,0 +1,311 @@
+<?xml version="1.0"?>
+<fragment xmlns="http://www.ballview.org/FragmentXML">
+  <variant id="GLU">
+    <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">GLU</name>
+    <name convention="HumanReadable_en">GLUTAMIC ACID</name>
+  </variant>
+  <atoms>
+    <atom id="N">
+      <element>N</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">N</name>
+      <position x="1.199" y="1.867" z="-0.117">
+        <in variant="GLU"/>
+      </position>
+    <connection type="N-term" partnertype="C-term" order="1" distance="1.33" deviation="0.5"/></atom>
+    <atom id="CA">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">CA</name>
+      <position x="1.138" y="0.515" z="0.453">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="C">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">C</name>
+      <position x="2.364" y="-0.260" z="0.041">
+        <in variant="GLU"/>
+      </position>
+    <connection type="C-term" partnertype="N-term" order="1" distance="1.33" deviation="0.5"/></atom>
+    <atom id="O">
+      <element>O</element>
+      <name convention="PDB/2 PDB/3 Amber Discover Star XPLOR">O</name><name convention="CHARMM">OCT1</name>
+      <position x="3.010" y="0.096" z="-0.916">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="CB">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">CB</name>
+      <position x="-0.113" y="-0.200" z="-0.062">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="CG">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">CG</name>
+      <position x="-1.360" y="0.517" z="0.461">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="CD">
+      <element>C</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">CD</name>
+      <position x="-2.593" y="-0.187" z="-0.046">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="OE1">
+      <element>O</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">OE1</name>
+      <position x="-2.485" y="-1.161" z="-0.753">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="OE2">
+      <element>O</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">OE2</name>
+      <position x="-3.811" y="0.269" z="0.287">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="OXT">
+      <element>O</element>
+      <name convention="PDB/2 PDB/3 Amber">OXT</name><name convention="CHARMM">OCT2</name><name convention="Star">OT2</name>
+      <position x="2.737" y="-1.345" z="0.737">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="H">
+      <element>H</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Star XPLOR">H</name><name convention="Discover">HN</name>
+      <position x="1.237" y="1.834" z="-1.125">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="H2">
+      <element>H</element>
+      <name convention="PDB/3">H2</name>
+      <name convention="PDB/2">HN2</name>
+      <position x="0.421" y="2.427" z="0.197">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="HA">
+      <element>H</element>
+      <name convention="PDB/2 PDB/3 Amber CHARMM Discover Star XPLOR">HA</name>
+      <position x="1.098" y="0.580" z="1.540">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="HB2">
+      <element>H</element>
+      <name convention="PDB/3">HB2</name>
+      <name convention="PDB/2">HB1</name>
+      <position x="-0.117" y="-0.187" z="-1.152">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="HB3">
+      <element>H</element>
+      <name convention="PDB/3">HB3</name>
+      <name convention="PDB/2">HB2</name>
+      <position x="-0.113" y="-1.231" z="0.289">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="HG2">
+      <element>H</element>
+      <name convention="PDB/3">HG2</name>
+      <name convention="PDB/2">HG1</name>
+      <position x="-1.357" y="0.504" z="1.551">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="HG3">
+      <element>H</element>
+      <name convention="PDB/3">HG3</name>
+      <name convention="PDB/2">HG2</name>
+      <position x="-1.360" y="1.548" z="0.109">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="HE2">
+      <element>H</element>
+      <name convention="PDB/2 PDB/3">HE2</name>
+      <position x="-4.571" y="-0.215" z="-0.062">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+    <atom id="HXT">
+      <element>H</element>
+      <name convention="PDB/2 PDB/3">HXT</name>
+      <position x="3.530" y="-1.809" z="0.435">
+        <in variant="GLU"/>
+      </position>
+    </atom>
+  </atoms>
+  <bonds>
+    <bond>
+      <partner atom="N"/>
+      <partner atom="CA"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="N"/>
+      <partner atom="H"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="N"/>
+      <partner atom="H2"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CA"/>
+      <partner atom="C"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CA"/>
+      <partner atom="CB"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CA"/>
+      <partner atom="HA"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C"/>
+      <partner atom="O"/>
+      <occurs>
+        <as order="2">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="C"/>
+      <partner atom="OXT"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CB"/>
+      <partner atom="CG"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CB"/>
+      <partner atom="HB2"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CB"/>
+      <partner atom="HB3"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CG"/>
+      <partner atom="CD"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CG"/>
+      <partner atom="HG2"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CG"/>
+      <partner atom="HG3"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CD"/>
+      <partner atom="OE1"/>
+      <occurs>
+        <as order="2">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="CD"/>
+      <partner atom="OE2"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="OE2"/>
+      <partner atom="HE2"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+    <bond>
+      <partner atom="OXT"/>
+      <partner atom="HXT"/>
+      <occurs>
+        <as order="1">
+          <in variant="GLU"/>
+        </as>
+      </occurs>
+    </bond>
+  </bonds>
+</fragment>
