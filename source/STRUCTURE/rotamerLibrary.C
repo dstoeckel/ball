@@ -6,6 +6,7 @@
 #include <BALL/FORMAT/SCWRLRotamerFile.h>
 #include <BALL/SYSTEM/path.h>
 #include <BALL/MATHS/common.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/nameFragmentQuery.h>
 
 #include <algorithm>
 
@@ -210,7 +211,13 @@ namespace BALL
 		}
 		else
 		{
-			bb_dep_sets_[phi][psi].insert(make_pair(name, ResidueRotamerSet(*fragment_db_.getResidue(name), number_of_torsions)));
+			NameFragmentQuery query(name);
+			if(!fragment_db_.query(query) || query.getResults().empty())
+			{
+				return;
+			}
+
+			bb_dep_sets_[phi][psi].insert(make_pair(name, ResidueRotamerSet(*query.getResults().begin()->get(), number_of_torsions)));
 			bb_dep_sets_[phi][psi][name].setTorsionPhi(Angle(phi, false));
 			bb_dep_sets_[phi][psi][name].setTorsionPsi(Angle(psi, false));
 			bb_dep_sets_[phi][psi][name].addRotamer(rotamer);
@@ -225,7 +232,14 @@ namespace BALL
 		}
 		else
 		{
-			bb_indep_sets_.insert(make_pair(name, ResidueRotamerSet(*fragment_db_.getResidue(name), number_of_torsions)));
+			NameFragmentQuery query(name);
+			if(!fragment_db_.query(query) || query.getResults().empty())
+			{
+				return;
+			}
+
+			fragment_db_.query(query);
+			bb_indep_sets_.insert(make_pair(name, ResidueRotamerSet(*query.getResults().begin()->get(), number_of_torsions)));
 			bb_indep_sets_[name].addRotamer(rotamer);
 		}
 		return;
