@@ -18,6 +18,8 @@
 #include <BALL/KERNEL/system.h>
 #include <BALL/QSAR/ringPerceptionProcessor.h>
 #include <BALL/STRUCTURE/geometricTransformations.h>
+#include <BALL/STRUCTURE/fragmentDB.h>
+#include <BALL/STRUCTURE/FRAGMENTDB/resourceFileFragmentStorage.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/propertyFragmentQuery.h>
 #include <BALL/STRUCTURE/FRAGMENTDB/resourceFileFragmentStorage.h>
 
