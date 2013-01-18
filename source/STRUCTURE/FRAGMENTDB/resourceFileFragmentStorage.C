@@ -137,8 +137,8 @@ namespace BALL
 					// all bits in the template are also present in the fragment
 					// now check the named properties. (TODO: test equality here?)
 					bool namedPropsOK = true;
-					NamedPropertyIterator namedProp = q->getPropertyManager().beginNamedProperty();
-					NamedPropertyIterator end = q->getPropertyManager().endNamedProperty();
+					NamedPropertyConstIterator namedProp = q->getPropertyManager().beginNamedProperty();
+					NamedPropertyConstIterator end = q->getPropertyManager().endNamedProperty();
 					for (; (namedProp != end) && namedPropsOK; ++namedProp)
 					{
 						if (!(*fragment)->hasProperty(namedProp->getName()))

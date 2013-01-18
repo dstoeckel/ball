@@ -190,7 +190,7 @@ namespace BALL {
 			
 			// if tplate_atom has a connection, store it for &*frag_atom_it.
 			// so inter-fragment connections can be built in the finish() step.
-			NamedPropertyIterator it = tplate_atom->beginNamedProperty();
+			NamedPropertyConstIterator it = tplate_atom->beginNamedProperty();
 			while (it != tplate_atom->endNamedProperty()) {
 				if ((it->getType() == NamedProperty::SMART_OBJECT) && boost::starts_with(it->getName(),"CONNECTION")) {
 					DEBUG(tplate_atom->getName() << " has a Connection entry (inter-fragment bond).")

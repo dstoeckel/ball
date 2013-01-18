@@ -282,12 +282,22 @@ namespace BALL
 		return false;
 	}
 
-	NamedPropertyIterator PropertyManager::beginNamedProperty() const
+	NamedPropertyIterator PropertyManager::beginNamedProperty()
 	{
 		return named_properties_.begin();
 	}
 
-	NamedPropertyIterator PropertyManager::endNamedProperty() const
+	NamedPropertyConstIterator PropertyManager::beginNamedProperty() const
+	{
+		return named_properties_.begin();
+	}
+
+	NamedPropertyIterator PropertyManager::endNamedProperty()
+	{
+		return named_properties_.end();
+	}
+
+	NamedPropertyConstIterator PropertyManager::endNamedProperty() const
 	{
 		return named_properties_.end();
 	}
