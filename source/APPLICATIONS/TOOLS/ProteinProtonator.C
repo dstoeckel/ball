@@ -58,21 +58,6 @@ int main(int argc, char* argv[])
 	Protein protein;
 	pdb_input->read(protein);
 
-/*	
- 	//  !!!! this functionality in now covered by the tool AddMissingAtoms!
-  
-	FragmentDB fragdb;
-	fragdb.setFilename("fragments/Fragments.db");
-	fragdb.init();
-	
-	Log.disableOutput();
-	protein.apply(fragdb.normalize_names);
-	protein.apply(fragdb.build_bonds);
-	Log.enableOutput();
-	
-	fragdb.destroy();
-*/
-
 	// If the input protein already has hydrogens, then delete them first.
 	for (AtomIterator it=protein.beginAtom(); it!=protein.endAtom(); it++)
 	{

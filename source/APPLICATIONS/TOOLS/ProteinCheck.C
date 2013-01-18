@@ -844,9 +844,7 @@ int main(int argc, char* argv[])
 	System system;
 	system.insert(protein);
 
-	FragmentDB fragdb;
-	fragdb.setFilename("fragments/Fragments.db");
-	fragdb.init();
+	FragmentDB fragdb("fragments/Fragments.db");
 	protein.apply(fragdb.build_bonds);
 
 // 	StructurePreparer sp;
