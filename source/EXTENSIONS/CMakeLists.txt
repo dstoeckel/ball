@@ -6,6 +6,7 @@ OPTION(USE_SPACENAV_PLUGIN "Build the SpaceNavigator input device plugin" ON)
 OPTION(USE_VRPN_PLUGIN "Build the VRPN input device plugin" ON)
 OPTION(USE_VRPNHD_PLUGIN "Build the VRPNDH input device plugin" ON)
 OPTION(USE_BALLAXY_PLUGIN "Build the BALLaxy widget plugin" ON)
+OPTION(USE_RTFACT_PLUGIN "Build the RTFact renderer plugin" ON)
 
 IF (USE_PRESENTABALL_PLUGIN)
 	ADD_SUBDIRECTORY(PRESENTABALL)
@@ -33,6 +34,10 @@ IF (USE_BALLAXY_PLUGIN)
         ELSE()
                 MESSAGE(STATUS "Not building the ballaxy plugin because BALLTools are disabled (BALL_BUILD_TOOLS=OFF).")
         ENDIF()
+ENDIF()
+
+IF (USE_RTFACT_PLUGIN)
+	ADD_SUBDIRECTORY(RTFactRenderer)
 ENDIF()
 
 ADD_SUBDIRECTORY(GLRenderer)

@@ -208,21 +208,11 @@ ENDIF()
 
 ## TBB
 SET(USE_TBB ON CACHE BOOL "Should Intel Threading Building Blocks support be enabled?")
-SET(REQUIRE_TBB OFF CACHE BOOL "Should Intel Threading Building Blocks support be required?")
-
-## RTFact would require tbb... so check if it is required
-IF(REQUIRE_RTFACT)
-	SET(REQUIRE_TBB ON)
-ENDIF()
 
 IF(USE_TBB)
-	IF (REQUIRE_TBB)
-		FIND_PACKAGE(TBB REQUIRED)
-	ELSE()
-		FIND_PACKAGE(TBB)
-		IF (NOT TBB_FOUND)
-			MESSAGE(STATUS "Intel Threading Building Blocks not found!")
-		ENDIF()
+	FIND_PACKAGE(TBB)
+	IF (NOT TBB_FOUND)
+		MESSAGE(STATUS "Intel Threading Building Blocks not found!")
 	ENDIF()
 
 	IF (TBB_FOUND)
@@ -330,36 +320,12 @@ IF (BALL_HAS_VIEW)
 	OPTION(BALL_ENABLE_CG "Build against NVIDIA Cg library" OFF)
 	OPTION(BALL_REQUIRE_CG "Fail if NVIDIA Cg could not be detected" OFF)
 
-	OPTION(USE_RTFACT "Enable RTfact support" ON)
-	OPTION(REQUIRE_RTFACT "Require RTfact support" OFF)
-
 	## OpenGL
 	FIND_PACKAGE(OpenGL)
 	IF (NOT OPENGL_FOUND OR NOT OPENGL_GLU_FOUND)
 		MESSAGE(SEND_ERROR "Could not find gl/glu!")
 	ENDIF()
 	INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
-
-	## RTfact
-	IF (USE_RTFACT)
-		IF (REQUIRE_RTFACT)
-			FIND_PACKAGE(RTfact REQUIRED)
-		ELSE()
-			FIND_PACKAGE(RTfact)
-		ENDIF()
-
-		IF (RTFACT_FOUND)
-			## RTfact requires TBB
-			IF (NOT CMAKE_COMPILER_IS_INTELCXX)
-				IF (NOT TBB_FOUND)
-					MESSAGE(SEND_ERROR "RTfact support requires TBB!")
-				ENDIF()
-			ENDIF()
-
-			SET(BALL_HAS_RTFACT TRUE)
-			INCLUDE_DIRECTORIES(${RTFACT_INCLUDE_DIR})
-		ENDIF()
-	ENDIF()
 
 	## Cg
 	IF (BALL_ENABLE_CG)
@@ -376,7 +342,6 @@ IF (BALL_HAS_VIEW)
 			MESSAGE(STATUS "${CG_MESSAGE} - found  ${CG_LIBRARY}  ${CG_GL_LIBRARY}")
 			SET(BALL_HAS_CG TRUE)
 			SET(CG_LIBRARIES ${CG_LIBRARY} ${CG_GL_LIBRARY})
-			INCLUDE_DIRECTORIES(${RTFACT_INCLUDE_PATH})
 		ELSE()
 			IF (BALL_REQUIRE_CG)
 				MESSAGE(SEND_ERROR "Could not find Cg library, but Cg was marked as required!")
@@ -590,11 +555,9 @@ ENDIF()
 
 IF (BALL_HAS_VIEW)
 ## TODO: Qt handling!
-	LIST(APPEND VIEW_DEP_LIBRARIES ${RTFACT_LIBRARIES})
-
 	SET_TARGET_PROPERTIES(VIEW PROPERTIES
 		SOVERSION "${BALL_PACKAGE_VERSION_MAJOR}.${BALL_PACKAGE_VERSION_MINOR}"
-)
+	)
 
 	IF(MSVC)
 		## Do we really need this?
