@@ -6,7 +6,7 @@
 #define BALL_VIEW_RENDERING_RENDERERS_CUDARAYTRACINGRENDERER_H
 
 #define BALLVIEW_CUDAVOLUMERENDERER_THROW(exceptionName, message) (throw BALL::Exception::##exceptionName##(__FILE__, __LINE__, message))
-#include <BALL/VIEW/RENDERING/RENDERERS/raytracingRenderer.h>
+#include <BALL/VIEW/RENDERING/RENDERERS/renderer.h>
 #include <cudamm/cuda.hpp>
 
 namespace BALL
@@ -14,7 +14,7 @@ namespace BALL
 	namespace VIEW
 	{
 		class CudaVolumeRenderer
-			: public RaytracingRenderer
+			: public Renderer
 		{			
 			public:			
 
@@ -46,12 +46,7 @@ namespace BALL
             {
             
             }
-            			
-			virtual void prepareBufferedRendering(const Stage& stage)
-            {
-            
-            }
-			
+
 			virtual void renderToBufferImpl(FrameBufferPtr buffer)
             {               
                 FrameBufferFormat fmt = buffer->getFormat();
