@@ -215,6 +215,19 @@ namespace BALL
 			glPopAttrib();
 		}
 
+		bool GLRenderWindow::doNotResize() const
+		{
+			return RenderWindow::doNotResize() || isFullScreen();
+		}
+
+		void GLRenderWindow::prepareRendering()
+		{
+			if (QGLContext::currentContext() != context())
+			{
+				makeCurrent();
+			}
+		}
+
 		void GLRenderWindow::renderText(int x, int y, const String& text, const ColorRGBA& color, Size size)
 		{
 			glMatrixMode(GL_PROJECTION);
@@ -366,7 +379,7 @@ namespace BALL
 		{
 			if(isVisible() && getMainControl()->windowHandle()->isExposed())
 			{
-				swapBuffers();
+				QGLWidget::swapBuffers();
 			}
 		}
 	} // namespace VIEW
