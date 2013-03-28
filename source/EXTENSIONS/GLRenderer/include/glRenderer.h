@@ -25,25 +25,21 @@
 # include <BALL/VIEW/KERNEL/stage.h>
 #endif
 
-#ifndef BALL_VIEW_RENDERING_GLDISPLAYLIST_H
-# include <BALL/VIEW/RENDERING/glDisplayList.h>
-#endif
-
 #ifndef BALL_DATATYPE_REGULARDATA3D_H
 # include <BALL/DATATYPE/regularData3D.h>
+#endif
+
+#ifndef BALL_VIEW_RENDERING_GEOMETRICOBJECTDISPATCHER_H
+# include <BALL/VIEW/RENDERING/geometricObjectDispatcher.h>
 #endif
 
 #ifndef APIENTRY
 #define APIENTRY
 #endif
 
-#ifdef BALL_OS_DARWIN
-        #include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
-#else
-        #include <GL/gl.h>
-	#include <GL/glu.h>
-#endif
+#include <glDisplayList.h>
+
+#include <GL/glu.h>
 
 class QFont;
 
@@ -65,7 +61,7 @@ namespace BALL
 				\ingroup ViewRendering
 		*/
 		class BALL_VIEW_EXPORT GLRenderer
-                        : public Renderer
+			: public Renderer, public GeometricObjectDispatcher
 		{
 			friend class Scene;
 			public:
@@ -219,17 +215,21 @@ namespace BALL
 			 *  made current before this function is called. Buffers are not automatically
 			 *  swapped afterwards!
 			 */
-			virtual void renderToBuffer(RenderTarget* renderTarget, BufferMode);
+			virtual void renderToBuffer(RenderTarget* renderTarget, BufferMode mode);
 
+			virtual void renderToBufferImpl(boost::shared_ptr<FrameBuffer> /*buffer*/) {
+				renderToBuffer(0, DISPLAY_LISTS_RENDERING);
+			}
+
+			virtual bool supports(const BALL::VIEW::PixelFormat&) const { return true; }
+			virtual bool supports(const BALL::VIEW::FrameBufferFormat&) const { return true; }
+			virtual void formatUpdated() {}
+
+			virtual boost::shared_ptr<RenderSetup> createRenderSetup(RenderTarget* target, Scene* scene);
 			///
 			virtual bool render(const Representation& representation, bool for_display_list = false);
 
 			virtual void bufferingDependentRender_(const Representation& repr, BufferMode mode);
-
-			/** Test if a given opengl extension is supported by the current driver.
-			 		Call this only after Scene::initializeGL();
-			*/
-			bool isExtensionSupported(const String& extension) const;
 
 			///
 			void clearVertexBuffersFor(Representation& rep);
@@ -279,7 +279,7 @@ namespace BALL
 			//
 			void setupStereo(float eye_separation, float focal_length);
 
-			Position createTextureFromGrid(const RegularData3D& grid, const ColorMap& map);
+			Position createTextureFromGrid(const GridVisualisation& vis);
 			void removeTextureFor_(const RegularData3D& grid);
 
 			virtual void getFrustum(float& near_f, float& far_f, float& left_f, float& right_f, float& top_f, float& bottom_f);
@@ -287,6 +287,7 @@ namespace BALL
 			void updateMaterialForRepresentation(Representation const* rep) { bufferRepresentation(*rep); }
 
 	protected:
+			bool isExtensionSupported(const char* extension) const;
 
 			/** Maps the current viewplane to screen coordinates.
 			 *  Returns false if the projection matrix is not correctly initialized.
@@ -489,9 +490,9 @@ namespace BALL
 			float                   orthographic_zoom_;
 		};
 
-#	ifndef BALL_NO_INLINE_FUNCTIONS
-#		include <BALL/VIEW/RENDERING/RENDERERS/glRenderer.iC>
-#	endif
+#ifndef BALL_NO_INLINE_FUNCTIONS
+# include <glRenderer.iC>
+#endif
 
 	} // namespace VIEW
 } // namespace BALL

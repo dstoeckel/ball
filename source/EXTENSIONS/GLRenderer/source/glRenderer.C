@@ -2,8 +2,6 @@
 // vi: set ts=2:
 //
 
-#include <BALL/VIEW/RENDERING/RENDERERS/glRenderer.h>
-
 #include <BALL/KERNEL/atom.h>
 #include <BALL/MATHS/vector2.h>
 #include <BALL/MATHS/plane3.h>
@@ -30,12 +28,15 @@
 #include <BALL/VIEW/PRIMITIVES/twoColoredTube.h>
 #include <BALL/VIEW/PRIMITIVES/multiLine.h>
 #include <BALL/VIEW/PRIMITIVES/gridVisualisation.h>
-#include <BALL/VIEW/RENDERING/vertexBuffer.h>
 
 #include <QtGui/QPixmap>
 #include <QtGui/QPainter>
 #include <QtGui/QImage>
 #include <QtGui/QOpenGLContext>
+
+#include <glRenderer.h>
+#include <glRenderSetup.h>
+#include <vertexBuffer.h>
 
 using namespace std;
 
@@ -73,7 +74,7 @@ namespace BALL
 #endif
 
 		GLRenderer::GLRenderer()
-			: Renderer(),
+			: Renderer("GLRenderer"),
 				drawing_mode_(DRAWING_MODE_SOLID),
 				drawing_precision_(DRAWING_PRECISION_HIGH),
 				near_(1.5),
@@ -131,6 +132,11 @@ namespace BALL
 			display_lists_.clear();
 
 			orthographic_zoom_ = 10.f;
+		}
+
+		boost::shared_ptr<RenderSetup> GLRenderer::createRenderSetup(RenderTarget* target, Scene* scene)
+		{
+			return boost::shared_ptr<RenderSetup>(new GLRenderSetup(this, target, scene));
 		}
 
 		void GLRenderer::setAntialiasing(bool state)
@@ -194,6 +200,8 @@ namespace BALL
 		bool GLRenderer::init(const Stage& stage, float width, float height)
 		{
 			Renderer::init(stage, width, height);
+
+			enableVertexBuffers(true);
 
 			// Force OpenGL to normalize transformed normals to be of unit
 			// length before using the normals in OpenGL's lighting equations
@@ -2142,9 +2150,9 @@ namespace BALL
 			return display_lists_.has(&rep);
 		}
 
-		bool GLRenderer::isExtensionSupported(const String& extension) const
+		bool GLRenderer::isExtensionSupported(const char* extension) const
 		{
-			return QOpenGLContext::currentContext()->hasExtension(extension.c_str());
+			return QOpenGLContext::currentContext()->hasExtension(extension);
 		}
 
 		String GLRenderer::getVendor()
@@ -2203,8 +2211,6 @@ namespace BALL
 				else       Log.info() << (String)qApp->translate("BALL::VIEW::GLRenderer", "Disabling Vertex Buffer") << std::endl;
 			}
 			use_vertex_buffer_ = state;
-
-			if (use_vertex_buffer_) MeshBuffer::initGL();
 
 			return true;
 		}
@@ -2415,9 +2421,10 @@ namespace BALL
 						 BYTES_PER_TEXEL * width * height * z;
 		}
 
-		Position GLRenderer::createTextureFromGrid(const RegularData3D& grid, const ColorMap& map)
+		Position GLRenderer::createTextureFromGrid(const GridVisualisation& vis)
 		{
-			if (!isExtensionSupported("GL_EXT_texture3D")) return 0;
+			const RegularData3D& grid = *vis.getGrid();
+			const ColorMap& map = *vis.getColorMap().get();
 
 			Position texname = 0;
 			removeTextureFor_(grid);
@@ -2501,10 +2508,15 @@ namespace BALL
 
 		void GLRenderer::renderGridVisualisation_(const GridVisualisation& vol)
 		{
+			GLuint texname;
 			if (!grid_to_texture_.has(vol.getGrid()))
-				return;
+			{
+				texname = createTextureFromGrid(vol);
+				grid_to_texture_[vol.getGrid()] = texname;
+			} else {
+				texname = grid_to_texture_[vol.getGrid()];
+			}
 
-			Position texname = grid_to_texture_[vol.getGrid()];
 			if (texname == 0)
 			{
 				scene_->setStatusbarText((String)qApp->translate("BALL::VIEW::GLRenderer", "Graphics card does not support 3D textures. Abort"), true);
@@ -2528,6 +2540,7 @@ namespace BALL
 			glDisable(GL_CULL_FACE);
 
 			////////////////////////////////////////////////////////////////////////////////
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_3D, texname);
 			glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -2927,9 +2940,9 @@ namespace BALL
 		}
 
 
-#	ifdef BALL_NO_INLINE_FUNCTIONS
-#		include <BALL/VIEW/RENDERING/RENDERERS/glRenderer.iC>
-#	endif
+#ifdef BALL_NO_INLINE_FUNCTIONS
+# include <glRenderer.iC>
+#endif
 
 	} // namespace VIEW
 } // namespace BALL

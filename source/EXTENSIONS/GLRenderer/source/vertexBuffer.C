@@ -5,10 +5,11 @@
 
 #include <BALL/CONFIG/config.h>
 
-#include <BALL/VIEW/RENDERING/RENDERERS/glRenderer.h>
-#include <BALL/VIEW/RENDERING/vertexBuffer.h>
 #include <BALL/VIEW/PRIMITIVES/mesh.h>
 #include <BALL/VIEW/KERNEL/common.h>
+
+#include <glRenderer.h>
+#include <vertexBuffer.h>
 
 namespace BALL
 {
@@ -16,12 +17,6 @@ namespace BALL
 	{
 
 		GLRenderer* MeshBuffer::gl_renderer_ = 0;
-
-		bool MeshBuffer::initGL()
-		{
-			return gl_renderer_ != 0 &&
-					gl_renderer_->isExtensionSupported("GL_ARB_vertex_buffer_object");
-		}
 
 		MeshBuffer::MeshBuffer()
 		: mesh_(0),

@@ -34,3 +34,5 @@ IF (USE_BALLAXY_PLUGIN)
                 MESSAGE(STATUS "Not building the ballaxy plugin because BALLTools are disabled (BALL_BUILD_TOOLS=OFF).")
         ENDIF()
 ENDIF()
+
+ADD_SUBDIRECTORY(GLRenderer)
