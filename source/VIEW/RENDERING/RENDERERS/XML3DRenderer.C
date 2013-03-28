@@ -34,38 +34,18 @@ namespace BALL
 
 #define BALLVIEW_XML3D_LINE_RADIUS "BALL_LINE_RADIUS"
 
-		XML3DRenderer::XML3DRenderer()
-			: Renderer(),
-				outfile_(&std::cout),
-				human_readable_(true),
-				create_XHTML_(false)
-		{
-		}
-
-		XML3DRenderer::XML3DRenderer(const XML3DRenderer& renderer)
-			: Renderer(renderer),
-				outfile_(&std::cout),
-				human_readable_(renderer.human_readable_),
-				create_XHTML_(renderer.create_XHTML_)
-		{
-		}
-
-
 		XML3DRenderer::XML3DRenderer(const String& name)
-			throw(Exception::FileNotFound)
-			: Renderer(),
-				human_readable_(true),
-				create_XHTML_(true)
+			: SceneExporter(name),
+			  create_XHTML_(true),
+			  stage_(0)
 		{
-			outfile_ = new File(name, std::ios::out);
 		}
 
-		XML3DRenderer::XML3DRenderer(std::ostream& out_stream)
-			: Renderer(),
-				human_readable_(true),
-				create_XHTML_(false)
+		XML3DRenderer::XML3DRenderer(std::ostream* out_stream)
+			: SceneExporter(out_stream),
+			  create_XHTML_(false),
+			  stage_(0)
 		{
-			outfile_ = &out_stream;
 		}
 		
 		XML3DRenderer::~XML3DRenderer()
@@ -73,23 +53,22 @@ namespace BALL
 			#ifdef BALL_VIEW_DEBUG
 				Log.info() << "Destructing object " << this << " of class XML3DRenderer" << endl;
 			#endif
-
-				clear();
 		}
 
 		void XML3DRenderer::clear()
 		{
-            if (outfile_ != 0 && RTTI::isKindOf<File>(outfile_))
+			if (ostrm_ != 0 && RTTI::isKindOf<File>(ostrm_))
 			{
-				delete outfile_;
+				delete ostrm_;
 			}
 
-			outfile_ = &std::cout;
+			ostrm_ = &std::cout;
 			human_readable_ = true;
 
 			representations_.clear();
 			color_map_.clear();
 			color_index_ = 0;
+			stage_ = 0;
 		}
 
 		void XML3DRenderer::setSize(float width, float height)
@@ -116,28 +95,6 @@ namespace BALL
 			fov_x_ = 2*atan( (right-left)/(2*nearf) );
 			fov_y_ = 2*atan( (top-bot)/(2*nearf) );
 		}
-
-		void XML3DRenderer::setFileName(const String& name)
-			throw(Exception::FileNotFound)
-		{
-			create_XHTML_ = true;
-            if (outfile_ == 0 || !RTTI::isKindOf<File>(outfile_))
-			{
-				outfile_ = new File();
-			}
-			(*(File*)outfile_).open(name, std::ios::out);
-		}
-
-		void XML3DRenderer::setOstream(std::ostream& out_stream)
-		{
-			create_XHTML_ = false;
-            if (outfile_ != 0 && RTTI::isKindOf<File>(outfile_))
-			{
-				delete outfile_;
-			}
-			outfile_ = &out_stream;
-		}
-
 
 		String XML3DRenderer::XML3DColorRGBA(const ColorRGBA& color, const String& name)
 		{
@@ -176,41 +133,41 @@ namespace BALL
 		String XML3DRenderer::XML3DRaytracingMaterial(const Stage::Material& input)
 		{
 			String result;
-      	
-			ColorRGBA old_ambience = rt_material_.ambient_color;
-			ColorRGBA ambience((float)old_ambience.getRed()  * rt_material_.ambient_intensity,
-			                  (float)old_ambience.getBlue()  * rt_material_.ambient_intensity,
-											  (float)old_ambience.getGreen() * rt_material_.ambient_intensity, 1.);
 
-      result += XML3DColorRGBA(ambience, "ambientIntensity");
-			
+			ColorRGBA old_ambience = rt_material_.ambient_color;
+			ColorRGBA ambience((float)old_ambience.getRed()   * rt_material_.ambient_intensity,
+			                   (float)old_ambience.getBlue()  * rt_material_.ambient_intensity,
+			                   (float)old_ambience.getGreen() * rt_material_.ambient_intensity, 1.);
+
+			result += XML3DColorRGBA(ambience, "ambientIntensity");
+
 			ColorRGBA old_specular = rt_material_.specular_color;
 			ColorRGBA specular((float)old_specular.getRed()   * rt_material_.specular_intensity,
 			                   (float)old_specular.getBlue()  * rt_material_.specular_intensity,
-											   (float)old_specular.getGreen() * rt_material_.specular_intensity, 1.);
+			                   (float)old_specular.getGreen() * rt_material_.specular_intensity, 1.);
 
-      result += XML3DColorRGBA(specular, "specularColor");
+			result += XML3DColorRGBA(specular, "specularColor");
 
 			ColorRGBA old_reflect = rt_material_.reflective_color;
 			ColorRGBA reflect((float)old_reflect.getRed()   * rt_material_.reflective_intensity,
 			                  (float)old_reflect.getBlue()  * rt_material_.reflective_intensity,
-											  (float)old_reflect.getGreen() * rt_material_.reflective_intensity, 1.);
+			                  (float)old_reflect.getGreen() * rt_material_.reflective_intensity, 1.);
 
-      result += XML3DColorRGBA(reflect, "reflective");
-      
-      result += "<float name=\"shininess\">\n";
-      result += "   "+String(rt_material_.shininess/128.)+"\n";
-      result += "</float>\n";
+			result += XML3DColorRGBA(reflect, "reflective");
+
+			result += "<float name=\"shininess\">\n";
+			result += "   "+String(rt_material_.shininess/128.)+"\n";
+			result += "</float>\n";
 
 			result += "<float name=\"transparency\">\n";
-      result += "   "+String(rt_material_.transparency)+"\n";
-      result += "</float>\n";
+			result += "   "+String(rt_material_.transparency)+"\n";
+			result += "</float>\n";
 
-      result += "<float name=\"transparent\">\n";
-      result += "   " + String(rt_material_.transparency) + " "
-			                       + String(rt_material_.transparency) + " "
-														 + String(rt_material_.transparency) + "\n";
-      result += "</float>\n";
+			result += "<float name=\"transparent\">\n";
+			result += "   " + String(rt_material_.transparency) + " "
+			                + String(rt_material_.transparency) + " "
+			                + String(rt_material_.transparency) + "\n";
+			result += "</float>\n";
 
 			return result;
 		}
@@ -247,14 +204,9 @@ namespace BALL
 			return output;
 		}
 
-		bool XML3DRenderer::init(Scene& scene)
-		{
-			return Renderer::init(scene);
-		}
-
 		// init must be called right before the rendering starts, since
 		// we need to fix the camera, light sources, etc...
-		bool XML3DRenderer::init(const Stage& stage, float width, float height)
+		bool XML3DRenderer::init(const Stage* stage, float width, float height)
 		{
 			#ifdef BALL_VIEW_DEBUG
 				Log.info() << "Start the XML3DRender output..." << endl;
@@ -278,14 +230,14 @@ namespace BALL
 
       sphere_template.exportSurface(sphere_template_);
 
-      // prepare the tube template
-      TriangulatedSurface* tube_template = TriangulatedSurface::createTube(18, 0, false, true);
-      tube_template->exportSurface(tube_template_);
-      delete (tube_template);
+			stage_ = stage;
 
-			std::ostream& out = *outfile_;
+			// prepare the tube template
+			TriangulatedSurface* tube_template = TriangulatedSurface::createTube(18, 0, false, true);
+			tube_template->exportSurface(tube_template_);
+			delete (tube_template);
 
-			if (!Renderer::init(stage, width, height)) return false;
+			std::ostream& out = *ostrm_;
 
 			if (create_XHTML_) {createXHTMLHeader();};
 
@@ -315,12 +267,12 @@ namespace BALL
 
 			// Define BALLView Camera view
 			out << "	<view id=\"ballview_camera\" ";
-			out << "	position=\"" << stage.getCamera().getViewPoint().x << " "
-													<< stage.getCamera().getViewPoint().y << " "
-													<< stage.getCamera().getViewPoint().z << "\"";
+			out << "	position=\"" << stage->getCamera().getViewPoint().x << " "
+			                         << stage->getCamera().getViewPoint().y << " "
+			                         << stage->getCamera().getViewPoint().z << "\"";
 			
 			// Calculate rotation to align BALLview camera with standard XML3D camera
-			Vector3 direction = stage.getCamera().getViewVector();
+			Vector3 direction = stage->getCamera().getViewVector();
 			
 			if (direction.getSquareLength() < 1e-6)
 			{
@@ -361,7 +313,7 @@ namespace BALL
 			Vector3 testergebnis = dir_rotation_matrix * Vector3(0,0,-1);
 			
 			// Correct the position of the new upvector as introduced by the first rotation
-			Vector3 upvector = stage.getCamera().getLookUpVector();
+			Vector3 upvector = stage->getCamera().getLookUpVector();
 			upvector.normalize();
 			
 			Vector3 up_rotated = dir_rotation_matrix * Vector3(0,1,0);
@@ -394,7 +346,7 @@ namespace BALL
 			out << " fieldOfViewX=\"" << fov_x_ << "\"";
 			out << " fieldOfViewY=\"" << fov_y_ << "\"";
 
-			Vector3 look_at_vector = stage.getCamera().getLookAtPosition();
+			Vector3 look_at_vector = stage->getCamera().getLookAtPosition();
 			out << " lookAtVector=\"" << look_at_vector.x << " "
 				                      << look_at_vector.y << " "
 									  << look_at_vector.z << "\"";
@@ -423,8 +375,8 @@ namespace BALL
 					out << pos.x << " " << pos.y << " " << pos.z << "\" /> " << endl;
 					out << "<lightshader id=\"point" << i << "\" script=\"urn:xml3d:lightshader:point\" > "; 
 					out << "<float3 name=\"intensity\">" << (float) color.getRed() * intensity << " " 
-																												<< (float) color.getGreen() * intensity << " "
-																												<< (float) color.getBlue() * intensity <<   "</float3> ";
+					                                     << (float) color.getGreen() * intensity << " "
+					                                     << (float) color.getBlue() * intensity <<   "</float3> ";
 					out << "<float3 name=\"attenuation\">" << attenuation.x << " " << attenuation.y << " " << attenuation.z << "</float3> ";
 					out << "</lightshader>" << endl;
 					out << "<group transform=\"lighttransform" << i << "\" >" << endl;
@@ -445,9 +397,9 @@ namespace BALL
 			return true;
 		}
 
-		bool XML3DRenderer::finish()
+		bool XML3DRenderer::finishImpl_()
 		{
-			std::ostream& out = *outfile_;
+			std::ostream& out = *ostrm_;
 
 			rt_material_ = stage_->getMaterial();
 
@@ -481,9 +433,9 @@ namespace BALL
 			
 			if (create_XHTML_) {createXHTMLFooter();};	
 
-            if (outfile_ != 0 && RTTI::isKindOf<File>(outfile_))
+            if (ostrm_ != 0 && RTTI::isKindOf<File>(ostrm_))
 			{
-				(*(File*)outfile_).close();
+				(*(File*)ostrm_).close();
 			}
 
 			return true;
@@ -491,7 +443,7 @@ namespace BALL
 		
 		void XML3DRenderer::createXHTMLHeader()
 		{
-			std::ostream& out = *outfile_;
+			std::ostream& out = *ostrm_;
 			
 			//Create X-HMTL encasing	
 			out << "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" << endl;
@@ -510,7 +462,7 @@ namespace BALL
 
 		void XML3DRenderer::createXHTMLFooter()
 		{
-			std::ostream& out = *outfile_;
+			std::ostream& out = *ostrm_;
 
 			//add some javascripts, caution relative paths
 
@@ -524,7 +476,7 @@ namespace BALL
 
 		void XML3DRenderer::renderSphere_(const Sphere& sphere)
 		{
-			std::ostream& out = *outfile_;
+			std::ostream& out = *ostrm_;
 
       Vector3 const& sphere_pos = sphere.getPosition();
       float radius = sphere.getRadius();
@@ -633,7 +585,7 @@ namespace BALL
 
 		void XML3DRenderer::renderTwoColoredTube_(const TwoColoredTube& tube)
 		{
-			std::ostream& out = *outfile_;
+			std::ostream& out = *ostrm_;
 			
 			ColorRGBA const& color1 = tube.getColor();
 			ColorRGBA const& color2 = tube.getColor2();
@@ -825,7 +777,7 @@ namespace BALL
 				return;
 			}
 
-			std::ostream& out = *outfile_;
+			std::ostream& out = *ostrm_;
 			
 			ColorRGBA const &c = (mesh.colors.size() == 1) ? mesh.colors[0] : ColorRGBA(1., 1., 1., 1.);
     		
@@ -917,39 +869,27 @@ namespace BALL
 			return object.getColor();
 		}
 		
-		bool XML3DRenderer::renderOneRepresentation(const Representation& representation)
+		bool XML3DRenderer::exportOneRepresentation(const Representation* representation)
 		{
-			if (representation.isHidden()) return true;
+			if (representation->isHidden()) return true;
 
-			if (!representation.isValid())
+			if (!representation->isValid())
 			{
-				Log.error() << "Representation " << &representation 
-										<< "not valid, so aborting." << std::endl;
+				Log.error() << "Representation " << representation
+				            << "not valid, so aborting." << std::endl;
 				return false;
 			}	
 
 			list<GeometricObject*>::const_iterator it;
 
-			for (it =  representation.getGeometricObjects().begin();
-					 it != representation.getGeometricObjects().end();
-					 it++)
+			for (it =  representation->getGeometricObjects().begin();
+				 it != representation->getGeometricObjects().end();
+				 it++)
 			{
 				(**it).getColors(color_strings_);
-
-				if (representation.getDrawingMode() == DRAWING_MODE_WIREFRAME)
-				{
-					//wireframes_.insert((Mesh*) *it);
-				}
 			}
 
-			HashSet<String>::ConstIterator cit = color_strings_.begin();
-			for (; +cit; ++cit)
-			{
-				//color_map_.insert(ColorMap::ValueType(*cit, color_index_));
-				//color_index_++;
-			}
-
-			representations_.push_back(&representation);
+			representations_.push_back(representation);
 
 			return true;
 		}
@@ -983,8 +923,8 @@ namespace BALL
       temp.setTranslation(midpoint);
       matrix = temp*matrix;
 
-			std::ostream& out = *outfile_;
-			
+			std::ostream& out = *ostrm_;
+
 			out << "<transform ";
 			out << "id=\"" << &tube << "trafo\" ";
 			out << "translation=\"" << midpoint.x << " " << midpoint.y << " " << midpoint.z << "\" ";  
@@ -1001,7 +941,7 @@ namespace BALL
 
 		void XML3DRenderer::renderLabel_(const Label& label)
 		{
-			std::ostream& out = *outfile_;
+			std::ostream& out = *ostrm_;
 
 			out << "text{ ttf BALLLabelFont, \"" << label.getExpandedText() << "\",0.2, 0" << std::endl;
 			//out << "  texture{ pigment{color rgb" << 	XML3DColorRGBA(label.getColor()) << " }"<< std::endl;
@@ -1022,7 +962,7 @@ namespace BALL
 
 		void XML3DRenderer::renderMultiLine_(const MultiLine& line)
 		{
-			std::ostream& out = *outfile_;
+			std::ostream& out = *ostrm_;
 
 			String last;
 			HashSet<Position> used;

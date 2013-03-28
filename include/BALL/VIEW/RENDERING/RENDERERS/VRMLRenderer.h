@@ -5,12 +5,12 @@
 #ifndef BALL_VIEW_RENDERING_RENDERERS_VRMLRENDERER_H
 #define BALL_VIEW_RENDERING_RENDERERS_VRMLRENDERER_H
 
-#ifndef BALL_VIEW_RENDERING_RENDERERS_RENDERER_H
-# include <BALL/VIEW/RENDERING/RENDERERS/renderer.h>
+#ifndef BALL_VIEW_RENDERING_SCENEEXPORTER_H
+# include <BALL/VIEW/RENDERING/sceneExporter.h>
 #endif
 
-#ifndef BALL_SYSTEM_FILE_H
-# include <BALL/SYSTEM/file.h>
+#ifndef BALL_VIEW_RENDERING_GEOMETRICOBJECTDISPATCHER_H
+# include <BALL/VIEW/RENDERING/geometricObjectDispatcher.h>
 #endif
 
 #ifndef BALL_MATHS_VECTOR3_H
@@ -36,7 +36,7 @@ namespace BALL
 		This is unmaintained code!
 		\ingroup ViewRendering
 */
-class BALL_VIEW_EXPORT VRMLRenderer : public Renderer
+class BALL_VIEW_EXPORT VRMLRenderer : public SceneExporter, public GeometricObjectDispatcher
 {
 	public:
 
@@ -44,14 +44,10 @@ class BALL_VIEW_EXPORT VRMLRenderer : public Renderer
 	 */
 	//@{
 
-	/// Default constructor.
-	VRMLRenderer();
-
 	/** Detailed constructor.
 			\param name The name of the file we will create
 	 */
-	VRMLRenderer(const String& name)
-		throw(Exception::FileNotFound);
+	VRMLRenderer(const String& name);
 	
 	/// Destructor.
 	virtual ~VRMLRenderer();
@@ -63,12 +59,6 @@ class BALL_VIEW_EXPORT VRMLRenderer : public Renderer
 	/** @name Accessors
 	 */
 	//@{
-
-	/** Sets the name of the file we will create.
-			\param name The file name
-	 */
-	void setFileName(const String& name)
-		throw(Exception::FileNotFound);
 
 	/** Converts a ColorRGBA into a String in VRMLRay format.
 	 */
@@ -89,14 +79,18 @@ class BALL_VIEW_EXPORT VRMLRenderer : public Renderer
 	/** Start method. 
 			This method creates the file and writes the header.
 	 */
-	virtual bool init(const Stage& stage);
+	virtual bool init(const Stage* stage, float width, float height);
+
+	bool exportOneRepresentation(const Representation* representation);
+
+	//@}
+
+	protected:
 
 	/** Finish method.
 			This method writes the ending of the file and closes it.
 	 */
-	virtual bool finish();
-
-	//@}
+	bool finishImpl_();
 
 	void renderSphere_(const Sphere& sphere);
 	
@@ -121,13 +115,10 @@ class BALL_VIEW_EXPORT VRMLRenderer : public Renderer
 	Size width, height;
 
 	protected:
-
 	void header_(const Vector3& translation, const ColorRGBA& color, 
 							 const String& rotation = "");
 		
 	void footer_();
-
-	File outfile_;
 
 	Vector3   origin_;
 	Matrix4x4 rotation_;
@@ -138,6 +129,7 @@ class BALL_VIEW_EXPORT VRMLRenderer : public Renderer
 
 	//boolean showing if scaling is relevant afterall
 	bool scalingUsed;
+	const Stage* stage_;
 };
   
 } } // namespaces

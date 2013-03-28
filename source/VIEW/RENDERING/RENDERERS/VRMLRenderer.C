@@ -31,24 +31,12 @@ namespace BALL
 	namespace VIEW
 	{
 
-VRMLRenderer::VRMLRenderer()
-	: Renderer(),
-		outfile_(),
-		current_indent_(0)
-{
-}
-
 VRMLRenderer::VRMLRenderer(const String& name)
-	throw(Exception::FileNotFound)
-	: Renderer(),
+	: SceneExporter(name),
 		width(600),
 		height(600),
 		current_indent_(0)
 {
-	outfile_.open(name, std::ios::out);
-
-	out_("#VRML V2.0 utf8");
-	out_("");
 }
 
 VRMLRenderer::~VRMLRenderer()
@@ -61,18 +49,7 @@ VRMLRenderer::~VRMLRenderer()
 
 void VRMLRenderer::clear()
 {
-	outfile_.clear();
 	current_indent_ = 0;
-}
-
-void VRMLRenderer::setFileName(const String& name)
-	throw(Exception::FileNotFound)
-{
-	outfile_.open(name, std::ios::out);
-	current_indent_ = 0;
-
-	out_("#VRML V2.0 utf8");
-	out_("");
 }
 
 String VRMLRenderer::VRMLColorRGBA(const ColorRGBA& input)
@@ -103,13 +80,16 @@ String VRMLRenderer::VRMLVector3(Vector3 input)
 
 // init must be called right before the rendering starts, since
 // we need to fix the camera, light sources, etc...
-bool VRMLRenderer::init(const Stage& stage)
+bool VRMLRenderer::init(const Stage* stage, float width, float height)
 {
 	#ifdef BALL_VIEW_DEBUG_PROCESSORS
 		Log.info() << "Start the VRMLRender output..." << std::endl;
 	#endif
 
-	stage_ = &stage;
+	out_("#VRML V2.0 utf8");
+	out_("");
+
+	stage_ = stage;
 /*
 	// Find out the position of the camera.
 	const Camera& camera = stage_->getCamera();
@@ -126,7 +106,29 @@ bool VRMLRenderer::init(const Stage& stage)
 	return true;
 }
 
-bool VRMLRenderer::finish()
+bool VRMLRenderer::exportOneRepresentation(const Representation* representation)
+{
+	if (representation->isHidden()) return true;
+	
+	if (!representation->isValid())
+	{
+		Log.error() << (String)(qApp->translate("BALL::VIEW::Renderer", "Representation ")) << representation
+		            << (String)(qApp->translate("BALL::VIEW::Renderer", "not valid, so aborting.")) << std::endl;
+		return false;
+	}
+
+	list<GeometricObject*>::const_iterator it;
+	for (it = representation->getGeometricObjects().begin();
+	     it != representation->getGeometricObjects().end();
+	     it++)
+	{
+	        render_(*it);
+	}
+
+	return true;
+}
+
+bool VRMLRenderer::finishImpl_()
 {
 	//before finishing we write the scaling if was used
 	String infos = "# Biggest Values: (" + (String)(bigX) + "|"+ (String)(bigY) + "|"+ (String)(bigZ) + "); Smallest Values: (" + (String)smallX + "|"+ (String)smallY + "|"+ (String)smallZ +")";
@@ -134,8 +136,6 @@ bool VRMLRenderer::finish()
 	out_(infos);
 	out_(scaling);
 
-
-	outfile_.close();
 	current_indent_ = 0;
 
 	return true;
@@ -483,7 +483,7 @@ void VRMLRenderer::out_(const String& data)
 		out += " ";
 	}
 	out += data;
-	outfile_ << out << std::endl;
+	(*ostrm_) << out << std::endl;
 }
 
 } } // namespaces

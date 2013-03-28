@@ -33,6 +33,7 @@
 #include <BALL/VIEW/RENDERING/RENDERERS/STLRenderer.h>
 #include <BALL/VIEW/RENDERING/RENDERERS/tilingRenderer.h>
 #include <BALL/VIEW/RENDERING/glOffscreenTarget.h>
+#include <BALL/VIEW/RENDERING/sceneExporter.h>
 
 #include <BALL/VIEW/PRIMITIVES/simpleBox.h>
 #include <BALL/VIEW/PRIMITIVES/box.h>
@@ -985,9 +986,9 @@ namespace BALL
 			notify_(new RepresentationMessage(*rp, RepresentationMessage::ADD_TO_GEOMETRIC_CONTROL));
 		}
 
-		bool Scene::exportScene(Renderer &er) const
+		bool Scene::exportScene(SceneExporter& er) const
 		{
-			if (er.init(*stage_, (float) width(), (float) height()))
+			if (er.init(stage_, (float) width(), (float) height()))
 			{
 				MainControl *main_control = MainControl::getMainControl(this);
 				RepresentationManager& rman = main_control->getRepresentationManager();
@@ -1008,7 +1009,7 @@ namespace BALL
 				RepresentationList::const_iterator it = rman.getRepresentations().begin();
 				for (; it != rman.getRepresentations().end(); it++)
 				{
-					if (!er.renderOneRepresentation(**it))
+					if (!er.exportOneRepresentation(*it))
 					{
 						getMainControl()->setStatusbarText((String)tr("Error rendering representation..."));
 						return false;
@@ -2362,14 +2363,14 @@ namespace BALL
 
 		void Scene::exportNextPOVRay()
 		{
-			String filename = String((String)tr("BALLView_pov_") + String(pov_nr_) +".pov");
+			String filename = String("BALLView_pov_" + String(pov_nr_) +".pov");
 
 			POVRenderer pr(filename);
 			bool result = exportScene(pr);
 			pov_nr_ ++;
 
-			if (result) setStatusbarText((String)tr("Saved POVRay to ") + filename);
-			else setStatusbarText((String)tr("Could not save POVRay to ") + filename);
+			if (result) setStatusbarText(tr("Saved POVRay to ") + filename.c_str());
+			else setStatusbarText(tr("Could not save POVRay to ") + filename.c_str());
 		}
 
 		void Scene::exportPOVRay()
@@ -2402,11 +2403,11 @@ namespace BALL
 
 			if (!ok)
 			{
-				setStatusbarText((String)tr("Could not export POV to ") + result, true);
+				setStatusbarText(tr("Could not export POV to ") + result.c_str(), true);
 			}
 			else
 			{
-				setStatusbarText((String)tr("Exported POV to ") + result);
+				setStatusbarText(tr("Exported POV to ") + result.c_str());
 				setWorkingDirFromFilename_(result);
 			}
 		}
@@ -2458,7 +2459,7 @@ namespace BALL
 			try
 			{
 //				main_display_->makeCurrent();
-				XML3DRenderer pr(xml3ddump);
+				XML3DRenderer pr(&xml3ddump);
 
 				if (exportScene(pr)) ok = true;
 			}

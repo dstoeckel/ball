@@ -26,26 +26,13 @@ namespace BALL
 	namespace VIEW
 	{
 
-//default constructor
-STLRenderer::STLRenderer()
-	: Renderer(),
-		outfile_(),
-		current_indent_(0)
-{
-}
-
 //constructor containing the filename: this is the usally used constructor
 //the filename has to be saved as the stl file has to end with the same 
 //line as it starts just with endsolid instead "solid"
 STLRenderer::STLRenderer(const String& name)
-	throw(Exception::FileNotFound)
-	: Renderer(),
-		width(600),
-		height(600),
-		current_indent_(0)
+	: SceneExporter(name),
+	  current_indent_(0)
 {
-	outfile_.open(name, std::ios::out);
-
 	out_("solid " + name + " created by BALL");
 	endingName_ = "endsolid " + name + " created by BALL";
 }
@@ -61,17 +48,7 @@ STLRenderer::~STLRenderer()
 
 void STLRenderer::clear()
 {
-	outfile_.clear();
 	current_indent_ = 0;
-}
-
-void STLRenderer::setFileName(const String& name)
-	throw(Exception::FileNotFound)
-{
-	outfile_.open(name, std::ios::out);
-	current_indent_ = 0;
-
-	outheader_("solid " + name + " created by BALL");
 }
 
 //as stl contains neither colors nor structured surfaces there is no color definition part
@@ -91,27 +68,45 @@ String STLRenderer::VRMLVector3(Vector3 input)
 
 // init must be called right before the rendering starts, since
 // we need to fix the camera, light sources, etc...
-bool STLRenderer::init(const Stage& stage)
+bool STLRenderer::init(const Stage* stage, float, float)
 {
 	#ifdef BALL_VIEW_DEBUG_PROCESSORS
 		Log.info() << "Start the STLRender output..." << std::endl;
 	#endif
 
-	stage_ = &stage;
 	return true;
 }
 
 //finishing means to make the last line the first with "endsolid" instead of "solid"
-bool STLRenderer::finish()
+bool STLRenderer::finishImpl_()
 {
 	out_(endingName_);
-	outfile_.close();
 	current_indent_ = 0;
 
 	return true;
 }
 
+bool STLRenderer::exportOneRepresentation(const Representation* representation)
+{
+	if (representation->isHidden()) return true;
 
+	if (!representation->isValid())
+	{
+		Log.error() << (String)(qApp->translate("BALL::VIEW::Renderer", "Representation ")) << representation
+		            << (String)(qApp->translate("BALL::VIEW::Renderer", "not valid, so aborting.")) << std::endl;
+		return false;
+	}
+
+	list<GeometricObject*>::const_iterator it;
+	for (it = representation->getGeometricObjects().begin();
+	     it != representation->getGeometricObjects().end();
+	     it++)
+	{
+	        render_(*it);
+	}
+
+	return true;
+}
 
 void STLRenderer::footer_()
 {
@@ -1153,7 +1148,7 @@ void STLRenderer::out_(const String& data)
 		out += " ";
 	}
 	out += data;
-	outfile_ << out << std::endl;
+	(*ostrm_) << out << std::endl;
 }
 
 } } // namespaces

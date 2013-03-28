@@ -37,7 +37,6 @@ static Scene* getInstance(Position);
 	void setElementCursor(int);
 
 	virtual void onNotify(Message*) throw();
-	virtual bool exportScene(Renderer&) const throw();
 	virtual void initializeWidget(MainControl&) throw();
 	virtual void fetchPreferences(INIFile&) throw();
 	virtual void writePreferences(INIFile&) throw();
@@ -45,6 +44,7 @@ static Scene* getInstance(Position);
 	virtual bool isValid() const throw();
 //	virtual void dump(std::ostream& = std::cout, Size = 0) const throw();
 	Stage* getStage() throw();
+	virtual bool exportScene(SceneExporter&) const;
 //	void setInfo(const QString& );
 	Vector2 map3DToViewport(const Vector3& );
 	Vector3 mapViewportTo3D(const Vector2& );
