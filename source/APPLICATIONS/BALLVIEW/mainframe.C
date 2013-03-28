@@ -134,8 +134,8 @@ namespace BALL
 		Path path;
 
 		addDockWidget(Qt::BottomDockWidgetArea, new HelpViewer(this, "BALLView Docu"));
-		new LabelDialog(        this, ((String)tr("LabelDialog")).c_str());
-		new MolecularStructure(	this, ((String)tr("MolecularStructure")).c_str());
+		new LabelDialog(        this, "LabelDialog");
+		new MolecularStructure(	this, "MolecularStructure");
  		addDockWidget(Qt::BottomDockWidgetArea, new LogView(      this, ((String)tr("Logs")).c_str()));
 		addDockWidget(Qt::BottomDockWidgetArea, new FileObserver( this, ((String)tr("FileObserver")).c_str()));
 
