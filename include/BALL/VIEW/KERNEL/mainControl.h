@@ -174,10 +174,9 @@ namespace BALL
 				/// Display Animation submenu
 				DISPLAY_ANIMATION,
 
-#ifdef BALL_HAS_RTFACT	
 				/// Display Raytracing Continuos Loop submenu
 				DISPLAY_CONTINUOUSLOOP,
-#endif				
+
 				/// Simulations menu
 				MOLECULARMECHANICS = 10400,
 				
