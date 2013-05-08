@@ -206,7 +206,11 @@ namespace BALL
 
 			BoxIteratorTraits(const BoxIteratorTraits& traits, bool /* deep */ = true)
 				:	bound_(traits.bound_),
-					position_(traits.position_)
+					position_(traits.position_),
+					cur_box_(traits.cur_box_),
+					x_(traits.x_),
+					y_(traits.y_),
+					z_(traits.z_)
 			{
 			}
 
@@ -375,7 +379,7 @@ namespace BALL
 				
 			DataIteratorTraits(const HashGridBox3& box)
 			:	bound_((HashGridBox3 *)&box),
-				position_(bound_->data.begin())
+				position_(((HashGridBox3*)&box)->data.begin())
 			{
 			}
 				
