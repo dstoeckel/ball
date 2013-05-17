@@ -513,7 +513,6 @@ ENDIF()
 
 ## all the dependency libraries are linked into libBALL.so, except Qt and CUDA which are still dynamic
 LIST(APPEND BALL_DEP_LIBRARIES
-	${BOOST_LIBRARIES}
 	${REGEX_LIBRARIES}
 	${XDR_LIBRARIES}
 	${FFTW_LIBRARIES}
@@ -521,6 +520,13 @@ LIST(APPEND BALL_DEP_LIBRARIES
 	${MPI_LIBRARIES}
 	${PYTHON_LIBRARIES}
 )
+
+## On Windows linking of boost libraries is taken care of by #pragma comment(lib) in boost headers
+IF(NOT WIN32)
+LIST(APPEND BALL_DEP_LIBRARIES
+    ${BOOST_LIBRARIES}
+)
+ENDIF()
 
 
 IF(UNIX)
