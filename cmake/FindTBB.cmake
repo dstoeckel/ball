@@ -221,20 +221,23 @@ SET(TBB_MALLOC_LIBRARY_DEBUG ${_TBB_MALLOC_LIBRARY_DEBUG_NAME})
 if (TBB_INCLUDE_DIR)
     if (TBB_LIBRARY)
         set (TBB_FOUND "YES")
-   	#On Windows, we always should have both debug and release libraries. On other platforms, the debug libraries are often not present.
-	if(WIN32 OR (TBB_LIBRARY_DEBUG AND TBB_MALLOC_LIBRARY_DEBUG))
-	   set (_TBB_LIBRARIES optimized ${TBB_LIBRARY} optimized ${TBB_MALLOC_LIBRARY} debug ${TBB_LIBRARY_DEBUG} debug ${TBB_MALLOC_LIBRARY_DEBUG} ${TBB_LIBRARIES})
-	#and if not, use just the release ones
-	else()
-	  set (_TBB_LIBRARIES general ${TBB_LIBRARY} ${TBB_MALLOC_LIBRARY})
-	endif()
+        set (_TBB_LIBRARY_DIRS ${TBB_LIBRARY_PATH})
+        #On Windows, we always should have both debug and release libraries. On other platforms, the debug libraries are often not present.
+        if(WIN32 OR (TBB_LIBRARY_DEBUG AND TBB_MALLOC_LIBRARY_DEBUG))
+            SET(_TBB_LIBRARIES optimized ${TBB_LIBRARY} optimized ${TBB_MALLOC_LIBRARY} debug ${TBB_LIBRARY_DEBUG} debug ${TBB_MALLOC_LIBRARY_DEBUG})
+            LIST(APPEND _TBB_LIBRARY_DIRS ${TBB_LIBRARY_DEBUG_PATH})
+        #and if not, use just the release ones
+        else()
+            set (_TBB_LIBRARIES general ${TBB_LIBRARY} ${TBB_MALLOC_LIBRARY})
+        endif()
+        
         set (TBB_LIBRARIES ${_TBB_LIBRARIES} CACHE STRING "Intel TBB Libraries")
-        set (TBB_INCLUDE_DIRS ${TBB_INCLUDE_DIR} CACHE PATH "TBB include directory" FORCE)
-        set (_TBB_LIBRARY_DIRS ${TBB_LIBRARY_PATH} ${TBB_LIBRARY_DEBUG_PATH})
-        list(REMOVE_DUPLICATES _TBB_LIBRARY_DIRS)
+        set (TBB_INCLUDE_DIRS ${TBB_INCLUDE_DIR} CACHE PATH "TBB include directory" FORCE)        
         set (TBB_LIBRARY_DIRS ${_TBB_LIBRARY_DIRS} CACHE PATH "TBB library directories" FORCE)
+        
         mark_as_advanced(TBB_INCLUDE_DIRS TBB_LIBRARY_DIRS TBB_LIBRARIES TBB_DEBUG_LIBRARIES)
         message(STATUS "Found Intel TBB")
+        
     endif (TBB_LIBRARY)
 endif (TBB_INCLUDE_DIR)
 
