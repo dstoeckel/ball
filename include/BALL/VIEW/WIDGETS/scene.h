@@ -169,7 +169,7 @@ namespace BALL
 					\param      w_flags the flags the scene widget should have
 					(See documentation of QT-library for information concerning widget flags)
 					*/
-				Scene(QWidget* parent_widget = 0, const char* name = NULL, Qt::WindowFlags w_flags = 0);
+				Scene(QWidget* parent_widget = 0, const char* name = NULL, Qt::WindowFlags w_flags = 0, const QString& preferred_renderer = QString("GLRenderer"));
 
 				/** Copy constructor.
 					Initialize the width, height and camera position.
