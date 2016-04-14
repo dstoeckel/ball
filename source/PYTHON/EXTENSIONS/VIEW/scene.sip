@@ -4,14 +4,17 @@
 // $Id$
 //
 
-class Scene 
-  : Embeddable
+class Scene
+  : ModularWidget
 {
 %TypeHeaderCode
 	#include <BALL/VIEW/WIDGETS/scene.h>
 	using namespace BALL;
 	using namespace BALL::VIEW;
 %End
+  private:
+    // Scene is not copyable
+    Scene(const Scene&);
   public:
 //  void dump(std::ostream& s = std::cout, Size depth = 0) const;
 //  BALL_EMBEDDABLE(Scene,);
@@ -22,7 +25,6 @@ static Scene* getInstance(Position);
 
   Scene();
 //  Scene(QWidget*, const char*, WFlags);
-  Scene(const Scene&);
 //  const Scene& operator =  (const Scene&);
 //  void fetchPreferences(INIFile&);
 //  void finalizePreferencesTab(Preferences &preferences);
